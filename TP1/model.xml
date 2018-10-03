@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extendedFeatureModel>
+    <properties/>
+    <struct>
+        <and abstract="true" mandatory="true" name="Central">
+            <and abstract="true" mandatory="true" name="Rooms manager">
+                <feature name="Door controller"/>
+                <feature name="Light controller"/>
+                <feature name="Heating controller"/>
+                <and name="Anti-theft systems">
+                    <feature mandatory="true" name="Camera"/>
+                </and>
+            </and>
+            <feature name="Coffe machine controller"/>
+            <feature name="Sensors"/>
+        </and>
+    </struct>
+    <constraints>
+        <rule>
+            <imp>
+                <var>Heating controller</var>
+                <var>Sensors</var>
+            </imp>
+        </rule>
+    </constraints>
+    <calculations Auto="true" Constraints="true" Features="true" Redundant="true" Tautology="true"/>
+    <comments/>
+    <featureOrder userDefined="false"/>
+</extendedFeatureModel>
