@@ -3,6 +3,7 @@
     <properties/>
     <struct>
         <and abstract="true" mandatory="true" name="Central">
+            <feature name="Automated_vacuum"/>
             <feature name="Wifi_checkpoint"/>
             <and abstract="true" mandatory="true" name="Rooms_manager">
                 <feature name="Door_controller"/>
@@ -11,14 +12,16 @@
                 <and name="Anti_theft_systems">
                     <feature mandatory="true" name="Camera_connected"/>
                 </and>
-                <feature name="Automated_vacuum"/>
             </and>
             <feature name="Coffe_machine_controller"/>
             <and name="Sensors">
                 <feature name="Movements_sensors"/>
                 <feature name="Weather_sensors"/>
                 <feature name="Light_sensors"/>
+                <feature name="Microphone"/>
             </and>
+            <feature name="Connected_speakers"/>
+            <feature name="Virtual_assisstant"/>
         </and>
     </struct>
     <constraints>
@@ -44,6 +47,24 @@
             <imp>
                 <var>Door_controller</var>
                 <var>Wifi_checkpoint</var>
+            </imp>
+        </rule>
+        <rule>
+            <imp>
+                <var>Virtual_assisstant</var>
+                <var>Wifi_checkpoint</var>
+            </imp>
+        </rule>
+        <rule>
+            <imp>
+                <var>Virtual_assisstant</var>
+                <var>Microphone</var>
+            </imp>
+        </rule>
+        <rule>
+            <imp>
+                <var>Virtual_assisstant</var>
+                <var>Connected_speakers</var>
             </imp>
         </rule>
     </constraints>
