@@ -2,7 +2,7 @@
 <extendedFeatureModel>
     <properties/>
     <struct>
-        <and abstract="true" mandatory="true" name="Central">
+        <and abstract="true" mandatory="true" name="Central_connecter">
             <feature name="Automated_vacuum"/>
             <feature name="Wifi_checkpoint"/>
             <and abstract="true" mandatory="true" name="Rooms_manager">
@@ -10,25 +10,33 @@
                 <feature name="Light_controller"/>
                 <feature name="Heating_controller"/>
                 <and name="Anti_theft_systems">
-                    <feature mandatory="true" name="Camera_connected"/>
+                    <feature mandatory="true" name="Connected_cameras"/>
                 </and>
             </and>
             <feature name="Coffe_machine_controller"/>
-            <and name="Sensors">
+            <and abstract="true" name="Sensors">
                 <feature name="Movements_sensors"/>
                 <feature name="Weather_sensors"/>
                 <feature name="Light_sensors"/>
                 <feature name="Microphone"/>
+                <feature name="Temperature_sensors"/>
             </and>
             <feature name="Connected_speakers"/>
             <feature name="Virtual_assisstant"/>
+            <feature name="Connected_music_system"/>
         </and>
     </struct>
     <constraints>
         <rule>
             <imp>
                 <var>Heating_controller</var>
-                <var>Sensors</var>
+                <var>Temperature_sensors</var>
+            </imp>
+        </rule>
+        <rule>
+            <imp>
+                <var>Heating_controller</var>
+                <var>Weather_sensors</var>
             </imp>
         </rule>
         <rule>
@@ -64,6 +72,12 @@
         <rule>
             <imp>
                 <var>Virtual_assisstant</var>
+                <var>Connected_speakers</var>
+            </imp>
+        </rule>
+        <rule>
+            <imp>
+                <var>Connected_music_system</var>
                 <var>Connected_speakers</var>
             </imp>
         </rule>
