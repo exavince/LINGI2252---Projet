@@ -1,5 +1,6 @@
 package main;
 
+import main.event.EnterTheRoom;
 import main.event.SoonWakeUpTime;
 import main.event.VoiceCommand;
 import main.event.WakeUpTime;
@@ -20,6 +21,7 @@ public class ConnectedHouseSimulator {
         EVENT_BUS.register(new ConnectedSpeakers());
         EVENT_BUS.register(new ClockController());
         EVENT_BUS.register(new VoiceAssistant());
+        EVENT_BUS.register(new LightController());
 
         println("# Scenario 1");
         println("## Some time before the user wakes up..");
@@ -27,6 +29,8 @@ public class ConnectedHouseSimulator {
         println("## Now the user must wake up.");
         EVENT_BUS.post(new WakeUpTime());
         println("## The user is waking up.. ");
+        println("## Entering the kitchen..");
+        EVENT_BUS.post(new EnterTheRoom(Room.KITCHEN));
         println("## He asks to play his morning playlist.");
         EVENT_BUS.post(VoiceCommand.PLAY_MORNING_PLAYLIST);
         // TODO trigger events on EVENT_BUS

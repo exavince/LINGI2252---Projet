@@ -7,7 +7,7 @@ public class ConnectedSpeakers implements Feature {
     @Override
     public void onEvent(SimulationEvent event) {
         if(event instanceof SoundEvent) {
-            System.out.println("Connected speakers play this message: "+((SoundEvent) event).getContent());
+            System.out.println("Connected speakers play this music: "+((SoundEvent) event).getContent());
         }
     }
 }
