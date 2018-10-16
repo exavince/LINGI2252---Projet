@@ -1,8 +1,9 @@
-package feature;
+package main.feature;
 
-import event.SimulationEvent;
-import event.SoundEvent;
-import event.WakeUpTime;
+import main.ConnectedHouseSimulator;
+import main.event.SimulationEvent;
+import main.event.SoundEvent;
+import main.event.WakeUpTime;
 
 public class ClockController implements Feature {
     @Override

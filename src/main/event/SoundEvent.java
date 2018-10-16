@@ -1,6 +1,6 @@
-package event;
+package main.event;
 
-public class SoundEvent {
+public class SoundEvent implements SimulationEvent{
     private final String content;
 
     public SoundEvent(String contentIn) {

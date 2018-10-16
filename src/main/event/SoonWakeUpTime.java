@@ -1,6 +1,4 @@
-package event;
-
-import event.SimulationEvent;
+package main.event;
 
 public class SoonWakeUpTime implements SimulationEvent {
 }

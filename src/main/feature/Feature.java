@@ -1,6 +1,6 @@
-package feature;
+package main.feature;
 
-import event.SimulationEvent;
+import main.event.SimulationEvent;
 
 public interface Feature {
     void onEvent(SimulationEvent event);

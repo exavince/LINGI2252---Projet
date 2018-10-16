@@ -1,7 +1,7 @@
-package feature;
+package main.feature;
 
-import event.SimulationEvent;
-import event.SoundEvent;
+import main.event.SimulationEvent;
+import main.event.SoundEvent;
 
 public class ConnectedSpeakers implements Feature {
     @Override

@@ -1,7 +1,7 @@
-package feature;
+package main.feature;
 
-import event.SimulationEvent;
-import event.SoonWakeUpTime;
+import main.event.SimulationEvent;
+import main.event.SoonWakeUpTime;
 
 public class HeatingController implements Feature {
 

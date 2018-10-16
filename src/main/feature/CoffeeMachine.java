@@ -1,9 +1,9 @@
-package feature;
+package main.feature;
 
-import event.SimulationEvent;
-import event.SoonWakeUpTime;
+import main.event.SimulationEvent;
+import main.event.SoonWakeUpTime;
 
-public class CoffeeMachine implements Feature {
+public class CoffeeMachine implements main.feature.Feature {
     @Override
     public void onEvent(SimulationEvent event) {
         if(event instanceof SoonWakeUpTime) {
