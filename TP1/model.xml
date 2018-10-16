@@ -3,85 +3,52 @@
     <properties/>
     <struct>
         <and abstract="true" mandatory="true" name="Central_connecter">
-            <feature name="Automated_vacuum"/>
-            <feature name="Wifi_checkpoint"/>
-            <and abstract="true" mandatory="true" name="Rooms_manager">
-                <feature name="Door_controller"/>
-                <feature name="Light_controller"/>
-                <feature name="Heating_controller"/>
-                <and name="Anti_theft_systems">
-                    <feature mandatory="true" name="Connected_cameras"/>
+            <and abstract="true" name="Security">
+                <feature name="Movements_sensors"/>
+                <feature mandatory="true" name="Connected_cameras"/>
+            </and>
+            <and abstract="true" name="Sounds">
+                <feature mandatory="true" name="Connected_speakers"/>
+                <feature name="Virtual_assisstant"/>
+                <feature mandatory="true" name="Connected_music_system"/>
+                <feature name="Microphone"/>
+            </and>
+            <and abstract="true" name="Control">
+                <and abstract="true" name="Heating">
+                    <feature mandatory="true" name="Heating_controller"/>
+                    <feature name="Temperature_sensors"/>
+                    <feature name="Weather_sensors"/>
+                </and>
+                <and abstract="true" name="Cleaning">
+                    <feature name="Automated_vacuum"/>
+                </and>
+                <and abstract="true" name="Light">
+                    <feature mandatory="true" name="Light_controller"/>
+                    <feature name="Light_sensors"/>
+                </and>
+                <and name="Devices">
+                    <feature name="Coffe_machine_controller"/>
+                    <feature name="Wifi_checkpoint"/>
+                </and>
+                <and abstract="true" name="Doors">
+                    <feature mandatory="true" name="Door_controller"/>
+                    <feature name="Shutter_controller"/>
+                    <feature name="Garage_door"/>
                 </and>
             </and>
-            <feature name="Coffe_machine_controller"/>
-            <and abstract="true" name="Sensors">
-                <feature name="Movements_sensors"/>
-                <feature name="Weather_sensors"/>
-                <feature name="Light_sensors"/>
-                <feature name="Microphone"/>
-                <feature name="Temperature_sensors"/>
+            <and abstract="true" mandatory="true" name="Rooms_manager">
+                <feature mandatory="true" name="Kitchen"/>
+                <feature mandatory="true" name="Bathroom"/>
+                <feature mandatory="true" name="Bedroom"/>
+                <feature mandatory="true" name="Living"/>
+                <feature name="Garage"/>
+                <feature name="Corridor"/>
+                <feature name="Toilet"/>
+                <feature name="Office"/>
             </and>
-            <feature name="Connected_speakers"/>
-            <feature name="Virtual_assisstant"/>
-            <feature name="Connected_music_system"/>
         </and>
     </struct>
-    <constraints>
-        <rule>
-            <imp>
-                <var>Heating_controller</var>
-                <var>Temperature_sensors</var>
-            </imp>
-        </rule>
-        <rule>
-            <imp>
-                <var>Heating_controller</var>
-                <var>Weather_sensors</var>
-            </imp>
-        </rule>
-        <rule>
-            <imp>
-                <var>Anti_theft_systems</var>
-                <var>Movements_sensors</var>
-            </imp>
-        </rule>
-        <rule>
-            <disj>
-                <var>Light_controller</var>
-                <var>Light_sensors</var>
-            </disj>
-        </rule>
-        <rule>
-            <imp>
-                <var>Door_controller</var>
-                <var>Wifi_checkpoint</var>
-            </imp>
-        </rule>
-        <rule>
-            <imp>
-                <var>Virtual_assisstant</var>
-                <var>Wifi_checkpoint</var>
-            </imp>
-        </rule>
-        <rule>
-            <imp>
-                <var>Virtual_assisstant</var>
-                <var>Microphone</var>
-            </imp>
-        </rule>
-        <rule>
-            <imp>
-                <var>Virtual_assisstant</var>
-                <var>Connected_speakers</var>
-            </imp>
-        </rule>
-        <rule>
-            <imp>
-                <var>Connected_music_system</var>
-                <var>Connected_speakers</var>
-            </imp>
-        </rule>
-    </constraints>
+    <constraints/>
     <calculations Auto="true" Constraints="true" Features="true" Redundant="true" Tautology="true"/>
     <comments/>
     <featureOrder userDefined="false"/>
