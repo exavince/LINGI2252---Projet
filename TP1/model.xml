@@ -26,7 +26,7 @@
                     <feature mandatory="true" name="Light_controller"/>
                     <feature name="Light_sensors"/>
                 </and>
-                <and name="Devices">
+                <and abstract="true" name="Devices">
                     <feature name="Coffe_machine_controller"/>
                     <feature name="Wifi_checkpoint"/>
                 </and>
@@ -48,7 +48,14 @@
             </and>
         </and>
     </struct>
-    <constraints/>
+    <constraints>
+        <rule>
+            <imp>
+                <var>Virtual_assisstant</var>
+                <var>Microphone</var>
+            </imp>
+        </rule>
+    </constraints>
     <calculations Auto="true" Constraints="true" Features="true" Redundant="true" Tautology="true"/>
     <comments/>
     <featureOrder userDefined="false"/>
