@@ -3,18 +3,14 @@
     <properties/>
     <struct>
         <and abstract="true" mandatory="true" name="Central_connecter">
-            <and abstract="true" name="Security">
-                <feature name="Movements_sensors"/>
-                <feature mandatory="true" name="Connected_cameras"/>
-            </and>
             <and abstract="true" name="Sounds">
                 <feature mandatory="true" name="Connected_speakers"/>
                 <feature name="Virtual_assisstant"/>
                 <feature mandatory="true" name="Connected_music_system"/>
                 <feature name="Microphone"/>
             </and>
-            <and abstract="true" name="Control">
-                <and abstract="true" name="Heating">
+            <and abstract="true" mandatory="true" name="Control">
+                <and abstract="true" mandatory="true" name="Heating">
                     <feature mandatory="true" name="Heating_controller"/>
                     <feature name="Temperature_sensors"/>
                     <feature name="Weather_sensors"/>
@@ -25,6 +21,7 @@
                 <and abstract="true" name="Light">
                     <feature mandatory="true" name="Light_controller"/>
                     <feature name="Light_sensors"/>
+                    <feature name="Movements_sensors"/>
                 </and>
                 <and abstract="true" name="Devices">
                     <feature name="Coffe_machine_controller"/>
@@ -33,18 +30,12 @@
                 <and abstract="true" name="Doors">
                     <feature mandatory="true" name="Door_controller"/>
                     <feature name="Shutter_controller"/>
-                    <feature name="Garage_door"/>
+                    <feature name="Window_controller"/>
                 </and>
             </and>
-            <and abstract="true" mandatory="true" name="Rooms_manager">
-                <feature mandatory="true" name="Kitchen"/>
-                <feature mandatory="true" name="Bathroom"/>
-                <feature mandatory="true" name="Bedroom"/>
-                <feature mandatory="true" name="Living"/>
-                <feature name="Garage"/>
-                <feature name="Corridor"/>
-                <feature name="Toilet"/>
-                <feature name="Office"/>
+            <and abstract="true" name="Security">
+                <feature mandatory="true" name="Connected_cameras"/>
+                <feature name="Auto_activation"/>
             </and>
         </and>
     </struct>
@@ -53,6 +44,12 @@
             <imp>
                 <var>Virtual_assisstant</var>
                 <var>Microphone</var>
+            </imp>
+        </rule>
+        <rule>
+            <imp>
+                <var>Auto_activation</var>
+                <var>Movements_sensors</var>
             </imp>
         </rule>
     </constraints>
