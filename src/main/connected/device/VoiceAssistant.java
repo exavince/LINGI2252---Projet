@@ -1,19 +1,18 @@
-package main.feature.sounds;
+package main.connected.device;
 
+import main.ConnectedHouse;
+import main.connected.Feature;
 import main.event.SimulationEvent;
 import main.event.SoundEvent;
 import main.event.VoiceCommand;
-import main.feature.Feature;
-
-import static main.ConnectedHouseSimulator.VIRTUAL_BUS;
 
 public class VoiceAssistant implements Feature {
     @Override
-    public void onEvent(SimulationEvent event) {
+    public void onEvent(SimulationEvent event, ConnectedHouse house) {
         if (event instanceof VoiceCommand) {
             switch ((VoiceCommand) event) {
                 case PLAY_MORNING_PLAYLIST:
-                    VIRTUAL_BUS.post(new SoundEvent("<Morning PlayList>"));
+                    house.broadcast(new SoundEvent("<Morning PlayList>"));
             }
         }
     }

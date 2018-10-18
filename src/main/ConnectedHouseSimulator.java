@@ -1,37 +1,28 @@
 package main;
 
+import main.connected.control.ClockController;
+import main.connected.control.door.DoorController;
+import main.connected.control.door.GarageDoorController;
+import main.connected.control.heating.HeatingController;
+import main.connected.control.heating.WeatherSensor;
+import main.connected.control.light.LightController;
+import main.connected.control.light.MovementsSensor;
+import main.connected.device.CoffeeMachine;
+import main.connected.device.VoiceAssistant;
+import main.connected.sounds.ConnectedSpeakers;
 import main.event.*;
-import main.feature.ClockController;
-import main.feature.control.devices.CoffeeMachine;
-import main.feature.control.doors.DoorController;
-import main.feature.control.doors.GarageDoorController;
-import main.feature.control.heating.HeatingController;
-import main.feature.control.heating.WeatherSensor;
-import main.feature.control.light.LightController;
-import main.feature.control.light.MovementsSensor;
-import main.feature.sounds.ConnectedSpeakers;
-import main.feature.sounds.VoiceAssistant;
 
 public class ConnectedHouseSimulator {
-    /**
-     * All the events that symbolize something happening in reality. Usually capted by sensors.
-     */
-    public static final EventBus PHYSICAL_BUS = new EventBus();
-
-    /**
-     * Messages broadcasted by the central unit. Usually posted by sensors or devices.
-     */
-    public static final EventBus VIRTUAL_BUS = new EventBus();
     // TODO scenario with rain, weather detector and close the shutter ?
 
     public static void main(String[] args) {
         //TODO Launch scenarios based on command-line arguments ?
-        firstScenario();
+        testScenario();
     }
 
-    private static void firstScenario() {
-        // Register features of the house
-        VIRTUAL_BUS.register(
+    private static void testScenario() {
+        ConnectedHouse house = new ConnectedHouse();
+        house.register(
                 new CoffeeMachine(),
                 new HeatingController(),
                 new ConnectedSpeakers(),
@@ -41,28 +32,28 @@ public class ConnectedHouseSimulator {
                 new GarageDoorController(),
                 new DoorController()
         );
-        PHYSICAL_BUS.register(
+        house.register(
                 new MovementsSensor(),
                 new WeatherSensor()
         );
 
         println("# Scenario 1");
         println("## Some time before the user wakes up..");
-        VIRTUAL_BUS.post(new SoonWakeUpTime());
+        house.broadcast(new SoonWakeUpTime());
         println("## Now the user must wake up.");
-        VIRTUAL_BUS.post(new WakeUpTime());
+        house.broadcast(new WakeUpTime());
         println("## The user is waking up.. ");
         println("## Entering the kitchen..");
-        PHYSICAL_BUS.post(new LeaveRoom(Room.BEDROOM));
-        PHYSICAL_BUS.post(new EnterRoom(Room.KITCHEN));
+        house.triggerSensors(new LeaveRoom(Room.BEDROOM));
+        house.triggerSensors(new EnterRoom(Room.KITCHEN));
         println("## He asks to play his morning playlist and goes to the garage.");
-        VIRTUAL_BUS.post(VoiceCommand.PLAY_MORNING_PLAYLIST);
-        PHYSICAL_BUS.post(new LeaveRoom(Room.KITCHEN));
-        PHYSICAL_BUS.post(new EnterRoom(Room.GARAGE));
+        house.broadcast(VoiceCommand.PLAY_MORNING_PLAYLIST);
+        house.triggerSensors(new LeaveRoom(Room.KITCHEN));
+        house.triggerSensors(new EnterRoom(Room.GARAGE));
         println("## Using his smartphone from his, he opens the garage door.");
-        VIRTUAL_BUS.post(SmartphoneCommand.OPEN_GARAGE_DOOR);
+        house.broadcast(SmartphoneCommand.OPEN_GARAGE_DOOR);
         println("## His application allows him to completely lock the house from his car, as he drives away.");
-        VIRTUAL_BUS.post(SmartphoneCommand.LOCK_HOUSE);
+        house.broadcast(SmartphoneCommand.LOCK_HOUSE);
     }
 
     /**

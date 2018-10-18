@@ -1,13 +1,14 @@
-package main.feature.control.doors;
+package main.connected.control.door;
 
+import main.ConnectedHouse;
+import main.connected.Feature;
 import main.event.SimulationEvent;
 import main.event.SmartphoneCommand;
-import main.feature.Feature;
 
 public class DoorController implements Feature {
 
     @Override
-    public void onEvent(SimulationEvent event) {
+    public void onEvent(SimulationEvent event, ConnectedHouse house) {
         if (event == SmartphoneCommand.LOCK_HOUSE) {
             System.out.println("Locking the door..");
         }

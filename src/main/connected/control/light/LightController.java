@@ -1,14 +1,15 @@
-package main.feature.control.light;
+package main.connected.control.light;
 
+import main.ConnectedHouse;
+import main.connected.Feature;
 import main.event.EnterRoom;
 import main.event.LeaveRoom;
 import main.event.SimulationEvent;
-import main.feature.Feature;
 
 public class LightController implements Feature {
 
     @Override
-    public void onEvent(SimulationEvent event) {
+    public void onEvent(SimulationEvent event, ConnectedHouse house) {
         if (event instanceof EnterRoom) {
             System.out.println("Light controller: Turning on the lights in the room \"" + ((EnterRoom) event).getRoom() + "\"!");
         } else if (event instanceof LeaveRoom) {
