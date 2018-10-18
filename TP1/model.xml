@@ -26,6 +26,7 @@
                 <and abstract="true" name="Devices">
                     <feature name="Coffe_machine_controller"/>
                     <feature name="Wifi_checkpoint"/>
+                    <feature name="Clock_controller"/>
                 </and>
                 <and abstract="true" name="Doors">
                     <feature mandatory="true" name="Door_controller"/>
