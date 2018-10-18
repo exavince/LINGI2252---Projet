@@ -1,7 +1,7 @@
-package main.connected.control.light;
+package main.item.control.light;
 
 import main.ConnectedHouse;
-import main.Sensor;
+import main.item.Sensor;
 import main.event.RoomEvent;
 import main.event.SimulationEvent;
 

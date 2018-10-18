@@ -1,7 +1,7 @@
-package main.connected.control.heating;
+package main.item.control.heating;
 
 import main.ConnectedHouse;
-import main.Sensor;
+import main.item.Sensor;
 import main.event.SimulationEvent;
 import main.event.SoonWakeUpTime;
 import main.event.WeatherReport;

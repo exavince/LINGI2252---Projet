@@ -1,15 +1,15 @@
 package main;
 
-import main.connected.control.ClockController;
-import main.connected.control.door.DoorController;
-import main.connected.control.door.GarageDoorController;
-import main.connected.control.heating.HeatingController;
-import main.connected.control.heating.WeatherSensor;
-import main.connected.control.light.LightController;
-import main.connected.control.light.MovementsSensor;
-import main.connected.device.CoffeeMachine;
-import main.connected.device.VoiceAssistant;
-import main.connected.sounds.ConnectedSpeakers;
+import main.item.control.ClockController;
+import main.item.control.door.DoorController;
+import main.item.control.door.GarageDoorController;
+import main.item.control.heating.HeatingController;
+import main.item.control.heating.WeatherSensor;
+import main.item.control.light.LightController;
+import main.item.control.light.MovementsSensor;
+import main.item.device.CoffeeMachine;
+import main.item.device.VoiceAssistant;
+import main.item.sounds.ConnectedSpeakers;
 import main.event.*;
 
 public class ConnectedHouseSimulator {

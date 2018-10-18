@@ -1,7 +1,8 @@
 package main;
 
-import main.connected.Item;
+import main.item.Item;
 import main.event.SimulationEvent;
+import main.item.Sensor;
 
 import java.util.ArrayList;
 import java.util.Arrays;

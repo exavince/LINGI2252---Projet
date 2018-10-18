@@ -1,7 +1,7 @@
-package main.connected.sounds;
+package main.item.sounds;
 
 import main.ConnectedHouse;
-import main.connected.Item;
+import main.item.Item;
 import main.event.SimulationEvent;
 import main.event.SoundEvent;
 

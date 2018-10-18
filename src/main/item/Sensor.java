@@ -1,5 +1,6 @@
-package main;
+package main.item;
 
+import main.ConnectedHouse;
 import main.event.SimulationEvent;
 
 public interface Sensor {

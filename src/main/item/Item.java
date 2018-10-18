@@ -1,4 +1,4 @@
-package main.connected;
+package main.item;
 
 import main.ConnectedHouse;
 import main.event.SimulationEvent;
