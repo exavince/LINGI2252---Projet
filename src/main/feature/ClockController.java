@@ -8,9 +8,8 @@ import main.event.WakeUpTime;
 public class ClockController implements Feature {
     @Override
     public void onEvent(SimulationEvent event) {
-        if(event instanceof WakeUpTime) {
-            ConnectedHouseSimulator.EVENT_BUS.post(new SoundEvent("WAKE UP USER, WAKE UP !"));
+        if (event instanceof WakeUpTime) {
+            ConnectedHouseSimulator.VIRTUAL_BUS.post(new SoundEvent("WAKE UP USER, WAKE UP !"));
         }
-
     }
 }
