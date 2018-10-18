@@ -3,6 +3,8 @@ package main;
 import main.event.*;
 import main.feature.ClockController;
 import main.feature.control.devices.CoffeeMachine;
+import main.feature.control.doors.DoorController;
+import main.feature.control.doors.GarageDoorController;
 import main.feature.control.heating.HeatingController;
 import main.feature.control.heating.WeatherSensor;
 import main.feature.control.light.LightController;
@@ -35,7 +37,9 @@ public class ConnectedHouseSimulator {
                 new ConnectedSpeakers(),
                 new ClockController(),
                 new VoiceAssistant(),
-                new LightController()
+                new LightController(),
+                new GarageDoorController(),
+                new DoorController()
         );
         PHYSICAL_BUS.register(
                 new MovementsSensor(),
@@ -55,6 +59,10 @@ public class ConnectedHouseSimulator {
         VIRTUAL_BUS.post(VoiceCommand.PLAY_MORNING_PLAYLIST);
         PHYSICAL_BUS.post(new LeaveRoom(Room.KITCHEN));
         PHYSICAL_BUS.post(new EnterRoom(Room.GARAGE));
+        println("## Using his smartphone from his, he opens the garage door.");
+        VIRTUAL_BUS.post(SmartphoneCommand.OPEN_GARAGE_DOOR);
+        println("## His application allows him to completely lock the house from his car, as he drives away.");
+        VIRTUAL_BUS.post(SmartphoneCommand.LOCK_HOUSE);
     }
 
     /**
