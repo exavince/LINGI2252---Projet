@@ -1,6 +1,6 @@
 package main;
 
-import main.connected.Feature;
+import main.connected.Item;
 import main.event.SimulationEvent;
 
 import java.util.ArrayList;
@@ -8,23 +8,23 @@ import java.util.Arrays;
 
 public class ConnectedHouse {
     private ArrayList<Sensor> sensors = new ArrayList<>();
-    private ArrayList<Feature> features = new ArrayList<>();
+    private ArrayList<Item> items = new ArrayList<>();
 
     /**
-     * Adds features to the Event bus. At least one feature is required to call the method.
+     * Adds items to the Event bus. At least one item is required to call the method.
      */
-    void register(Feature minimumFeature, Feature... featuresIn) {
-        features.add(minimumFeature);
-        features.addAll(Arrays.asList(featuresIn));
+    void register(Item minimumItem, Item... itemsIn) {
+        items.add(minimumItem);
+        items.addAll(Arrays.asList(itemsIn));
     }
 
     /**
-     * Broadcast an event to all features.
+     * Broadcast an event to all items.
      *
      * @param event The main.event to be broadcasted
      */
     public void broadcast(SimulationEvent event) {
-        features.forEach(feature -> feature.onEvent(event, this));
+        items.forEach(item -> item.onEvent(event, this));
     }
 
     /**

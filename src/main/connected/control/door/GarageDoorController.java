@@ -1,11 +1,11 @@
 package main.connected.control.door;
 
 import main.ConnectedHouse;
-import main.connected.Feature;
+import main.connected.Item;
 import main.event.SimulationEvent;
 import main.event.SmartphoneCommand;
 
-public class GarageDoorController implements Feature {
+public class GarageDoorController implements Item {
 
     @Override
     public void onEvent(SimulationEvent event, ConnectedHouse house) {

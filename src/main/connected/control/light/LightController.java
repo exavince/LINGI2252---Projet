@@ -1,12 +1,12 @@
 package main.connected.control.light;
 
 import main.ConnectedHouse;
-import main.connected.Feature;
+import main.connected.Item;
 import main.event.EnterRoom;
 import main.event.LeaveRoom;
 import main.event.SimulationEvent;
 
-public class LightController implements Feature {
+public class LightController implements Item {
 
     @Override
     public void onEvent(SimulationEvent event, ConnectedHouse house) {
