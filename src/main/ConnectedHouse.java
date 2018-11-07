@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class ConnectedHouse {
     private final ArrayList<Room> rooms = new ArrayList<>();
 
-    private ArrayList<Room> getRooms() {
+    ArrayList<Room> getRooms() {
         return rooms;
     }
 

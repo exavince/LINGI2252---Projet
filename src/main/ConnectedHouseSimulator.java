@@ -24,40 +24,8 @@ public class ConnectedHouseSimulator {
     }
 
     private static void testScenario() {
-        ConnectedHouse house = new ConnectedHouse();
-
-        house.register(
-                new Room(BEDROOM).register(
-                        new ConnectedSpeakers(),
-                        new HeatingController(),
-                        new LightController(),
-                        new ClockController()
-                ).register(new TemperatureSensor()),
-                new Room(KITCHEN).register(
-                        new CoffeeMachine(),
-                        new HeatingController(),
-                        new ConnectedSpeakers(),
-                        new CoffeeMachine(),
-                        new LightController()
-                ).register(
-                        new MovementsSensor(),
-                        new Microphone()
-                ),
-                new Room(LIVING_ROOM).register(
-                        new VoiceAssistant(),
-                        new DoorController(),
-                        new HeatingController(),
-                        new LightController()
-                ).register(
-                        new MovementsSensor()
-                ),
-                new Room(GARAGE).register(
-                        new GarageDoorController(),
-                        new LightController()
-                ).register(
-                        new MovementsSensor()
-                )
-        );
+        HomeBuilder build = new HomeBuilder();
+        ConnectedHouse house = build.createHouse();
 
 
         println("# Scenario 1");

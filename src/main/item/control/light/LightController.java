@@ -6,6 +6,13 @@ import main.message.MovementAlert;
 public class LightController extends Item {
     boolean light = false;
 
+    private LightController() {
+    }
+
+    public static LightController createLightController() {
+        return new LightController();
+    }
+
     @Override
     public void onEvent(Object message) {
         if (message instanceof MovementAlert) {

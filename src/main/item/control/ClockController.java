@@ -6,6 +6,13 @@ import main.item.sounds.ConnectedSpeakers;
 import main.message.SoundMessage;
 
 public class ClockController extends Item {
+    private ClockController() {
+    }
+
+    public static ClockController createClockController() {
+        return new ClockController();
+    }
+
     @Override
     public void onEvent(Object message) {
         if (message.equals("trigger_alarm")) {

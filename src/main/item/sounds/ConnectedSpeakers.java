@@ -5,6 +5,13 @@ import main.message.SoundMessage;
 
 public class ConnectedSpeakers extends Item {
 
+    private ConnectedSpeakers() {
+    }
+
+    public static ConnectedSpeakers createConnectedSpeakers() {
+        return new ConnectedSpeakers();
+    }
+
     @Override
     public void onEvent(Object message) {
         if (message instanceof SoundMessage) {
