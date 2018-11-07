@@ -1,10 +1,10 @@
 package main.event;
 
-import main.Room;
+import main.RoomType;
 
 public class LeaveRoom extends RoomEvent {
-    public LeaveRoom(Room room) {
-        super(room);
+    public LeaveRoom(RoomType roomType) {
+        super(roomType);
     }
 }
 

@@ -1,19 +1,19 @@
 package main.event;
 
-import main.Room;
+import main.RoomType;
 
 /**
- * RoomEvents both represent the "physical" movement in the room detected by movement sensors and the message broadcasted by these sensors.
+ * RoomEvents both represent the "physical" movement in the roomType detected by movement sensors and the message broadcasted by these sensors.
  */
 public abstract class RoomEvent implements SimulationEvent {
-    private Room room;
+    private RoomType roomType;
 
-    RoomEvent(Room room) {
-        this.room = room;
+    RoomEvent(RoomType roomType) {
+        this.roomType = roomType;
     }
 
-    public Room getRoom() {
-        return room;
+    public RoomType getRoomType() {
+        return roomType;
     }
 }
 

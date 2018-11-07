@@ -1,42 +1,79 @@
 package main;
 
 import main.item.Item;
-import main.event.SimulationEvent;
-import main.item.Sensor;
+import main.sensor.Sensor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ConnectedHouse {
-    private ArrayList<Sensor> sensors = new ArrayList<>();
-    private ArrayList<Item> items = new ArrayList<>();
+    private final ArrayList<Room> rooms = new ArrayList<>();
 
-    /**
-     * Adds items to the Event bus. At least one item is required to call the method.
-     */
-    void register(Item minimumItem, Item... itemsIn) {
-        items.add(minimumItem);
-        items.addAll(Arrays.asList(itemsIn));
+    public ArrayList<Room> getRooms() {
+        return rooms;
     }
 
     /**
-     * Broadcast an event to all items.
-     *
-     * @param event The main.event to be broadcasted
+     * Adds rooms to the house
      */
-    public void broadcast(SimulationEvent event) {
-        items.forEach(item -> item.onEvent(event, this));
+    void register(Room minimumRoom, Room... roomsIn) {
+        rooms.add(minimumRoom);
+        rooms.addAll(Arrays.asList(roomsIn));
     }
 
     /**
-     * Adds sensors. At least one sensor is required to call the method.
+     * Sends a message to all items of type itemClass in all rooms of type roomType
+     * TODO String is not a good idea for a command
      */
-    void register(Sensor minimumSensor, Sensor... sensorsIn) {
-        sensors.add(minimumSensor);
-        sensors.addAll(Arrays.asList(sensorsIn));
+    public void send(RoomType roomType, Class<? extends Item> itemClass, String message) {
+        for (Room room : rooms) {
+            if (room.getType() == roomType) {
+                for (Item item : room.getItems()) {
+                    if (itemClass.isInstance(item)) {
+                        item.onEvent(message, this);
+                    }
+                }
+            }
+        }
     }
 
-    void triggerSensors(SimulationEvent event) {
-        sensors.forEach(sensor -> sensor.onTrigger(event, this));
+    public void triggerSensor(RoomType roomType, Class<? extends Sensor> sensorClass) {
+        for (Room room : this.getRooms()) {
+            if (room.getType() == roomType) {
+                for (Sensor sensor : room.getSensors()) {
+                    if (sensorClass.isInstance(sensor)) {
+                        for (Item item : room.getItems()) {
+                            item.onEvent(sensor.askReport(), this);
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    /**
+     * Sends a message to all items of type itemClass in all rooms
+     * TODO String is not a good idea for a command
+     */
+    public void sendAllRooms(Class<? extends Item> itemClass, String message) {
+        for (Room room : rooms) {
+            for (Item item : room.getItems()) {
+                if (itemClass.isInstance(item)) {
+                    item.onEvent(message, this);
+                }
+            }
+        }
+    }
+
+
+    public void askSensorReport(Item askingItem, Class<? extends Sensor> sensorClass) {
+        for (Room room : rooms) {
+            for (Sensor sensor : room.getSensors()) {
+                if (sensorClass.isInstance(sensor))
+                    askingItem.onEvent(sensor.askReport(), this);
+            }
+        }
     }
 }

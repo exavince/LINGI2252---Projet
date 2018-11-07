@@ -2,18 +2,13 @@ package main.item.device;
 
 import main.ConnectedHouse;
 import main.item.Item;
-import main.event.SimulationEvent;
-import main.event.SoundEvent;
-import main.event.VoiceCommand;
+import main.item.sounds.ConnectedSpeakers;
 
 public class VoiceAssistant implements Item {
     @Override
-    public void onEvent(SimulationEvent event, ConnectedHouse house) {
-        if (event instanceof VoiceCommand) {
-            switch ((VoiceCommand) event) {
-                case PLAY_MORNING_PLAYLIST:
-                    house.broadcast(new SoundEvent("<Morning PlayList>"));
-            }
+    public void onEvent(String message, ConnectedHouse house) {
+        if (message.equals("play_morning_playlist")) {
+            house.sendAllRooms(ConnectedSpeakers.class, "music:Morning Playlist");
         }
     }
 }

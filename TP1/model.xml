@@ -5,30 +5,26 @@
         <and abstract="true" mandatory="true" name="Central_connecter">
             <and abstract="true" name="Sounds">
                 <feature mandatory="true" name="Connected_speakers"/>
-                <feature name="Virtual_assisstant"/>
+                <feature name="Virtual_assistant"/>
                 <feature mandatory="true" name="Connected_music_system"/>
                 <feature name="Microphone"/>
             </and>
             <and abstract="true" mandatory="true" name="Control">
                 <and abstract="true" mandatory="true" name="Heating">
                     <feature mandatory="true" name="Heating_controller"/>
-                    <feature name="Temperature_sensors"/>
-                    <feature name="Weather_sensors"/>
                 </and>
-                <and abstract="true" name="Cleaning">
+                <and abstract="true" name="Cleaning_assistance">
                     <feature name="Automated_vacuum"/>
                 </and>
-                <and abstract="true" name="Light">
+                <and abstract="true" name="Light_management">
                     <feature mandatory="true" name="Light_controller"/>
-                    <feature name="Light_sensors"/>
-                    <feature name="Movements_sensors"/>
                 </and>
                 <and abstract="true" name="Devices">
                     <feature name="Coffe_machine_controller"/>
                     <feature name="Wifi_checkpoint"/>
                     <feature name="Clock_controller"/>
                 </and>
-                <and abstract="true" name="Doors">
+                <and abstract="true" name="Smart_doors">
                     <feature mandatory="true" name="Door_controller"/>
                     <feature name="Shutter_controller"/>
                     <feature name="Window_controller"/>
@@ -38,12 +34,19 @@
                 <feature mandatory="true" name="Connected_cameras"/>
                 <feature name="Auto_activation"/>
             </and>
+            <and abstract="true" name="Sensors">
+                <feature name="Temperature_sensors"/>
+                <feature name="Weather_sensors"/>
+                <feature name="Light_sensors"/>
+                <feature name="Movements_sensors"/>
+            </and>
+            <feature name="Rooms"/>
         </and>
     </struct>
     <constraints>
         <rule>
             <imp>
-                <var>Virtual_assisstant</var>
+                <var>Virtual_assistant</var>
                 <var>Microphone</var>
             </imp>
         </rule>
