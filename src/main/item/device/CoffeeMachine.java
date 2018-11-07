@@ -1,17 +1,16 @@
 package main.item.device;
 
-import main.ConnectedHouse;
 import main.item.Item;
 
-public class CoffeeMachine implements Item {
+public class CoffeeMachine extends Item {
     @Override
-    public void onEvent(String message, ConnectedHouse house) {
+    public void onEvent(Object message) {
         if (message.equals("make_coffee")) {
             makeCoffee();
         }
     }
 
     private void makeCoffee() {
-        System.out.println("Coffee machine : Starting to make coffee..");
+        println("Starting to make coffee..");
     }
 }

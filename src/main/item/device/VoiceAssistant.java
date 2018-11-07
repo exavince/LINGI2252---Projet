@@ -1,14 +1,13 @@
 package main.item.device;
 
-import main.ConnectedHouse;
 import main.item.Item;
 import main.item.sounds.ConnectedSpeakers;
 
-public class VoiceAssistant implements Item {
+public class VoiceAssistant extends Item {
     @Override
-    public void onEvent(String message, ConnectedHouse house) {
+    public void onEvent(Object message) {
         if (message.equals("play_morning_playlist")) {
-            house.sendAllRooms(ConnectedSpeakers.class, "music:Morning Playlist");
+            getHouse().sendAllRooms(ConnectedSpeakers.class, "The Morning Playlist");
         }
     }
 }

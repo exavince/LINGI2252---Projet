@@ -1,14 +1,13 @@
 package main.item.control.door;
 
-import main.ConnectedHouse;
 import main.item.Item;
 
-public class DoorController implements Item {
+public class DoorController extends Item {
 
     @Override
-    public void onEvent(String message, ConnectedHouse house) {
+    public void onEvent(Object message) {
         if (message.equals("lock")) {
-            System.out.println("Locking the door..");
+            println("Locking the door..");
         }
     }
 }

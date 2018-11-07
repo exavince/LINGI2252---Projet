@@ -1,14 +1,14 @@
 package main.item.sounds;
 
-import main.ConnectedHouse;
 import main.item.Item;
+import main.message.SoundMessage;
 
-public class ConnectedSpeakers implements Item {
+public class ConnectedSpeakers extends Item {
 
     @Override
-    public void onEvent(String message, ConnectedHouse house) {
-        if (message.startsWith("sound:")) {
-            System.out.println("Connected speakers play this sound: " + message);
+    public void onEvent(Object message) {
+        if (message instanceof SoundMessage) {
+            println("play this sound " + ((SoundMessage) message).getContent());
         }
     }
 }

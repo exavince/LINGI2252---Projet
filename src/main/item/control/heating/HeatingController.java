@@ -1,23 +1,20 @@
 package main.item.control.heating;
 
-import main.ConnectedHouse;
 import main.item.Item;
+import main.message.TemperatureReport;
 import main.sensor.TemperatureSensor;
 
-public class HeatingController implements Item {
+public class HeatingController extends Item {
     @Override
-    public void onEvent(String message, ConnectedHouse house) {
-        switch (message) {
-            case "start_heating":
-                house.askSensorReport(this, TemperatureSensor.class);
-                break;
-            case "temperature_report":
-                adjustHeat();
+    public void onEvent(Object message) {
+        if (message instanceof TemperatureReport) {
+            adjustHeat();
+        } else if (message == "start_heating") {
+            getHouse().triggerSensor(getRoom().getType(), TemperatureSensor.class, null);
         }
     }
 
     private void adjustHeat() {
-        System.out.println("Adjusting heating accordingly..");
+        println("Adjusting heating accordingly..");
     }
-
 }

@@ -4,12 +4,12 @@ import main.item.Item;
 import main.sensor.Sensor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Room {
     private final RoomType type;
     private final ArrayList<Sensor> sensors = new ArrayList<>();
     private ArrayList<Item> items = new ArrayList<>();
+    private ConnectedHouse house;
 
     public Room(RoomType typeIn) {
         type = typeIn;
@@ -27,8 +27,13 @@ public class Room {
      * Adds items to the Event bus. At least one item is required to call the method.
      */
     Room register(Item minimumItem, Item... itemsIn) {
+        minimumItem.setRoom(this);
         items.add(minimumItem);
-        items.addAll(Arrays.asList(itemsIn));
+
+        for (Item item : itemsIn) {
+            item.setRoom(this);
+            items.add(item);
+        }
         return this;
     }
 
@@ -36,9 +41,25 @@ public class Room {
      * Adds sensors. At least one sensor is required to call the method.
      */
     Room register(Sensor minimumSensor, Sensor... sensorsIn) {
+        minimumSensor.setRoom(this);
         sensors.add(minimumSensor);
-        sensors.addAll(Arrays.asList(sensorsIn));
+
+        for (Sensor sensor : sensorsIn) {
+            sensor.setRoom(this);
+            sensors.add(sensor);
+        }
         return this;
+    }
+
+    public ConnectedHouse getHouse() {
+        if (house == null) {
+            throw new RuntimeException("House was not set");
+        }
+        return house;
+    }
+
+    public void setHouse(ConnectedHouse house) {
+        this.house = house;
     }
 
     public RoomType getType() {

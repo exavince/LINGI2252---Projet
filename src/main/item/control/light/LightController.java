@@ -1,19 +1,19 @@
 package main.item.control.light;
 
-import main.ConnectedHouse;
 import main.item.Item;
+import main.message.MovementAlert;
 
-public class LightController implements Item {
+public class LightController extends Item {
     boolean light = false;
 
     @Override
-    public void onEvent(String message, ConnectedHouse house) {
-        switch (message) {
-            case "movement_detected":
+    public void onEvent(Object message) {
+        if (message instanceof MovementAlert) {
+            if (((MovementAlert) message).getRoom() == this.getRoom()) {
                 light = !light;
                 String msg = light ? "on" : "off";
-                System.out.println("[" + this.getClass() + "] " + "switched " + msg);
+                println("switched " + msg);
+            }
         }
-
     }
 }

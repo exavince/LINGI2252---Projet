@@ -1,7 +1,7 @@
 package main.item;
 
-import main.ConnectedHouse;
+import main.sensor.HouseObject;
 
-public interface Item {
-    void onEvent(String message, ConnectedHouse house);
+public abstract class Item extends HouseObject {
+    abstract public void onEvent(Object message);
 }

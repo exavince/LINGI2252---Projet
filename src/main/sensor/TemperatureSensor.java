@@ -1,8 +1,11 @@
 package main.sensor;
 
-public class TemperatureSensor implements Sensor {
+import main.message.TemperatureReport;
+
+public class TemperatureSensor extends Sensor {
+
     @Override
-    public String askReport() {
-        return "temperature_report";
+    public void trigger(Object message) {
+        getHouse().send(new TemperatureReport(this.getRoom()));
     }
 }

@@ -1,16 +1,15 @@
 package main.item.control.door;
 
-import main.ConnectedHouse;
 import main.item.Item;
 
-public class GarageDoorController implements Item {
+public class GarageDoorController extends Item {
 
     @Override
-    public void onEvent(String message, ConnectedHouse house) {
+    public void onEvent(Object message) {
         if (message.equals("open")) {
-            System.out.println("Opening the garage door..");
+            println("Opening the garage door..");
         } else if (message.equals("lock")) {
-            System.out.println("Locking the garage door..");
+            println("Locking the garage door..");
         }
     }
 }

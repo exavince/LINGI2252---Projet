@@ -1,8 +1,8 @@
 package main.sensor;
 
-public class WeatherSensor implements Sensor {
+public class WeatherSensor extends Sensor {
     @Override
-    public String askReport() {
-        return "weather_report";
+    public void trigger(Object message) {
+        getHouse().send("weather_report");
     }
 }

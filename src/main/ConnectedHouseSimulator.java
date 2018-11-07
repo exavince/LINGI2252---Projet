@@ -5,11 +5,13 @@ import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
 import main.item.control.heating.HeatingController;
 import main.item.control.light.LightController;
-import main.item.control.light.MovementsSensor;
 import main.item.device.CoffeeMachine;
 import main.item.device.VoiceAssistant;
 import main.item.sounds.ConnectedSpeakers;
 import main.routine.SoonWakeUpRoutine;
+import main.sensor.Microphone;
+import main.sensor.MovementsSensor;
+import main.sensor.TemperatureSensor;
 
 import static main.RoomType.*;
 
@@ -30,7 +32,7 @@ public class ConnectedHouseSimulator {
                         new HeatingController(),
                         new LightController(),
                         new ClockController()
-                ),
+                ).register(new TemperatureSensor()),
                 new Room(KITCHEN).register(
                         new CoffeeMachine(),
                         new HeatingController(),
@@ -38,7 +40,8 @@ public class ConnectedHouseSimulator {
                         new CoffeeMachine(),
                         new LightController()
                 ).register(
-                        new MovementsSensor()
+                        new MovementsSensor(),
+                        new Microphone()
                 ),
                 new Room(LIVING_ROOM).register(
                         new VoiceAssistant(),
@@ -66,12 +69,12 @@ public class ConnectedHouseSimulator {
         house.send(BEDROOM, ClockController.class, "trigger_alarm");
         println("## The user is waking up.. ");
         println("## Entering the kitchen..");
-        house.triggerSensor(KITCHEN, MovementsSensor.class);
-        println("## He asks to play his morning playlist and goes to the garage.");
-
-        // TODO house.broadcast(VoiceCommand.PLAY_MORNING_PLAYLIST);
-        house.triggerSensor(KITCHEN, MovementsSensor.class);
-        house.triggerSensor(GARAGE, MovementsSensor.class);
+        house.triggerSensor(KITCHEN, MovementsSensor.class, null);
+        println("## He asks to play his morning playlist");
+        house.triggerSensor(KITCHEN, Microphone.class, "play_morning_playlist");
+        println("## He goes to the garage.");
+        house.triggerSensor(KITCHEN, MovementsSensor.class, null);
+        house.triggerSensor(GARAGE, MovementsSensor.class, null);
         println("## Using his smartphone from his, he opens the garage door.");
         house.send(GARAGE, GarageDoorController.class, "open");
         println("## His application allows him to completely lock the house from his car, as he drives away.");

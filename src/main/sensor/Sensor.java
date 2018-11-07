@@ -1,6 +1,5 @@
 package main.sensor;
 
-public interface Sensor {
-    // TODO Change String to something else
-    String askReport();
+public abstract class Sensor extends HouseObject {
+    abstract public void trigger(Object message);
 }
