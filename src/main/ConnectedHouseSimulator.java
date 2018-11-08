@@ -3,17 +3,9 @@ package main;
 import main.item.control.ClockController;
 import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
-import main.item.control.heating.HeatingController;
-import main.item.control.light.LightController;
-import main.item.device.CoffeeMachine;
-import main.item.device.VoiceAssistant;
-import main.item.sounds.ConnectedSpeakers;
 import main.routine.SoonWakeUpRoutine;
 import main.sensor.Microphone;
 import main.sensor.MovementsSensor;
-import main.sensor.TemperatureSensor;
-
-import java.io.IOException;
 
 import static main.RoomType.*;
 

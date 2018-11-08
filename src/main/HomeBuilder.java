@@ -1,10 +1,8 @@
 package main;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import main.item.control.ClockController;
 import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
@@ -16,6 +14,10 @@ import main.item.sounds.ConnectedSpeakers;
 import main.sensor.Microphone;
 import main.sensor.MovementsSensor;
 import main.sensor.TemperatureSensor;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import static main.RoomType.*;
 
@@ -36,7 +38,7 @@ public class HomeBuilder {
             createItem(json);
             createSensor(json);
         } catch (IOException e) {
-            System.out.println(e);
+            System.err.println(e);
         }
 
         return this.house;
@@ -44,7 +46,6 @@ public class HomeBuilder {
 
 
     private void createRoom(JsonObject json) {
-        JsonParser gson = new JsonParser();
         JsonArray rooms = json.getAsJsonArray("ROOM");
 
         for (int i = 0; i < rooms.size(); i++) {
@@ -73,33 +74,33 @@ public class HomeBuilder {
         ArrayList<Room> rooms = house.getRooms();
         JsonObject item = json.getAsJsonObject("ITEM");
 
-        for (int i = 0; i < rooms.size(); i++) {
-            JsonArray itemTMP = item.getAsJsonArray(rooms.get(i).getType().toString());
+        for (Room room : rooms) {
+            JsonArray itemTMP = item.getAsJsonArray(room.getType().toString());
             for (int j = 0; j < itemTMP.size(); j++) {
                 switch (itemTMP.get(j).getAsString()) {
                     case "speaker":
-                        rooms.get(i).register(new ConnectedSpeakers());
+                        room.register(new ConnectedSpeakers());
                         break;
                     case "heating":
-                        rooms.get(i).register(new HeatingController());
+                        room.register(new HeatingController());
                         break;
                     case "light":
-                        rooms.get(i).register(new LightController());
+                        room.register(new LightController());
                         break;
                     case "clock":
-                        rooms.get(i).register(new ClockController());
+                        room.register(new ClockController());
                         break;
                     case "coffee":
-                        rooms.get(i).register(new CoffeeMachine());
+                        room.register(new CoffeeMachine());
                         break;
                     case "voice":
-                        rooms.get(i).register(new VoiceAssistant());
+                        room.register(new VoiceAssistant());
                         break;
                     case "door":
-                        rooms.get(i).register(new DoorController());
+                        room.register(new DoorController());
                         break;
                     case "garage":
-                        rooms.get(i).register(new GarageDoorController());
+                        room.register(new GarageDoorController());
                         break;
                     default:
                         break;
@@ -114,18 +115,18 @@ public class HomeBuilder {
         ArrayList<Room> rooms = house.getRooms();
         JsonObject sensor = json.getAsJsonObject("SENSOR");
 
-        for (int i = 0; i < rooms.size(); i++) {
-            JsonArray sensorTMP = sensor.getAsJsonArray(rooms.get(i).getType().toString());
+        for (Room room : rooms) {
+            JsonArray sensorTMP = sensor.getAsJsonArray(room.getType().toString());
             for (int j = 0; j < sensorTMP.size(); j++) {
                 switch (sensorTMP.get(j).getAsString()) {
                     case "movement":
-                        rooms.get(i).register(new MovementsSensor());
+                        room.register(new MovementsSensor());
                         break;
                     case "microphone":
-                        rooms.get(i).register(new Microphone());
+                        room.register(new Microphone());
                         break;
                     case "temperature":
-                        rooms.get(i).register(new TemperatureSensor());
+                        room.register(new TemperatureSensor());
                         break;
                     default:
                         break;
