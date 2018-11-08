@@ -4,12 +4,6 @@ import main.item.Item;
 import main.item.sounds.ConnectedSpeakers;
 
 public class VoiceAssistant extends Item {
-    private VoiceAssistant() {
-    }
-
-    public static VoiceAssistant createVoiceAssistant() {
-        return new VoiceAssistant();
-    }
 
     @Override
     public void onEvent(Object message) {

@@ -13,6 +13,8 @@ import main.sensor.Microphone;
 import main.sensor.MovementsSensor;
 import main.sensor.TemperatureSensor;
 
+import java.io.IOException;
+
 import static main.RoomType.*;
 
 public class ConnectedHouseSimulator {
@@ -48,6 +50,7 @@ public class ConnectedHouseSimulator {
         println("## His application allows him to completely lock the house from his car, as he drives away.");
         house.send(GARAGE, GarageDoorController.class, "lock");
         house.sendAllRooms(DoorController.class, "lock");
+
     }
 
     /**

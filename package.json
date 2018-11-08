@@ -1,0 +1,15 @@
+{
+  "ROOM": ["BEDROOM","KITCHEN","LIVING_ROOM","GARAGE"],
+  "SENSOR" : {
+    "BEDROOM": ["temperature"],
+    "KITCHEN": ["movement", "microphone"],
+    "LIVING_ROOM": ["movement"],
+    "GARAGE": ["movement"]
+  },
+  "ITEM": {
+    "BEDROOM": ["speaker","heating","light","clock"],
+    "KITCHEN": ["coffee", "coffee","heating","light","speaker"],
+    "LIVING_ROOM": ["voice", "door","heating","light"],
+    "GARAGE": ["garage","light"]
+  }
+}

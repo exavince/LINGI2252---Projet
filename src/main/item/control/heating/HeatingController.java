@@ -5,12 +5,6 @@ import main.message.TemperatureReport;
 import main.sensor.TemperatureSensor;
 
 public class HeatingController extends Item {
-    private HeatingController() {
-    }
-
-    public static HeatingController createHeatingController() {
-        return new HeatingController();
-    }
 
     @Override
     public void onEvent(Object message) {

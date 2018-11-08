@@ -1,8 +1,16 @@
 package main;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-import com.sun.deploy.panel.AndOrRadioPropertyGroup;
+
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import jdk.nashorn.internal.parser.JSONParser;
 import main.item.control.ClockController;
 import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
@@ -14,6 +22,8 @@ import main.item.sounds.ConnectedSpeakers;
 import main.sensor.Microphone;
 import main.sensor.MovementsSensor;
 import main.sensor.TemperatureSensor;
+
+import javax.tools.Diagnostic;
 
 import static main.RoomType.*;
 
@@ -30,63 +40,114 @@ public class HomeBuilder {
     }
 
     private void createRoom(){
-        house.register(new Room(BEDROOM),
-                new Room(KITCHEN),
-                new Room(LIVING_ROOM),
-                new Room(GARAGE)
-        );
+        JsonParser gson = new JsonParser();
+        try {
+            Object obj = gson.parse(new FileReader("package.json"));
+            JsonObject json = (JsonObject) obj;
+
+            JsonArray rooms = json.getAsJsonArray("ROOM");
+            for (int i=0; i < rooms.size(); i++) {
+                System.out.println(rooms.size());
+                switch (rooms.get(i).getAsString()) {
+                    case "BEDROOM":
+                        house.register(new Room(BEDROOM));
+                        break;
+                    case "KITCHEN":
+                        house.register(new Room(KITCHEN));
+                        break;
+                    case "BATHROOM":
+                        house.register(new Room(BATHROOM));
+                        break;
+                    case "GARAGE":
+                        house.register(new Room(GARAGE));
+                        break;
+                    case "LIVING_ROOM":
+                        house.register(new Room(LIVING_ROOM));
+                        break;
+                }
+            }
+
+
+        } catch (IOException e) {}
     }
 
     private void createItem(){
         ArrayList<Room> rooms = house.getRooms();
 
-        rooms.get(0).register(
-                ConnectedSpeakers.createConnectedSpeakers(),
-                HeatingController.createHeatingController(),
-                LightController.createLightController(),
-                ClockController.createClockController()
-        );
+        JsonParser gson = new JsonParser();
+        try {
+            Object obj = gson.parse(new FileReader("package.json"));
+            JsonObject json = (JsonObject) obj;
 
-        rooms.get(1).register(
-                CoffeeMachine.createCoffeeMachine(),
-                HeatingController.createHeatingController(),
-                ConnectedSpeakers.createConnectedSpeakers(),
-                CoffeeMachine.createCoffeeMachine(),
-                LightController.createLightController()
-        );
+            JsonObject item = json.getAsJsonObject("ITEM");
 
-        rooms.get(2).register(
-                VoiceAssistant.createVoiceAssistant(),
-                DoorController.createDoorController(),
-                HeatingController.createHeatingController(),
-                LightController.createLightController()
-        );
+            for (int i=0; i < rooms.size(); i++) {
+                JsonArray itemTMP = item.getAsJsonArray(rooms.get(i).getType().toString());
+                for (int j=0; j < itemTMP.size(); j++) {
+                    switch (itemTMP.get(j).getAsString()) {
+                        case "speaker":
+                            rooms.get(i).register(new ConnectedSpeakers());
+                            break;
+                        case "heating":
+                            rooms.get(i).register(new HeatingController());
+                            break;
+                        case "light":
+                            rooms.get(i).register(new LightController());
+                            break;
+                        case "clock":
+                            rooms.get(i).register(new ClockController());
+                            break;
+                        case "coffee":
+                            rooms.get(i).register(new CoffeeMachine());
+                            break;
+                        case "voice":
+                            rooms.get(i).register(new VoiceAssistant());
+                            break;
+                        case "door":
+                            rooms.get(i).register(new DoorController());
+                            break;
+                        case "garage":
+                            rooms.get(i).register(new GarageDoorController());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
 
-        rooms.get(3).register(
-                GarageDoorController.createGarageDoorController(),
-                LightController.createLightController()
-        );
+        } catch (IOException e) {}
     }
 
     private void createSensor(){
         ArrayList<Room> rooms = house.getRooms();
 
-        rooms.get(0).register(
-                TemperatureSensor.createTemperatureSensor()
-        );
+        JsonParser gson = new JsonParser();
+        try {
+            Object obj = gson.parse(new FileReader("package.json"));
+            JsonObject json = (JsonObject) obj;
 
-        rooms.get(1).register(
-                MovementsSensor.createMovementsSensor(),
-                Microphone.createMicrophone()
-        );
+            JsonObject sensor = json.getAsJsonObject("SENSOR");
 
-        rooms.get(2).register(
-                MovementsSensor.createMovementsSensor()
-        );
+            for (int i=0; i < rooms.size(); i++) {
+                JsonArray sensorTMP = sensor.getAsJsonArray(rooms.get(i).getType().toString());
+                System.out.println(rooms.get(i).getType().toString());
+                for (int j=0; j < sensorTMP.size(); j++) {
+                    switch (sensorTMP.get(j).getAsString()) {
+                        case "movement":
+                            rooms.get(i).register(new MovementsSensor());
+                            break;
+                        case "microphone":
+                            rooms.get(i).register(new Microphone());
+                            break;
+                        case "temperature":
+                            rooms.get(i).register(new TemperatureSensor());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
 
-        rooms.get(3).register(
-                MovementsSensor.createMovementsSensor()
-        );
+        } catch (IOException e) {}
     }
-
 }
