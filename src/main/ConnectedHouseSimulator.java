@@ -27,7 +27,7 @@ public class ConnectedHouseSimulator {
 
     private static void testScenario() {
         HomeBuilder build = new HomeBuilder();
-        ConnectedHouse house = build.createHouse();
+        ConnectedHouse house = build.createHouse("package.json");
 
 
         println("# Scenario 1");
