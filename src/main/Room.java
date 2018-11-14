@@ -84,4 +84,13 @@ public class Room {
     public void setTemperature(int temperature) {
         this.temperature = temperature;
     }
+
+    public Item getItem(Class<? extends Item> itemClass){
+        for (Item item : getItems()) {
+            if (itemClass.isInstance(item)) {
+                return item;
+            }
+        }
+        return null;
+    }
 }

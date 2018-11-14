@@ -5,6 +5,7 @@ import main.message.MovementAlert;
 
 public class LightController extends Item {
     boolean light = false;
+    int intensity = 0;
 
     @Override
     public void onEvent(Object message) {
@@ -15,5 +16,9 @@ public class LightController extends Item {
                 println("switched " + msg);
             }
         }
+    }
+
+    public void setIntensity(int value) {
+        intensity = value;
     }
 }
