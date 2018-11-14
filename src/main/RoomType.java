@@ -5,5 +5,6 @@ public enum RoomType {
     KITCHEN,
     BATHROOM,
     GARAGE,
-    LIVING_ROOM
+    LIVING_ROOM,
+    NOWHERE
 }

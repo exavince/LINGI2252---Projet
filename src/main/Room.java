@@ -10,6 +10,7 @@ public class Room {
     private final ArrayList<Sensor> sensors = new ArrayList<>();
     private ArrayList<Item> items = new ArrayList<>();
     private ConnectedHouse house;
+    private int temperature = 0;
 
     public Room(RoomType typeIn) {
         type = typeIn;
@@ -64,5 +65,23 @@ public class Room {
 
     public RoomType getType() {
         return type;
+    }
+
+    /**
+     * Should only be accessed by {@code TemperatureSensor} or commands
+     *
+     * @return temperature of the room
+     */
+    public int getTemperature() {
+        return temperature;
+    }
+
+    /**
+     * Edit the temperature of the room
+     *
+     * @param temperature The new temperature of the room
+     */
+    public void setTemperature(int temperature) {
+        this.temperature = temperature;
     }
 }

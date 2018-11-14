@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 public class ConnectedHouse {
     private final ArrayList<Room> rooms = new ArrayList<>();
+    private WeatherStatus weather = WeatherStatus.SUNNY;
+    private RoomType position = RoomType.NOWHERE;
 
     ArrayList<Room> getRooms() {
         return rooms;
