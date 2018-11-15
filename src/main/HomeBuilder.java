@@ -3,6 +3,7 @@ package main;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import main.item.Item;
 import main.item.control.ClockController;
 import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
@@ -22,12 +23,12 @@ import java.util.ArrayList;
 import static main.RoomType.*;
 
 
-public class HomeBuilder {
+class HomeBuilder {
 
     private ConnectedHouse house;
 
 
-    public ConnectedHouse createHouse(String config) {
+    ConnectedHouse createHouse(String config, String value) {
         this.house = new ConnectedHouse();
 
         try {
@@ -37,6 +38,9 @@ public class HomeBuilder {
             createRoom(json);
             createItem(json);
             createSensor(json);
+            obj = gson.parse(new FileReader(value));
+            json = (JsonObject) obj;
+            setValue(json);
         } catch (IOException e) {
             System.err.println(e);
         }
@@ -133,5 +137,33 @@ public class HomeBuilder {
                 }
             }
         }
+    }
+
+
+    private void setValue (JsonObject json) {
+        ArrayList<Room> rooms = house.getRooms();
+
+        for (Room room: rooms) {
+            JsonObject temp = json.getAsJsonObject(room.getType().toString());
+            if (temp != null) {
+                if (temp.get("speaker") != null) {
+                    Item item = room.getItem(ConnectedSpeakers.class);
+                    ConnectedSpeakers speakers = (ConnectedSpeakers) item;
+                    speakers.setIntensity(temp.get("speaker").getAsInt());
+                }
+                if (temp.get("light") != null) {
+                    Item item = room.getItem(LightController.class);
+                    LightController light = (LightController) item;
+                    light.setIntensity(temp.get("light").getAsInt());
+                }
+                if (temp.get("heating") != null) {
+                    Item item = room.getItem(HeatingController.class);
+                    HeatingController heating = (HeatingController) item;
+                    heating.setDesiredTemperature(temp.get("heating").getAsInt());
+                }
+            }
+        }
+
+
     }
 }

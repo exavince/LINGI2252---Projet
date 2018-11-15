@@ -43,7 +43,7 @@ public class ConnectedHouseSimulator {
 
     private static void testScenario() {
         HomeBuilder build = new HomeBuilder();
-        ConnectedHouse house = build.createHouse("package.json");
+        ConnectedHouse house = build.createHouse("config.json", "state.json");
 
         println("# Scenario 1");
         println("## Some time before the user wakes up..");
