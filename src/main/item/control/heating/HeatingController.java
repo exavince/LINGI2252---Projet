@@ -14,6 +14,8 @@ public class HeatingController extends Item {
             adjustHeat(((TemperatureReport) message).getTemperature());
         } else if (message == "start_heating") {
             getHouse().triggerSensor(getRoom().getType(), TemperatureSensor.class, null);
+        } else if (message instanceof Integer) {
+            this.setDesiredTemperature((Integer) message);
         }
     }
 

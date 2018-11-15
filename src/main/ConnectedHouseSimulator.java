@@ -1,5 +1,6 @@
 package main;
 
+import main.command.CommandFactory;
 import main.item.control.ClockController;
 import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
@@ -7,20 +8,42 @@ import main.routine.SoonWakeUpRoutine;
 import main.sensor.Microphone;
 import main.sensor.MovementsSensor;
 
+import java.util.Scanner;
+
 import static main.RoomType.*;
 
 public class ConnectedHouseSimulator {
     // TODO scenario with rain, weather detector and close the shutter ?
 
+
     public static void main(String[] args) {
-        //TODO Launch scenarios based on command-line arguments ?
-        testScenario();
+        System.out.println("# Welcome to ConnectedHouseSimulator");
+        final Scanner userInput = new Scanner(System.in);
+        final CommandFactory factory = new CommandFactory();
+
+        final HomeBuilder build = new HomeBuilder();
+        final ConnectedHouse house = build.createHouse("package.json");
+        // TODO Choose a starting scenario
+        house.moveTo(BEDROOM);
+        System.out.println("You wake up in your bedroom. What do you do ?");
+
+        while(userInput.hasNext()) {
+            try {
+                factory.create(userInput).execute(house);
+            } catch(RuntimeException e) {
+                if(e.getMessage().equals("EXIT")) break;
+                else {
+                    System.err.println(e.getMessage());
+                    System.err.println("Please enter another command or \"EXIT\" to exit.");
+                }
+            }
+        }
+        userInput.close();
     }
 
     private static void testScenario() {
         HomeBuilder build = new HomeBuilder();
         ConnectedHouse house = build.createHouse("package.json");
-
 
         println("# Scenario 1");
         println("## Some time before the user wakes up..");
@@ -42,7 +65,6 @@ public class ConnectedHouseSimulator {
         println("## His application allows him to completely lock the house from his car, as he drives away.");
         house.send(GARAGE, GarageDoorController.class, "lock");
         house.sendAllRooms(DoorController.class, "lock");
-
     }
 
     /**

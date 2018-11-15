@@ -1,13 +1,14 @@
 package main;
 
 import main.item.Item;
+import main.sensor.MovementsSensor;
 import main.sensor.Sensor;
 
 import java.util.ArrayList;
 
 public class ConnectedHouse {
     private final ArrayList<Room> rooms = new ArrayList<>();
-    private WeatherStatus weather = WeatherStatus.SUNNY;
+    private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
     private RoomType position = RoomType.NOWHERE;
 
     ArrayList<Room> getRooms() {
@@ -70,5 +71,24 @@ public class ConnectedHouse {
                 }
             }
         }
+    }
+
+    public void moveTo(RoomType room) {
+        if(this.position == room) System.err.println("User was already in the room "+room);
+        else {
+            System.out.println("## Moving to room "+room);
+            RoomType oldRoom = this.position;
+            this.position = room;
+            triggerSensor(oldRoom, MovementsSensor.class, null);
+            triggerSensor(this.position, MovementsSensor.class, null);
+        }
+    }
+
+    public WeatherStatus getWeatherStatus() {
+        return weatherStatus;
+    }
+
+    public void setWeatherStatus(WeatherStatus weatherStatus) {
+        this.weatherStatus = weatherStatus;
     }
 }
