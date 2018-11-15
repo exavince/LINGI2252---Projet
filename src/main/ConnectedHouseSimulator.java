@@ -8,6 +8,7 @@ import main.routine.SoonWakeUpRoutine;
 import main.sensor.Microphone;
 import main.sensor.MovementsSensor;
 
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import static main.RoomType.*;
@@ -16,22 +17,23 @@ public class ConnectedHouseSimulator {
     // TODO scenario with rain, weather detector and close the shutter ?
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         System.out.println("# Welcome to ConnectedHouseSimulator");
+
+        final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
+        final ConnectedHouse house = parser.parse("config.json", "state.json");
+
         final Scanner userInput = new Scanner(System.in);
         final CommandFactory factory = new CommandFactory();
-
-        final HomeBuilder build = new HomeBuilder();
-        final ConnectedHouse house = build.createHouse("package.json");
         // TODO Choose a starting scenario
         house.moveTo(BEDROOM);
         System.out.println("You wake up in your bedroom. What do you do ?");
 
-        while(userInput.hasNext()) {
+        while (userInput.hasNext()) {
             try {
                 factory.create(userInput).execute(house);
-            } catch(RuntimeException e) {
-                if(e.getMessage().equals("EXIT")) break;
+            } catch (RuntimeException e) {
+                if (e.getMessage().equals("EXIT")) break;
                 else {
                     System.err.println(e.getMessage());
                     System.err.println("Please enter another command or \"EXIT\" to exit.");
@@ -41,10 +43,7 @@ public class ConnectedHouseSimulator {
         userInput.close();
     }
 
-    private static void testScenario() {
-        HomeBuilder build = new HomeBuilder();
-        ConnectedHouse house = build.createHouse("config.json", "state.json");
-
+    private static void testScenario(ConnectedHouse house) {
         println("# Scenario 1");
         println("## Some time before the user wakes up..");
         new SoonWakeUpRoutine().call(house);

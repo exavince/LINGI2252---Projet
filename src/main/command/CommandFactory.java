@@ -1,6 +1,5 @@
 package main.command;
 
-import main.ConnectedHouse;
 import main.RoomType;
 
 import java.util.Scanner;

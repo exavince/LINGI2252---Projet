@@ -74,9 +74,9 @@ public class ConnectedHouse {
     }
 
     public void moveTo(RoomType room) {
-        if(this.position == room) System.err.println("User was already in the room "+room);
+        if (this.position == room) System.err.println("User was already in the room " + room);
         else {
-            System.out.println("## Moving to room "+room);
+            System.out.println("## Moving to room " + room);
             RoomType oldRoom = this.position;
             this.position = room;
             triggerSensor(oldRoom, MovementsSensor.class, null);

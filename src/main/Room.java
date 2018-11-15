@@ -85,7 +85,7 @@ public class Room {
         this.temperature = temperature;
     }
 
-    public Item getItem(Class<? extends Item> itemClass){
+    public Item getItem(Class<? extends Item> itemClass) {
         for (Item item : getItems()) {
             if (itemClass.isInstance(item)) {
                 return item;

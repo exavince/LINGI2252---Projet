@@ -17,6 +17,6 @@ public class Move implements Command {
 
     @Override
     public String toString() {
-        return "## Moving to room "+room;
+        return "## Moving to room " + room;
     }
 }

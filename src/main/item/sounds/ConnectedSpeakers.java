@@ -13,7 +13,7 @@ public class ConnectedSpeakers extends Item {
         }
     }
 
-    public void setIntensity (int value) {
+    public void setIntensity(int value) {
         intensity = value;
     }
 
