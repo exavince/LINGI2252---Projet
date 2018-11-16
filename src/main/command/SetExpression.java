@@ -24,7 +24,8 @@ public class SetExpression implements Command {
             switch (attribute) {
                 case "WEATHER":
                     house.setWeatherStatus((WeatherStatus) value.evaluate(house));
-                    break;
+                    System.out.println("-- Set global attribute " + attribute + " with success.");
+                    return;
                 default:
                     throw new UnsupportedOperationException("Unknown global attribute " + attribute);
             }
@@ -34,7 +35,7 @@ public class SetExpression implements Command {
                 switch (attribute) {
                     case "TEMPERATURE":
                         room.setTemperature((Integer) value.evaluate(house));
-                        house.send(roomType, HeatingController.class, "start_heating");
+                        house.findRoom(roomType).sendToItems("start_heating");
                         break;
                     case "DESIRED_TEMPERATURE":
                         boolean found = false;

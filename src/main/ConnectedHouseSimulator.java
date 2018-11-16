@@ -2,9 +2,6 @@ package main;
 
 import main.command.Command;
 import main.command.CommandParser;
-import main.item.control.ClockController;
-import main.item.control.door.DoorController;
-import main.item.control.door.GarageDoorController;
 import main.routine.SoonWakeUpRoutine;
 import main.sensor.Microphone;
 import main.sensor.MovementsSensor;
@@ -33,7 +30,7 @@ public class ConnectedHouseSimulator {
         //house.broadcast(new SoonWakeUpTime());
         println("## Now the user must wake up.");
         // TODO Put in a configurable WakeUpRoutine ?
-        house.send(BEDROOM, ClockController.class, "trigger_alarm");
+        house.findRoom(BEDROOM).sendToItems("trigger_alarm");
         System.out.println("-- You wake up in your bedroom. What do you do ?");
         CommandParser commandParser = new CommandParser(userInput);
 
@@ -58,10 +55,9 @@ public class ConnectedHouseSimulator {
         println("# Scenario 1");
         println("## Some time before the user wakes up..");
         new SoonWakeUpRoutine().call(house);
-        //house.broadcast(new SoonWakeUpTime());
         println("## Now the user must wake up.");
         // TODO Put in a configurable WakeUpRoutine ?
-        house.send(BEDROOM, ClockController.class, "trigger_alarm");
+        house.findRoom(BEDROOM).sendToItems("trigger_alarm");
         println("## The user is waking up.. ");
         println("## Entering the kitchen..");
         house.triggerSensor(KITCHEN, MovementsSensor.class, null);
@@ -71,10 +67,10 @@ public class ConnectedHouseSimulator {
         house.triggerSensor(KITCHEN, MovementsSensor.class, null);
         house.triggerSensor(GARAGE, MovementsSensor.class, null);
         println("## Using his smartphone from his, he opens the garage door.");
-        house.send(GARAGE, GarageDoorController.class, "open");
+        house.findRoom(GARAGE).sendToItems("open");
         println("## His application allows him to completely lock the house from his car, as he drives away.");
-        house.send(GARAGE, GarageDoorController.class, "lock");
-        house.sendAllRooms(DoorController.class, "lock");
+        house.findRoom(GARAGE).sendToItems("lock");
+        house.sendToItems("lock");
     }
 
     /**

@@ -1,11 +1,14 @@
 package main;
 
 import main.item.Item;
+import main.item.ItemSubject;
 import main.sensor.Sensor;
+import main.sensor.SensorSubject;
 
 import java.util.ArrayList;
 
-public class Room {
+public class Room implements ItemSubject, SensorSubject {
+    public static final Room NONE = new Room(RoomType.NOWHERE);
     private final RoomType type;
     private final ArrayList<Sensor> sensors = new ArrayList<>();
     private ArrayList<Item> items = new ArrayList<>();
@@ -28,7 +31,7 @@ public class Room {
     /**
      * Adds items to the Event bus. At least one item is required to call the method.
      */
-    Room register(Item minimumItem, Item... itemsIn) {
+    Room attach(Item minimumItem, Item... itemsIn) {
         minimumItem.setRoom(this);
         items.add(minimumItem);
 
@@ -42,7 +45,7 @@ public class Room {
     /**
      * Adds sensors. At least one sensor is required to call the method.
      */
-    Room register(Sensor minimumSensor, Sensor... sensorsIn) {
+    Room attach(Sensor minimumSensor, Sensor... sensorsIn) {
         minimumSensor.setRoom(this);
         sensors.add(minimumSensor);
 
@@ -101,5 +104,19 @@ public class Room {
 
     public void setLighting(int lighting) {
         this.lighting = lighting;
+    }
+
+    @Override
+    public void sendToItems(Object message) {
+        for (Item item : getItems()) {
+            item.onEvent(message);
+        }
+    }
+
+    @Override
+    public void sendToSensors(Object message) {
+        for (Sensor sensor : getSensors()) {
+            sensor.trigger(message);
+        }
     }
 }

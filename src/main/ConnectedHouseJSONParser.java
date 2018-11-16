@@ -48,12 +48,12 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
             JsonArray itemTMP = items.getAsJsonArray(room.getType().toString());
             for (int j = 0; j < itemTMP.size(); j++) {
                 String itemName = itemTMP.get(j).getAsString();
-                room.register(itemFromString(itemName));
+                room.attach(itemFromString(itemName));
             }
             JsonArray sensorTMP = sensors.getAsJsonArray(room.getType().toString());
             for (int j = 0; j < sensorTMP.size(); j++) {
                 String sensorName = sensorTMP.get(j).getAsString();
-                room.register(sensorFromString(sensorName));
+                room.attach(sensorFromString(sensorName));
             }
             setValue(room, stateJson);
 

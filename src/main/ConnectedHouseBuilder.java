@@ -17,6 +17,6 @@ class ConnectedHouseBuilder {
      * Adds rooms to the house.
      */
     void register(Room minimumRoom, Room... roomsIn) {
-        house.register(minimumRoom, roomsIn);
+        house.attach(minimumRoom, roomsIn);
     }
 }

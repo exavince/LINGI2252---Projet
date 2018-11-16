@@ -1,12 +1,13 @@
 package main;
 
-import main.item.Item;
+import main.item.ItemSubject;
 import main.sensor.MovementsSensor;
 import main.sensor.Sensor;
+import main.sensor.SensorSubject;
 
 import java.util.ArrayList;
 
-public class ConnectedHouse {
+public class ConnectedHouse implements ItemSubject, SensorSubject {
     private final ArrayList<Room> rooms = new ArrayList<>();
     private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
     private RoomType position = RoomType.NOWHERE;
@@ -18,32 +19,13 @@ public class ConnectedHouse {
     /**
      * Adds rooms to the house
      */
-    void register(Room minimumRoom, Room... roomsIn) {
+    void attach(Room minimumRoom, Room... roomsIn) {
         minimumRoom.setHouse(this);
         rooms.add(minimumRoom);
         for (Room room : roomsIn) {
             room.setHouse(this);
             rooms.add(room);
         }
-    }
-
-    /**
-     * Sends a message to all items of type itemClass in all rooms of type roomType
-     */
-    public void send(RoomType roomType, Class<? extends Item> itemClass, Object message) {
-        for (Room room : rooms) {
-            if (room.getType() == roomType) {
-                for (Item item : room.getItems()) {
-                    if (itemClass.isInstance(item)) {
-                        item.onEvent(message);
-                    }
-                }
-            }
-        }
-    }
-
-    public void send(Object message) {
-        rooms.forEach(room -> room.getItems().forEach(item -> item.onEvent(message)));
     }
 
     public void triggerSensor(RoomType roomType, Class<? extends Sensor> sensorClass, Object message) {
@@ -53,21 +35,6 @@ public class ConnectedHouse {
                     if (sensorClass.isInstance(sensor)) {
                         sensor.trigger(message);
                     }
-                }
-            }
-        }
-
-
-    }
-
-    /**
-     * Sends a message to all items of type itemClass in all rooms
-     */
-    public void sendAllRooms(Class<? extends Item> itemClass, Object message) {
-        for (Room room : rooms) {
-            for (Item item : room.getItems()) {
-                if (itemClass.isInstance(item)) {
-                    item.onEvent(message);
                 }
             }
         }
@@ -90,5 +57,26 @@ public class ConnectedHouse {
 
     public void setWeatherStatus(WeatherStatus weatherStatus) {
         this.weatherStatus = weatherStatus;
+    }
+
+    @Override
+    public void sendToItems(Object message) {
+        for (Room room : getRooms()) {
+            room.sendToItems(message);
+        }
+    }
+
+    public Room findRoom(RoomType type) {
+        for (Room room : getRooms()) {
+            if (room.getType() == type) return room;
+        }
+        return Room.NONE;
+    }
+
+    @Override
+    public void sendToSensors(Object message) {
+        for (Room room : getRooms()) {
+            room.sendToSensors(message);
+        }
     }
 }

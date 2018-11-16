@@ -7,6 +7,6 @@ public class WeatherSensor extends Sensor {
     @Override
     public void trigger(Object message) {
         WeatherStatus status = getHouse().getWeatherStatus();
-        getHouse().send(new WeatherReport(status));
+        getHouse().sendToItems(new WeatherReport(status));
     }
 }
