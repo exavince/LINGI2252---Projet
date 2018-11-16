@@ -11,6 +11,7 @@ public class Room {
     private ArrayList<Item> items = new ArrayList<>();
     private ConnectedHouse house;
     private int temperature = 0;
+    private int lighting = 0; // TODO Replace by Lamp item ?
 
     public Room(RoomType typeIn) {
         type = typeIn;
@@ -92,5 +93,13 @@ public class Room {
             }
         }
         return null;
+    }
+
+    public int getLighting() {
+        return lighting;
+    }
+
+    public void setLighting(int lighting) {
+        this.lighting = lighting;
     }
 }

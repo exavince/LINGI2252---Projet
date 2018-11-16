@@ -4,7 +4,7 @@ import main.ConnectedHouse;
 import main.Room;
 
 public abstract class HouseObject {
-    Room room;
+    private Room room;
 
     protected ConnectedHouse getHouse() {
         return getRoom().getHouse();

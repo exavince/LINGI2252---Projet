@@ -3,6 +3,7 @@ package main.command;
 import main.ConnectedHouse;
 import main.Room;
 import main.RoomType;
+import main.WeatherStatus;
 import main.item.Item;
 import main.item.control.heating.HeatingController;
 
@@ -19,11 +20,20 @@ public class SetExpression implements Command {
 
     @Override
     public void interpret(ConnectedHouse house) {
+        if (roomType == RoomType.GLOBAL) {
+            switch (attribute) {
+                case "WEATHER":
+                    house.setWeatherStatus((WeatherStatus) value.evaluate(house));
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Unknown global attribute " + attribute);
+            }
+        }
         for (Room room : house.getRooms()) {
             if (room.getType() == roomType) {
                 switch (attribute) {
                     case "TEMPERATURE":
-                        room.setTemperature(Integer.parseInt(value.evaluate(house)));
+                        room.setTemperature((Integer) value.evaluate(house));
                         house.send(roomType, HeatingController.class, "start_heating");
                         break;
                     case "DESIRED_TEMPERATURE":
@@ -32,7 +42,7 @@ public class SetExpression implements Command {
                         for (Item item : room.getItems()) {
                             if (item instanceof HeatingController) {
                                 found = true;
-                                ((HeatingController) item).setDesiredTemperature(Integer.parseInt(value.evaluate(house)));
+                                ((HeatingController) item).setDesiredTemperature((Integer) value.evaluate(house));
                                 item.onEvent("start_heating");
                             }
                         }
@@ -40,7 +50,7 @@ public class SetExpression implements Command {
                             throw new RuntimeException("Could not find any heating controller in the room " + roomType);
                         break;
                     default:
-                        throw new UnsupportedOperationException("Unknown attribute: " + attribute);
+                        throw new UnsupportedOperationException("Unknown attribute " + attribute + " for room " + roomType);
                 }
             }
         }

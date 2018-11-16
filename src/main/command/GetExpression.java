@@ -15,8 +15,20 @@ public class GetExpression implements ValueExpression, Command {
         this.attribute = attribute;
     }
 
+    /**
+     * @param house context
+     * @return value of the get expression. Type depends on attribute.
+     */
     @Override
-    public String evaluate(ConnectedHouse house) {
+    public Object evaluate(ConnectedHouse house) {
+        if (roomType == RoomType.GLOBAL) {
+            switch (attribute) {
+                case "WEATHER":
+                    return house.getWeatherStatus();
+                default:
+                    throw new UnsupportedOperationException("Unknown attribute: " + attribute);
+            }
+        }
         for (Room room : house.getRooms()) {
             if (room.getType() == roomType) {
                 switch (attribute) {
@@ -25,7 +37,7 @@ public class GetExpression implements ValueExpression, Command {
                     case "DESIRED_TEMPERATURE":
                         for (Item item : room.getItems()) {
                             if (item instanceof HeatingController) {
-                                return Integer.toString(((HeatingController) item).getDesiredTemperature());
+                                return ((HeatingController) item).getDesiredTemperature();
                             }
                         }
                         throw new RuntimeException("Could not find any heating controller in the room " + roomType);
@@ -39,6 +51,6 @@ public class GetExpression implements ValueExpression, Command {
 
     @Override
     public void interpret(ConnectedHouse house) {
-        System.out.println(this.evaluate(house));
+        System.out.println(this.evaluate(house).toString());
     }
 }

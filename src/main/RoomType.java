@@ -6,5 +6,6 @@ public enum RoomType {
     BATHROOM,
     GARAGE,
     LIVING_ROOM,
-    NOWHERE;
+    NOWHERE,
+    GLOBAL
 }

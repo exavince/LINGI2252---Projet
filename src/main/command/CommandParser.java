@@ -1,6 +1,7 @@
 package main.command;
 
 import main.RoomType;
+import main.WeatherStatus;
 
 import java.util.Scanner;
 
@@ -8,7 +9,7 @@ import java.util.Scanner;
  * Grammar:
  * <COMMAND> ::= <SET> | <GET> | <MOVETO> | EXIT
  * <SET> ::= SET <ROOM> <ATTRIBUTE> <VALUE>
- * <VALUE> ::= <GET>|<INT>|<DOUBLE>|
+ * <VALUE> ::= <GET>|<INT>|<DOUBLE>|<WEATHER_STATUS>
  * <GET> ::= GET <ROOM> <ATTRIBUTE>
  * <ATTRIBUTE> ::= TEMPERATURE, DESIRED_TEMPERATURE, ...
  * <ROOM> ::= KITCHEN, BEDROOM, ...
@@ -53,7 +54,20 @@ public class CommandParser {
         if (token.equals("GET")) {
             return get();
         } else {
-            return house -> token;
+            // TODO guess type based on what should be expected with attribute ?
+            try {
+                return new TerminalExpression<>(WeatherStatus.valueOf(token));
+            } catch (IllegalArgumentException e1) {
+                try {
+                    return new TerminalExpression<>(Integer.parseInt(token));
+                } catch (NumberFormatException e2) {
+                    try {
+                        return new TerminalExpression<>(Double.parseDouble(token));
+                    } catch (NumberFormatException e3) {
+                        throw new RuntimeException("Unknown value token " + token);
+                    }
+                }
+            }
         }
     }
 
