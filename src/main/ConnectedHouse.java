@@ -11,7 +11,7 @@ public class ConnectedHouse {
     private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
     private RoomType position = RoomType.NOWHERE;
 
-    ArrayList<Room> getRooms() {
+    public ArrayList<Room> getRooms() {
         return rooms;
     }
 

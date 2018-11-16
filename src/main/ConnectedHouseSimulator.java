@@ -1,6 +1,7 @@
 package main;
 
-import main.command.CommandFactory;
+import main.command.Command;
+import main.command.CommandParser;
 import main.item.control.ClockController;
 import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
@@ -24,20 +25,30 @@ public class ConnectedHouseSimulator {
         final ConnectedHouse house = parser.parse("config.json", "state.json");
 
         final Scanner userInput = new Scanner(System.in);
-        final CommandFactory factory = new CommandFactory();
         // TODO Choose a starting scenario
         house.moveTo(BEDROOM);
-        System.out.println("You wake up in your bedroom. What do you do ?");
+        println("# Scenario 1");
+        println("## Some time before the user wakes up..");
+        new SoonWakeUpRoutine().call(house);
+        //house.broadcast(new SoonWakeUpTime());
+        println("## Now the user must wake up.");
+        // TODO Put in a configurable WakeUpRoutine ?
+        house.send(BEDROOM, ClockController.class, "trigger_alarm");
+        System.out.println("-- You wake up in your bedroom. What do you do ?");
+        CommandParser commandParser = new CommandParser(userInput);
 
         while (userInput.hasNext()) {
             try {
-                factory.create(userInput).execute(house);
-            } catch (RuntimeException e) {
-                if (e.getMessage().equals("EXIT")) break;
-                else {
-                    System.err.println(e.getMessage());
-                    System.err.println("Please enter another command or \"EXIT\" to exit.");
+                Command command = commandParser.parse();
+                if (command == Command.EXIT) {
+                    System.out.println("Exiting simulator..");
+                    break;
+                } else {
+                    command.interpret(house);
                 }
+            } catch (RuntimeException e) {
+                System.err.println(e.getMessage());
+                System.err.println("Please enter another command or \"EXIT\" to exit.");
             }
         }
         userInput.close();

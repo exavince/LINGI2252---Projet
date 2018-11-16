@@ -21,7 +21,7 @@ public class HeatingController extends Item {
 
     private void adjustHeat(int receivedTemperature) {
         if (receivedTemperature < desiredTemperature) {
-            println("Adjusting heating accordingly from " + receivedTemperature + " to " + desiredTemperature);
+            println("Adjusting heating accordingly from " + receivedTemperature + "°C to " + desiredTemperature + "°C");
             getRoom().setTemperature(desiredTemperature);
         }
     }
