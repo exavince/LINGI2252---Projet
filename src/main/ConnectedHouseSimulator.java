@@ -3,8 +3,6 @@ package main;
 import main.command.Command;
 import main.command.CommandParser;
 import main.routine.SoonWakeUpRoutine;
-import main.sensor.Microphone;
-import main.sensor.MovementsSensor;
 
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -53,6 +51,7 @@ public class ConnectedHouseSimulator {
 
     private static void testScenario(ConnectedHouse house) {
         println("# Scenario 1");
+        house.moveTo(BEDROOM);
         println("## Some time before the user wakes up..");
         new SoonWakeUpRoutine().call(house);
         println("## Now the user must wake up.");
@@ -60,12 +59,12 @@ public class ConnectedHouseSimulator {
         house.findRoom(BEDROOM).sendToItems("trigger_alarm");
         println("## The user is waking up.. ");
         println("## Entering the kitchen..");
-        house.triggerSensor(KITCHEN, MovementsSensor.class, null);
+        house.findRoom(KITCHEN).sendToSensors("movement_detected");
         println("## He asks to play his morning playlist");
-        house.triggerSensor(KITCHEN, Microphone.class, "play_morning_playlist");
+        house.findRoom(KITCHEN).sendToSensors("play_morning_playlist");
         println("## He goes to the garage.");
-        house.triggerSensor(KITCHEN, MovementsSensor.class, null);
-        house.triggerSensor(GARAGE, MovementsSensor.class, null);
+        house.findRoom(KITCHEN).sendToSensors("movement_detected");
+        house.findRoom(GARAGE).sendToSensors("movement_detected");
         println("## Using his smartphone from his, he opens the garage door.");
         house.findRoom(GARAGE).sendToItems("open");
         println("## His application allows him to completely lock the house from his car, as he drives away.");

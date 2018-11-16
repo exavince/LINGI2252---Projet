@@ -2,7 +2,6 @@ package main.item.control.heating;
 
 import main.item.Item;
 import main.message.TemperatureReport;
-import main.sensor.TemperatureSensor;
 
 public class HeatingController extends Item {
     private int desiredTemperature = 0;
@@ -13,7 +12,7 @@ public class HeatingController extends Item {
             println("Received a temperature report : " + ((TemperatureReport) message).getTemperature() + "°C in my room");
             adjustHeat(((TemperatureReport) message).getTemperature());
         } else if (message == "start_heating") {
-            getHouse().triggerSensor(getRoom().getType(), TemperatureSensor.class, null);
+            getHouse().sendToSensors("check_weather");
         } else if (message instanceof Integer) {
             this.setDesiredTemperature((Integer) message);
         }

@@ -6,6 +6,7 @@ import main.RoomType;
 import main.WeatherStatus;
 import main.item.Item;
 import main.item.control.heating.HeatingController;
+import main.routine.HomeMood;
 
 public class SetExpression implements Command {
     private final RoomType roomType;
@@ -25,10 +26,14 @@ public class SetExpression implements Command {
                 case "WEATHER":
                     house.setWeatherStatus((WeatherStatus) value.evaluate(house));
                     System.out.println("-- Set global attribute " + attribute + " with success.");
-                    return;
+                    break;
+                case "MOOD":
+                    house.setMood((HomeMood) value.evaluate(house));
+                    break;
                 default:
                     throw new UnsupportedOperationException("Unknown global attribute " + attribute);
             }
+            return;
         }
         for (Room room : house.getRooms()) {
             if (room.getType() == roomType) {

@@ -3,9 +3,9 @@ package main.command;
 import main.ConnectedHouse;
 
 public class TerminalExpression<T> implements ValueExpression<T> {
-    final T value;
+    private final T value;
 
-    public TerminalExpression(T value) {
+    TerminalExpression(T value) {
         this.value = value;
     }
 

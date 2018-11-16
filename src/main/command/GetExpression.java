@@ -23,6 +23,8 @@ public class GetExpression implements ValueExpression, Command {
     public Object evaluate(ConnectedHouse house) {
         if (roomType == RoomType.GLOBAL) {
             switch (attribute) {
+                case "MOOD":
+                    return house.getMood();
                 case "WEATHER":
                     return house.getWeatherStatus();
                 default:

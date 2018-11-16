@@ -1,8 +1,9 @@
 package main;
 
 import main.item.ItemSubject;
-import main.sensor.MovementsSensor;
-import main.sensor.Sensor;
+import main.item.control.light.LightController;
+import main.message.SoundMessage;
+import main.routine.HomeMood;
 import main.sensor.SensorSubject;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ public class ConnectedHouse implements ItemSubject, SensorSubject {
     private final ArrayList<Room> rooms = new ArrayList<>();
     private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
     private RoomType position = RoomType.NOWHERE;
+    private HomeMood mood = HomeMood.NORMAL;
 
     public ArrayList<Room> getRooms() {
         return rooms;
@@ -28,26 +30,14 @@ public class ConnectedHouse implements ItemSubject, SensorSubject {
         }
     }
 
-    public void triggerSensor(RoomType roomType, Class<? extends Sensor> sensorClass, Object message) {
-        for (Room room : this.getRooms()) {
-            if (room.getType() == roomType) {
-                for (Sensor sensor : room.getSensors()) {
-                    if (sensorClass.isInstance(sensor)) {
-                        sensor.trigger(message);
-                    }
-                }
-            }
-        }
-    }
-
     public void moveTo(RoomType room) {
         if (this.position == room) System.err.println("User was already in the room " + room);
         else {
             System.out.println("## Moving to room " + room);
             RoomType oldRoom = this.position;
             this.position = room;
-            triggerSensor(oldRoom, MovementsSensor.class, null);
-            triggerSensor(this.position, MovementsSensor.class, null);
+            findRoom(oldRoom).sendToSensors("movement_detected");
+            findRoom(this.position).sendToSensors("movement_detected");
         }
     }
 
@@ -77,6 +67,31 @@ public class ConnectedHouse implements ItemSubject, SensorSubject {
     public void sendToSensors(Object message) {
         for (Room room : getRooms()) {
             room.sendToSensors(message);
+        }
+    }
+
+    public HomeMood getMood() {
+        return mood;
+    }
+
+    public void setMood(HomeMood mood) {
+        this.mood = mood;
+        switch (mood) {
+            case NORMAL:
+                getRooms().forEach((room -> room.getItems().forEach((item -> {
+                    if (item instanceof LightController) {
+                        ((LightController) item).setIntensity(100);
+                    }
+                }))));
+                break;
+            case ROMANTIC:
+                getRooms().forEach((room -> room.getItems().forEach((item -> {
+                    if (item instanceof LightController) {
+                        ((LightController) item).setIntensity(50);
+                    }
+                }))));
+                sendToItems(new SoundMessage("Jazz Music starts playing"));
+                break;
         }
     }
 }

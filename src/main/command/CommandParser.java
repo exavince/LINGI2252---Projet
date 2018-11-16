@@ -2,6 +2,7 @@ package main.command;
 
 import main.RoomType;
 import main.WeatherStatus;
+import main.routine.HomeMood;
 
 import java.util.Scanner;
 
@@ -59,12 +60,16 @@ public class CommandParser {
                 return new TerminalExpression<>(WeatherStatus.valueOf(token));
             } catch (IllegalArgumentException e1) {
                 try {
-                    return new TerminalExpression<>(Integer.parseInt(token));
-                } catch (NumberFormatException e2) {
+                    return new TerminalExpression<>(HomeMood.valueOf(token));
+                } catch (IllegalArgumentException e) {
                     try {
-                        return new TerminalExpression<>(Double.parseDouble(token));
-                    } catch (NumberFormatException e3) {
-                        throw new RuntimeException("Unknown value token " + token);
+                        return new TerminalExpression<>(Integer.parseInt(token));
+                    } catch (NumberFormatException e2) {
+                        try {
+                            return new TerminalExpression<>(Double.parseDouble(token));
+                        } catch (NumberFormatException e3) {
+                            throw new RuntimeException("Unknown value token " + token);
+                        }
                     }
                 }
             }
