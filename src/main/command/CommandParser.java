@@ -8,10 +8,12 @@ import java.util.Scanner;
 
 /**
  * Grammar:
- * <COMMAND> ::= <SET> | <GET> | <MOVETO> | EXIT
+ * <COMMAND> ::= <SET> | <GET> | <MOVETO> | <SAY> | DONE | EXIT
  * <SET> ::= SET <ROOM> <ATTRIBUTE> <VALUE>
  * <VALUE> ::= <GET>|<INT>|<DOUBLE>|<WEATHER_STATUS>
  * <GET> ::= GET <ROOM> <ATTRIBUTE>
+ * <MOVETO> ::= MOVETO <ROOM>
+ * <SAY> ::= SAY <STRING>
  * <ATTRIBUTE> ::= TEMPERATURE, DESIRED_TEMPERATURE, ...
  * <ROOM> ::= KITCHEN, BEDROOM, ...
  */
@@ -27,12 +29,16 @@ public class CommandParser {
         switch (token) {
             case "EXIT":
                 return Command.EXIT;
+            case "DONE":
+                return Command.DONE;
             case "SET":
                 return set();
             case "GET":
                 return get();
             case "MOVETO":
                 return move();
+            case "SAY":
+                return say();
             default:
                 throw new UnsupportedOperationException("Unknown command: " + token);
         }
@@ -44,6 +50,11 @@ public class CommandParser {
 
     private MoveExpression move() {
         return new MoveExpression(room());
+    }
+
+    private SayExpression say() {
+        //TODO parse quotes ?
+        return new SayExpression(new TerminalExpression<>(input.next()));
     }
 
     private String attribute() {

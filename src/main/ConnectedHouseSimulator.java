@@ -7,7 +7,8 @@ import main.routine.SoonWakeUpRoutine;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import static main.RoomType.*;
+import static main.RoomType.BEDROOM;
+import static main.RoomType.GARAGE;
 
 public class ConnectedHouseSimulator {
     // TODO scenario with rain, weather detector and close the shutter ?
@@ -18,26 +19,42 @@ public class ConnectedHouseSimulator {
 
         final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
         final ConnectedHouse house = parser.parse("config.json", "state.json");
-
+        System.out.println("Choose a scenario (1 or 2)");
         final Scanner userInput = new Scanner(System.in);
-        // TODO Choose a starting scenario
-        house.moveTo(BEDROOM);
-        println("# Scenario 1");
-        println("## Some time before the user wakes up..");
-        new SoonWakeUpRoutine().call(house);
-        //house.broadcast(new SoonWakeUpTime());
-        println("## Now the user must wake up.");
-        // TODO Put in a configurable WakeUpRoutine ?
-        house.findRoom(BEDROOM).sendToItems("trigger_alarm");
-        System.out.println("-- You wake up in your bedroom. What do you do ?");
-        CommandParser commandParser = new CommandParser(userInput);
+        int scenarioNumber = getScenarioNumber(userInput);
+        if(scenarioNumber == 1) firstScenario(userInput, house); else secondScenario(userInput, house);
+        userInput.close();
+    }
 
-        while (userInput.hasNext()) {
+    private static int getScenarioNumber(Scanner userInput) {
+        int scenarioNumber = 1;
+        boolean valid = false;
+        while(!valid) {
+            scenarioNumber = userInput.nextInt();
+            if(scenarioNumber >= 1 && scenarioNumber <= 2) {
+                valid = true;
+            } else {
+                System.err.println("Invalid scenario number");
+            }
+        }
+        return scenarioNumber;
+    }
+
+    private static Command giveTerminalControl(Scanner userInput, ConnectedHouse house) {
+        CommandParser commandParser = new CommandParser(userInput);
+        Command lastCommand = Command.DONE;
+        boolean shouldStopAskingUser = false;
+
+        while (!shouldStopAskingUser) {
             try {
                 Command command = commandParser.parse();
+                lastCommand = command;
                 if (command == Command.EXIT) {
                     System.out.println("Exiting simulator..");
-                    break;
+                    shouldStopAskingUser = true;
+                } else if (command == Command.DONE) {
+                    System.out.println("Continuing the scenario..");
+                    shouldStopAskingUser = true;
                 } else {
                     command.interpret(house);
                 }
@@ -46,31 +63,53 @@ public class ConnectedHouseSimulator {
                 System.err.println("Please enter another command or \"EXIT\" to exit.");
             }
         }
-        userInput.close();
+        return lastCommand;
     }
 
-    private static void testScenario(ConnectedHouse house) {
-        println("# Scenario 1");
+    private static void firstScenario(Scanner userInput, ConnectedHouse house) {
+        println("# Scenario 1 : Waking up in the bed");
         house.moveTo(BEDROOM);
         println("## Some time before the user wakes up..");
         new SoonWakeUpRoutine().call(house);
+        //house.broadcast(new SoonWakeUpTime());
         println("## Now the user must wake up.");
         // TODO Put in a configurable WakeUpRoutine ?
         house.findRoom(BEDROOM).sendToItems("trigger_alarm");
-        println("## The user is waking up.. ");
-        println("## Entering the kitchen..");
-        house.findRoom(KITCHEN).sendToSensors("movement_detected");
-        println("## He asks to play his morning playlist");
-        house.findRoom(KITCHEN).sendToSensors("play_morning_playlist");
-        println("## He goes to the garage.");
-        house.findRoom(KITCHEN).sendToSensors("movement_detected");
-        house.findRoom(GARAGE).sendToSensors("movement_detected");
-        println("## Using his smartphone from his, he opens the garage door.");
+        System.out.println("-- You wake up in your bedroom. What do you do ?");
+        final Command lastCommand = giveTerminalControl(userInput, house);
+        if(lastCommand == Command.EXIT) {
+            return;
+        }
+
+        if(house.getPosition() != GARAGE) {
+            println("## The user moves to the garage to go to work");
+            house.moveTo(GARAGE);
+        }
+        println("## User enters his car");
+        println("## Using his smartphone from his car, he opens the garage door.");
         house.findRoom(GARAGE).sendToItems("open");
         println("## His application allows him to completely lock the house from his car, as he drives away.");
         house.findRoom(GARAGE).sendToItems("lock");
         house.sendToItems("lock");
     }
+
+    private static void secondScenario(Scanner userInput, ConnectedHouse house) {
+        println("# Scenario 2 : Arriving home from work");
+        house.moveTo(GARAGE);
+        System.out.println("-- You are in your garage after having returned from work. What do you do ?");
+        final Command lastCommand = giveTerminalControl(userInput, house);
+        if(lastCommand == Command.EXIT) {
+            return;
+        }
+
+        if(house.getPosition() != BEDROOM) {
+            println("## The user needs to sleep and goes to the bedroom to do so.");
+            house.moveTo(BEDROOM);
+        }
+        println("## He uses his smartphone application to completely lock the house from his bed.");
+        house.sendToItems("lock");
+    }
+
 
     /**
      * Proxy method to shorten code in scenarios
