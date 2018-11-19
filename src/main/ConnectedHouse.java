@@ -52,6 +52,7 @@ public class ConnectedHouse implements ItemSubject, SensorSubject {
 
     public void setWeatherStatus(WeatherStatus weatherStatus) {
         this.weatherStatus = weatherStatus;
+        sendToSensors("check_weather");
     }
 
     @Override

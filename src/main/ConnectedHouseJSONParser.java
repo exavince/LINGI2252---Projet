@@ -7,15 +7,13 @@ import main.item.Item;
 import main.item.control.ClockController;
 import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
+import main.item.control.door.ShutterController;
 import main.item.control.heating.HeatingController;
 import main.item.control.light.LightController;
 import main.item.device.CoffeeMachine;
 import main.item.device.VoiceAssistant;
 import main.item.sounds.ConnectedSpeakers;
-import main.sensor.Microphone;
-import main.sensor.MovementsSensor;
-import main.sensor.Sensor;
-import main.sensor.TemperatureSensor;
+import main.sensor.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -97,6 +95,8 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
                 return new DoorController();
             case "garage":
                 return new GarageDoorController();
+            case "shutter":
+                return new ShutterController();
             default:
                 throw new RuntimeException("Unknown item type : " + itemName);
         }
@@ -111,6 +111,8 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
                 return new Microphone();
             case "temperature":
                 return new TemperatureSensor();
+            case "weather":
+                return new WeatherSensor();
             default:
                 throw new RuntimeException("Unknown sensor type : " + sensorName);
         }
