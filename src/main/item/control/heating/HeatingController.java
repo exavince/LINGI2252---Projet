@@ -12,9 +12,8 @@ public class HeatingController extends Item {
             println("Received a temperature report : " + ((TemperatureReport) message).getTemperature() + "°C in my room");
             adjustHeat(((TemperatureReport) message).getTemperature());
         } else if (message == "start_heating") {
-            getHouse().sendToSensors("check_weather");
-        } else if (message instanceof Integer) {
-            this.setDesiredTemperature((Integer) message);
+            getHouse().sendToSensors("check_temperature");
+            println("Asking temperature report");
         }
     }
 

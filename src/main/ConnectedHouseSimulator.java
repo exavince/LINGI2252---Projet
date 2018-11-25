@@ -22,16 +22,17 @@ public class ConnectedHouseSimulator {
         System.out.println("Choose a scenario (1 or 2)");
         final Scanner userInput = new Scanner(System.in);
         int scenarioNumber = getScenarioNumber(userInput);
-        if(scenarioNumber == 1) firstScenario(userInput, house); else secondScenario(userInput, house);
+        if (scenarioNumber == 1) firstScenario(userInput, house);
+        else secondScenario(userInput, house);
         userInput.close();
     }
 
     private static int getScenarioNumber(Scanner userInput) {
         int scenarioNumber = 1;
         boolean valid = false;
-        while(!valid) {
+        while (!valid) {
             scenarioNumber = userInput.nextInt();
-            if(scenarioNumber >= 1 && scenarioNumber <= 2) {
+            if (scenarioNumber >= 1 && scenarioNumber <= 2) {
                 valid = true;
             } else {
                 System.err.println("Invalid scenario number");
@@ -77,11 +78,11 @@ public class ConnectedHouseSimulator {
         house.findRoom(BEDROOM).sendToItems("trigger_alarm");
         System.out.println("-- You wake up in your bedroom. What do you do ?");
         final Command lastCommand = giveTerminalControl(userInput, house);
-        if(lastCommand == Command.EXIT) {
+        if (lastCommand == Command.EXIT) {
             return;
         }
 
-        if(house.getPosition() != GARAGE) {
+        if (house.getPosition() != GARAGE) {
             println("## The user moves to the garage to go to work");
             house.moveTo(GARAGE);
         }
@@ -98,11 +99,11 @@ public class ConnectedHouseSimulator {
         house.moveTo(GARAGE);
         System.out.println("-- You are in your garage after having returned from work. What do you do ?");
         final Command lastCommand = giveTerminalControl(userInput, house);
-        if(lastCommand == Command.EXIT) {
+        if (lastCommand == Command.EXIT) {
             return;
         }
 
-        if(house.getPosition() != BEDROOM) {
+        if (house.getPosition() != BEDROOM) {
             println("## The user needs to sleep and goes to the bedroom to do so.");
             house.moveTo(BEDROOM);
         }

@@ -10,7 +10,7 @@ public class ShutterController extends Item {
     public void onEvent(Object message) {
         if (message.equals("lock")) {
             println("Locking the shutter..");
-        } else if(message instanceof WeatherReport && ((WeatherReport) message).getWeatherStatus() == WeatherStatus.RAINY) {
+        } else if (message instanceof WeatherReport && ((WeatherReport) message).getWeatherStatus() == WeatherStatus.RAINY) {
             println("It's raining => Closing the shutter");
         }
     }

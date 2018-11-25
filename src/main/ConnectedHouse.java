@@ -11,13 +11,12 @@ import java.util.ArrayList;
 public class ConnectedHouse implements ItemSubject, SensorSubject {
     private final ArrayList<Room> rooms = new ArrayList<>();
     private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
+    private RoomType position = RoomType.NOWHERE;
+    private HomeMood mood = HomeMood.NORMAL;
 
     public RoomType getPosition() {
         return position;
     }
-
-    private RoomType position = RoomType.NOWHERE;
-    private HomeMood mood = HomeMood.NORMAL;
 
     public ArrayList<Room> getRooms() {
         return rooms;
