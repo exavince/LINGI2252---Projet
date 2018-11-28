@@ -3,13 +3,13 @@
   "SENSOR" : {
     "BEDROOM": ["temperature", "weather"],
     "KITCHEN": ["temperature","movement", "microphone"],
-    "LIVING_ROOM": ["movement", "temperature"],
+    "LIVING_ROOM": ["temperature","movement", "microphone"],
     "GARAGE": ["movement"]
   },
   "ITEM": {
     "BEDROOM": ["speaker","heating","light","clock","shutter"],
     "KITCHEN": ["coffee", "coffee","heating","light","speaker"],
-    "LIVING_ROOM": ["voice", "door","heating","light"],
+    "LIVING_ROOM": ["voice", "door","heating","light", "speaker"],
     "GARAGE": ["garage","light"]
   }
 }

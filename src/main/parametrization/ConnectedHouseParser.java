@@ -1,4 +1,6 @@
-package main;
+package main.parametrization;
+
+import main.ConnectedHouse;
 
 import java.io.FileNotFoundException;
 

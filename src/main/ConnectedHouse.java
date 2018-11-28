@@ -25,7 +25,7 @@ public class ConnectedHouse implements ItemSubject, SensorSubject {
     /**
      * Adds rooms to the house
      */
-    void attach(Room minimumRoom, Room... roomsIn) {
+    public void attach(Room minimumRoom, Room... roomsIn) {
         minimumRoom.setHouse(this);
         rooms.add(minimumRoom);
         for (Room room : roomsIn) {

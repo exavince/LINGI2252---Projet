@@ -1,8 +1,10 @@
-package main;
+package main.parametrization;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import main.ConnectedHouse;
+import main.Room;
 import main.item.Item;
 import main.item.control.ClockController;
 import main.item.control.door.DoorController;

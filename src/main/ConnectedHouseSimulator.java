@@ -2,6 +2,8 @@ package main;
 
 import main.command.Command;
 import main.command.CommandParser;
+import main.parametrization.ConnectedHouseJSONParser;
+import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
 
 import java.io.FileNotFoundException;

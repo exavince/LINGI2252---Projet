@@ -31,7 +31,7 @@ public class Room implements ItemSubject, SensorSubject {
     /**
      * Adds items to the Event bus. At least one item is required to call the method.
      */
-    Room attach(Item minimumItem, Item... itemsIn) {
+    public Room attach(Item minimumItem, Item... itemsIn) {
         minimumItem.setRoom(this);
         items.add(minimumItem);
 
@@ -45,7 +45,7 @@ public class Room implements ItemSubject, SensorSubject {
     /**
      * Adds sensors. At least one sensor is required to call the method.
      */
-    Room attach(Sensor minimumSensor, Sensor... sensorsIn) {
+    public Room attach(Sensor minimumSensor, Sensor... sensorsIn) {
         minimumSensor.setRoom(this);
         sensors.add(minimumSensor);
 
@@ -118,5 +118,10 @@ public class Room implements ItemSubject, SensorSubject {
         for (Sensor sensor : getSensors()) {
             sensor.trigger(message);
         }
+    }
+
+    @Override
+    public String toString() {
+        return type.toString();
     }
 }
