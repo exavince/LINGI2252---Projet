@@ -2,48 +2,84 @@
 <extendedFeatureModel>
     <properties/>
     <struct>
-        <and abstract="true" mandatory="true" name="Central_connecter">
-            <and abstract="true" name="Sounds">
-                <feature mandatory="true" name="Connected_speakers"/>
-                <feature name="Virtual_assistant"/>
-                <feature mandatory="true" name="Connected_music_system"/>
-                <feature name="Microphone"/>
+        <and abstract="true" mandatory="true" name="Central">
+            <and abstract="true" mandatory="true" name="Rooms">
+                <feature name="Kitchen"/>
+                <feature name="Bathroom"/>
+                <feature name="Bedroom"/>
+                <feature name="Livingroom"/>
+                <feature name="etc"/>
             </and>
-            <and abstract="true" mandatory="true" name="Control">
-                <and abstract="true" mandatory="true" name="Heating">
-                    <feature mandatory="true" name="Heating_controller"/>
+            <and abstract="true" name="Control">
+                <and abstract="true" name="Comfort_controllers">
+                    <feature name="Light_controller"/>
+                    <feature name="Shutter_controller"/>
+                    <feature name="Heating_controller"/>
                 </and>
-                <and abstract="true" name="Cleaning_assistance">
-                    <feature name="Automated_vacuum"/>
-                </and>
-                <and abstract="true" name="Light_management">
-                    <feature mandatory="true" name="Light_controller"/>
-                </and>
-                <and abstract="true" name="Devices">
-                    <feature name="Coffe_machine_controller"/>
-                    <feature name="Wifi_checkpoint"/>
+                <and abstract="true" name="Assistant_controllers">
+                    <feature name="Virtual_assistant"/>
                     <feature name="Clock_controller"/>
                 </and>
-                <and abstract="true" name="Smart_doors">
-                    <feature mandatory="true" name="Door_controller"/>
-                    <feature name="Shutter_controller"/>
-                    <feature name="Window_controller"/>
+                <and abstract="true" name="Security_controllers">
+                    <feature name="Camera_controller"/>
+                    <feature name="Doors_controller"/>
+                    <feature name="Garage_door_controller"/>
                 </and>
             </and>
-            <and abstract="true" name="Security">
-                <feature mandatory="true" name="Connected_cameras"/>
-                <feature name="Auto_activation"/>
+            <and abstract="true" name="Devices">
+                <and abstract="true" name="Cleaning_devices">
+                    <feature name="Automated_vacuum"/>
+                </and>
+                <and abstract="true" name="Media_devices">
+                    <feature name="Connected_speakers"/>
+                    <feature name="Connected_music_system"/>
+                </and>
+                <and abstract="true" name="Security_devices">
+                    <feature name="Connected_camera"/>
+                </and>
+                <and abstract="true" name="Others">
+                    <feature mandatory="true" name="Wifi_checkpoint"/>
+                    <feature name="Coffee_machine"/>
+                </and>
             </and>
             <and abstract="true" name="Sensors">
                 <feature name="Temperature_sensors"/>
                 <feature name="Weather_sensors"/>
                 <feature name="Light_sensors"/>
-                <feature name="Movements_sensors"/>
+                <feature name="Movement_sensors"/>
+                <feature name="Microphone"/>
             </and>
-            <feature name="Rooms"/>
+            <and abstract="true" name="Moods">
+                <feature name="Normal"/>
+                <feature name="Romantic"/>
+            </and>
         </and>
     </struct>
     <constraints>
+        <rule>
+            <disj>
+                <var>Light_controller</var>
+                <var>Light_sensors</var>
+            </disj>
+        </rule>
+        <rule>
+            <disj>
+                <var>Light_controller</var>
+                <var>Movement_sensors</var>
+            </disj>
+        </rule>
+        <rule>
+            <disj>
+                <var>Shutter_controller</var>
+                <var>Weather_sensors</var>
+            </disj>
+        </rule>
+        <rule>
+            <imp>
+                <var>Heating_controller</var>
+                <var>Temperature_sensors</var>
+            </imp>
+        </rule>
         <rule>
             <imp>
                 <var>Virtual_assistant</var>
@@ -52,8 +88,26 @@
         </rule>
         <rule>
             <imp>
-                <var>Auto_activation</var>
-                <var>Movements_sensors</var>
+                <var>Virtual_assistant</var>
+                <var>Connected_speakers</var>
+            </imp>
+        </rule>
+        <rule>
+            <disj>
+                <var>Camera_controller</var>
+                <var>Movement_sensors</var>
+            </disj>
+        </rule>
+        <rule>
+            <imp>
+                <var>Camera_controller</var>
+                <var>Connected_camera</var>
+            </imp>
+        </rule>
+        <rule>
+            <imp>
+                <var>Connected_music_system</var>
+                <var>Connected_speakers</var>
             </imp>
         </rule>
     </constraints>
