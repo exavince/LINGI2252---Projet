@@ -39,10 +39,20 @@ public class CommandParser {
                 return move();
             case "SAY":
                 return say();
+                /*
+            case "EDIT":
+                return edit();
+                */
             default:
                 throw new UnsupportedOperationException("Unknown command: " + token);
         }
     }
+
+    /*
+    private EditExpression edit() {
+        return new EditExpression();
+    }
+    */
 
     private GetExpression get() {
         return new GetExpression(room(), attribute());

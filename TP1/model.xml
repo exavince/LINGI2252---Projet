@@ -10,23 +10,23 @@
                 <feature name="Livingroom"/>
                 <feature name="etc"/>
             </and>
-            <and abstract="true" name="Control">
-                <and abstract="true" name="Comfort_controllers">
+            <or abstract="true" name="Control">
+                <or abstract="true" name="Comfort_controllers">
                     <feature name="Light_controller"/>
                     <feature name="Shutter_controller"/>
                     <feature name="Heating_controller"/>
-                </and>
-                <and abstract="true" name="Assistant_controllers">
-                    <feature name="Virtual_assistant"/>
+                </or>
+                <or abstract="true" name="Assistant_controllers">
+                    <feature name="Voice_assistant"/>
                     <feature name="Clock_controller"/>
-                </and>
-                <and abstract="true" name="Security_controllers">
+                </or>
+                <or abstract="true" name="Security_controllers">
                     <feature name="Camera_controller"/>
-                    <feature name="Doors_controller"/>
+                    <feature name="Door_controller"/>
                     <feature name="Garage_door_controller"/>
-                </and>
-            </and>
-            <and abstract="true" name="Devices">
+                </or>
+            </or>
+            <or abstract="true" name="Devices">
                 <and abstract="true" name="Cleaning_devices">
                     <feature name="Automated_vacuum"/>
                 </and>
@@ -41,18 +41,18 @@
                     <feature mandatory="true" name="Wifi_checkpoint"/>
                     <feature name="Coffee_machine"/>
                 </and>
-            </and>
-            <and abstract="true" name="Sensors">
+            </or>
+            <or abstract="true" name="Sensors">
                 <feature name="Temperature_sensors"/>
                 <feature name="Weather_sensors"/>
                 <feature name="Light_sensors"/>
                 <feature name="Movement_sensors"/>
                 <feature name="Microphone"/>
-            </and>
-            <and abstract="true" name="Moods">
+            </or>
+            <alt abstract="true" mandatory="true" name="Moods">
                 <feature name="Normal"/>
                 <feature name="Romantic"/>
-            </and>
+            </alt>
         </and>
     </struct>
     <constraints>
@@ -69,10 +69,10 @@
             </disj>
         </rule>
         <rule>
-            <disj>
+            <imp>
                 <var>Shutter_controller</var>
                 <var>Weather_sensors</var>
-            </disj>
+            </imp>
         </rule>
         <rule>
             <imp>
@@ -82,13 +82,13 @@
         </rule>
         <rule>
             <imp>
-                <var>Virtual_assistant</var>
+                <var>Voice_assistant</var>
                 <var>Microphone</var>
             </imp>
         </rule>
         <rule>
             <imp>
-                <var>Virtual_assistant</var>
+                <var>Voice_assistant</var>
                 <var>Connected_speakers</var>
             </imp>
         </rule>
