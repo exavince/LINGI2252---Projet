@@ -2,16 +2,14 @@ package main.parametrization;
 
 import main.Room;
 import main.item.Item;
-import main.sensor.HouseObject;
-import main.sensor.Sensor;
 
 public class Feature implements Expression {
-    private final Class<? extends HouseObject> objectClass;
+    private final Class<? extends Item> objectClass;
 
     /**
      * @param objectClass Related object class
      */
-    public Feature(Class<? extends HouseObject> objectClass) {
+    public Feature(Class<? extends Item> objectClass) {
         this.objectClass = objectClass;
     }
 
@@ -22,9 +20,6 @@ public class Feature implements Expression {
     public boolean interpret(Room context) {
         for (Item item : context.getItems()) {
             if (objectClass.isInstance(item)) return true;
-        }
-        for (Sensor sensor : context.getSensors()) {
-            if (objectClass.isInstance(sensor)) return true;
         }
         return false;
     }

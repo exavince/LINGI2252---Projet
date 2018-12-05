@@ -1,11 +1,12 @@
 package main.sensor;
 
+import main.item.Item;
 import main.message.MovementAlert;
 
-public class MovementsSensor extends Sensor {
+public class MovementsSensor extends Item {
 
     @Override
-    public void trigger(Object message) {
+    public void onEvent(Object message) {
         if (message != "movement_detected") return;
         getHouse().sendToItems(new MovementAlert(getRoom()));
     }

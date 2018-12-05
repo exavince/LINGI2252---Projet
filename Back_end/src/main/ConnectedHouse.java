@@ -4,11 +4,10 @@ import main.item.ItemSubject;
 import main.item.control.light.LightController;
 import main.message.SoundMessage;
 import main.routine.HomeMood;
-import main.sensor.SensorSubject;
 
 import java.util.ArrayList;
 
-public class ConnectedHouse implements ItemSubject, SensorSubject {
+public class ConnectedHouse implements ItemSubject {
     private final ArrayList<Room> rooms = new ArrayList<>();
     private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
     private RoomType position = RoomType.NOWHERE;
@@ -40,8 +39,8 @@ public class ConnectedHouse implements ItemSubject, SensorSubject {
             System.out.println("## Moving to room " + room);
             RoomType oldRoom = this.position;
             this.position = room;
-            findRoom(oldRoom).sendToSensors("movement_detected");
-            findRoom(this.position).sendToSensors("movement_detected");
+            findRoom(oldRoom).sendToItems("movement_detected");
+            findRoom(this.position).sendToItems("movement_detected");
         }
     }
 
@@ -51,7 +50,7 @@ public class ConnectedHouse implements ItemSubject, SensorSubject {
 
     public void setWeatherStatus(WeatherStatus weatherStatus) {
         this.weatherStatus = weatherStatus;
-        sendToSensors("check_weather");
+        sendToItems("check_weather");
     }
 
     @Override
@@ -66,13 +65,6 @@ public class ConnectedHouse implements ItemSubject, SensorSubject {
             if (room.getType() == type) return room;
         }
         return Room.NONE;
-    }
-
-    @Override
-    public void sendToSensors(Object message) {
-        for (Room room : getRooms()) {
-            room.sendToSensors(message);
-        }
     }
 
     public HomeMood getMood() {

@@ -12,6 +12,6 @@ public class SayExpression implements Command {
     @Override
     public void interpret(ConnectedHouse house) {
         System.out.println("## [User] say: " + content.evaluate(house));
-        house.findRoom(house.getPosition()).sendToSensors(content.evaluate(house));
+        house.findRoom(house.getPosition()).sendToItems(content.evaluate(house));
     }
 }

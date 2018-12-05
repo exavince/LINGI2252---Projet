@@ -2,15 +2,12 @@ package main;
 
 import main.item.Item;
 import main.item.ItemSubject;
-import main.sensor.Sensor;
-import main.sensor.SensorSubject;
 
 import java.util.ArrayList;
 
-public class Room implements ItemSubject, SensorSubject {
+public class Room implements ItemSubject {
     public static final Room NONE = new Room(RoomType.NOWHERE);
     private final RoomType type;
-    private final ArrayList<Sensor> sensors = new ArrayList<>();
     private ArrayList<Item> items = new ArrayList<>();
     private ConnectedHouse house;
     private int temperature = 0;
@@ -18,10 +15,6 @@ public class Room implements ItemSubject, SensorSubject {
 
     public Room(RoomType typeIn) {
         type = typeIn;
-    }
-
-    public ArrayList<Sensor> getSensors() {
-        return sensors;
     }
 
     public ArrayList<Item> getItems() {
@@ -38,20 +31,6 @@ public class Room implements ItemSubject, SensorSubject {
         for (Item item : itemsIn) {
             item.setRoom(this);
             items.add(item);
-        }
-        return this;
-    }
-
-    /**
-     * Adds sensors. At least one sensor is required to call the method.
-     */
-    public Room attach(Sensor minimumSensor, Sensor... sensorsIn) {
-        minimumSensor.setRoom(this);
-        sensors.add(minimumSensor);
-
-        for (Sensor sensor : sensorsIn) {
-            sensor.setRoom(this);
-            sensors.add(sensor);
         }
         return this;
     }
@@ -110,13 +89,6 @@ public class Room implements ItemSubject, SensorSubject {
     public void sendToItems(Object message) {
         for (Item item : getItems()) {
             item.onEvent(message);
-        }
-    }
-
-    @Override
-    public void sendToSensors(Object message) {
-        for (Sensor sensor : getSensors()) {
-            sensor.trigger(message);
         }
     }
 

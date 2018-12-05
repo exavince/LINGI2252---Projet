@@ -8,7 +8,7 @@ import static main.RoomType.KITCHEN;
 public class SoonWakeUpRoutine {
     public void call(ConnectedHouse house) {
         // TODO Configurable ?
-        house.findRoom(KITCHEN).sendToSensors("make_coffee");
-        house.findRoom(BEDROOM).sendToItems("start_heating");
+        house.findRoom(KITCHEN).sendToItems("make_coffee");
+        house.sendToItems("start_heating");
     }
 }

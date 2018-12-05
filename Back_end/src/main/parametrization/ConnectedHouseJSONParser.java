@@ -105,7 +105,7 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
 
     }
 
-    private Sensor sensorFromString(String sensorName) {
+    private Item sensorFromString(String sensorName) {
         switch (sensorName) {
             case "movement":
                 return new MovementsSensor();

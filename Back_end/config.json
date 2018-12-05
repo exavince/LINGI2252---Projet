@@ -8,7 +8,7 @@
   },
   "ITEM": {
     "BEDROOM": ["speaker","heating","light","clock","shutter"],
-    "KITCHEN": ["coffee", "coffee","heating","light","speaker"],
+    "KITCHEN": ["coffee","heating","light","speaker"],
     "LIVING_ROOM": ["voice", "door","heating","light", "speaker"],
     "GARAGE": ["garage","light"]
   }

@@ -1,11 +1,14 @@
 package main.sensor;
 
-public class Microphone extends Sensor {
+import main.item.Item;
+import main.message.VoiceCommand;
+
+public class Microphone extends Item {
 
     @Override
-    public void trigger(Object message) {
-        if (message instanceof String) {
-            getHouse().sendToItems(message);
+    public void onEvent(Object message) {
+        if (message.equals("play_morning_playlist")) {
+            getHouse().sendToItems(VoiceCommand.PLAY_MORNING_PLAYLIST);
         }
     }
 }
