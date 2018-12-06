@@ -6,6 +6,7 @@ import main.parametrization.ConnectedHouseJSONParser;
 import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
 
+import java.awt.geom.QuadCurve2D;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
@@ -13,17 +14,16 @@ import static main.RoomType.BEDROOM;
 import static main.RoomType.GARAGE;
 
 public class ConnectedHouseSimulator {
-    // TODO scenario with rain, weather detector and close the shutter ?
+    // TODO scenario with rain, weather detector and close the shutter
 
-
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(Scanner userInput) throws FileNotFoundException {
         System.out.println("# Welcome to ConnectedHouseSimulator");
 
         final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
-        final ConnectedHouse house = parser.parse("config.json", "state.json");
+        final ConnectedHouse house = parser.parse("../Back_end/config.json", "../Back_end/state.json");
         System.out.println("Choose a scenario (1 or 2)");
-        final Scanner userInput = new Scanner(System.in);
         int scenarioNumber = getScenarioNumber(userInput);
+        System.out.println("fail get scenario");
         if (scenarioNumber == 1) firstScenario(userInput, house);
         else secondScenario(userInput, house);
         userInput.close();
