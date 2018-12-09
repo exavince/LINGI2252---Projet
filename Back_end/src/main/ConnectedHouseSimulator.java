@@ -6,72 +6,87 @@ import main.parametrization.ConnectedHouseJSONParser;
 import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
 
-import java.awt.geom.QuadCurve2D;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static main.RoomType.BEDROOM;
 import static main.RoomType.GARAGE;
 
-public class ConnectedHouseSimulator {
+public class ConnectedHouseSimulator implements Runnable{
     // TODO scenario with rain, weather detector and close the shutter
+    public static ConnectedHouse house = null;
+    public static BlockingQueue<String> dataIN = new LinkedBlockingQueue<>();
+    public static BlockingQueue<String> dataOUT = new LinkedBlockingQueue<>();
 
-    public static void main(Scanner userInput) throws FileNotFoundException {
+    public void run() {
         System.out.println("# Welcome to ConnectedHouseSimulator");
-
         final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
-        final ConnectedHouse house = parser.parse("../Back_end/config.json", "../Back_end/state.json");
+        try {
+            house = parser.parse("../Back_end/config.json", "../Back_end/state.json", dataOUT);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
         System.out.println("Choose a scenario (1 or 2)");
-        int scenarioNumber = getScenarioNumber(userInput);
+        int scenarioNumber = getScenarioNumber(dataIN);
         System.out.println("fail get scenario");
-        if (scenarioNumber == 1) firstScenario(userInput, house);
-        else secondScenario(userInput, house);
-        userInput.close();
+        if (scenarioNumber == 1) firstScenario(dataIN, dataOUT, house);
+        else secondScenario(dataIN, dataOUT, house);
     }
 
-    private static int getScenarioNumber(Scanner userInput) {
+    private static int getScenarioNumber(Queue<String> dataIN) {
         int scenarioNumber = 1;
         boolean valid = false;
         while (!valid) {
-            scenarioNumber = userInput.nextInt();
-            if (scenarioNumber >= 1 && scenarioNumber <= 2) {
-                valid = true;
-            } else {
-                System.err.println("Invalid scenario number");
+            if (!dataIN.isEmpty()) {
+                String data = dataIN.poll();
+                scenarioNumber = Integer.parseInt(data);
+                if (scenarioNumber >= 1 && scenarioNumber <= 2) {
+                    valid = true;
+                } else {
+                    System.err.println("Invalid scenario number");
+                }
             }
         }
         return scenarioNumber;
     }
 
-    private static Command giveTerminalControl(Scanner userInput, ConnectedHouse house) {
-        CommandParser commandParser = new CommandParser(userInput);
+    private static Command giveTerminalControl(Queue<String> dataIN, Queue<String> dataOUT, ConnectedHouse house) {
+        CommandParser commandParser = new CommandParser(dataIN, dataOUT);
         Command lastCommand = Command.DONE;
         boolean shouldStopAskingUser = false;
 
         while (!shouldStopAskingUser) {
-            try {
-                Command command = commandParser.parse();
-                lastCommand = command;
-                if (command == Command.EXIT) {
-                    System.out.println("Exiting simulator..");
-                    shouldStopAskingUser = true;
-                } else if (command == Command.DONE) {
-                    System.out.println("Continuing the scenario..");
-                    shouldStopAskingUser = true;
-                } else {
-                    command.interpret(house);
+            if (!dataIN.isEmpty()) {
+                try {
+                    Command command = commandParser.parse();
+                    lastCommand = command;
+                    if (command == Command.EXIT) {
+                        dataOUT.add("EXIT");
+                        System.out.println("Exiting simulator..");
+                        shouldStopAskingUser = true;
+                    } else if (command == Command.DONE) {
+                        System.out.println("Continuing the scenario..");
+                        shouldStopAskingUser = true;
+                    } else {
+                        command.interpret(house);
+                    }
+                } catch (RuntimeException e) {
+                    System.err.println(e.getMessage());
+                    System.err.println("Please enter another command or \"EXIT\" to exit.");
+                    dataOUT.add("WRONG_COMMAND");
                 }
-            } catch (RuntimeException e) {
-                System.err.println(e.getMessage());
-                System.err.println("Please enter another command or \"EXIT\" to exit.");
             }
         }
         return lastCommand;
     }
 
-    private static void firstScenario(Scanner userInput, ConnectedHouse house) {
+    private static void firstScenario(Queue<String> dataIN, Queue<String> dataOUT, ConnectedHouse house) {
         println("# Scenario 1 : Waking up in the bed");
         house.moveTo(BEDROOM);
+        dataOUT.add("MOVE_BEDROOM");
         println("## Some time before the user wakes up..");
         new SoonWakeUpRoutine().call(house);
         //house.broadcast(new SoonWakeUpTime());
@@ -79,7 +94,7 @@ public class ConnectedHouseSimulator {
         // TODO Put in a configurable WakeUpRoutine ?
         house.findRoom(BEDROOM).sendToItems("trigger_alarm");
         System.out.println("-- You wake up in your bedroom. What do you do ?");
-        final Command lastCommand = giveTerminalControl(userInput, house);
+        final Command lastCommand = giveTerminalControl(dataIN, dataOUT, house);
         if (lastCommand == Command.EXIT) {
             return;
         }
@@ -96,11 +111,11 @@ public class ConnectedHouseSimulator {
         house.sendToItems("lock");
     }
 
-    private static void secondScenario(Scanner userInput, ConnectedHouse house) {
+    private static void secondScenario(Queue<String> dataIN, Queue<String> dataOUT, ConnectedHouse house) {
         println("# Scenario 2 : Arriving home from work");
         house.moveTo(GARAGE);
         System.out.println("-- You are in your garage after having returned from work. What do you do ?");
-        final Command lastCommand = giveTerminalControl(userInput, house);
+        final Command lastCommand = giveTerminalControl(dataIN, dataOUT, house);
         if (lastCommand == Command.EXIT) {
             return;
         }

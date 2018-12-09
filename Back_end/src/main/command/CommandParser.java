@@ -4,6 +4,7 @@ import main.RoomType;
 import main.WeatherStatus;
 import main.routine.HomeMood;
 
+import java.util.Queue;
 import java.util.Scanner;
 
 /**
@@ -18,14 +19,16 @@ import java.util.Scanner;
  * <ROOM> ::= KITCHEN, BEDROOM, ...
  */
 public class CommandParser {
-    private final Scanner input;
+    private final Queue<String> input;
+    private final Queue<String> output;
 
-    public CommandParser(Scanner input) {
-        this.input = input;
+    public CommandParser(Queue<String> dataIN, Queue<String> dataOUT) {
+        this.input = dataIN;
+        this.output = dataOUT;
     }
 
     public Command parse() {
-        String token = input.next();
+        String token = input.poll();
         switch (token) {
             case "EXIT":
                 return Command.EXIT;
@@ -64,15 +67,15 @@ public class CommandParser {
 
     private SayExpression say() {
         //TODO parse quotes ?
-        return new SayExpression(new TerminalExpression<>(input.next()));
+        return new SayExpression(new TerminalExpression<>(input.poll()));
     }
 
     private String attribute() {
-        return input.next();
+        return input.poll();
     }
 
     private ValueExpression value() {
-        String token = input.next();
+        String token = input.poll();
         if (token.equals("GET")) {
             return get();
         } else {
@@ -102,7 +105,7 @@ public class CommandParser {
     }
 
     private RoomType room() {
-        String token = input.next();
+        String token = input.poll();
         return RoomType.valueOf(token);
     }
 }

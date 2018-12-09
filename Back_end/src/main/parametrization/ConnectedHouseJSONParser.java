@@ -19,6 +19,7 @@ import main.sensor.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.concurrent.BlockingQueue;
 
 import static main.RoomType.*;
 
@@ -26,17 +27,17 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
     private ConnectedHouseBuilder house;
 
     @Override
-    public ConnectedHouse parse(String inputConfigFile, String inputStateFile) throws FileNotFoundException {
+    public ConnectedHouse parse(String inputConfigFile, String inputStateFile, BlockingQueue<String> dataOUT) throws FileNotFoundException {
         this.house = new ConnectedHouseBuilder();
         JsonParser gson = new JsonParser();
         JsonObject json = (JsonObject) gson.parse(new FileReader(inputConfigFile));
         JsonObject stateJson = (JsonObject) gson.parse(new FileReader(inputStateFile));
-        createRooms(json, stateJson);
+        createRooms(json, stateJson, dataOUT);
 
         return this.house.getHouse();
     }
 
-    private void createRooms(JsonObject json, JsonObject stateJson) {
+    private void createRooms(JsonObject json, JsonObject stateJson, BlockingQueue<String> dataOUT) {
         JsonArray rooms = json.getAsJsonArray("ROOM");
         JsonObject items = json.getAsJsonObject("ITEM");
         JsonObject sensors = json.getAsJsonObject("SENSOR");
@@ -44,6 +45,7 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
         for (int i = 0; i < rooms.size(); i++) {
             String roomName =
                     rooms.get(i).getAsString();
+            dataOUT.add(roomName);
             Room room = roomFromString(roomName);
             JsonArray itemTMP = items.getAsJsonArray(room.getType().toString());
             for (int j = 0; j < itemTMP.size(); j++) {
