@@ -36,7 +36,11 @@ public class ConnectedHouse implements ItemSubject {
     public void moveTo(RoomType room) {
         if (this.position == room) System.err.println("User was already in the room " + room);
         else {
-            System.out.println("## Moving to room " + room);
+            String info = "## Moving to room " + room;
+            ConnectedHouseSimulator.dataOUT.add(info);
+            System.out.println(info);
+
+
             RoomType oldRoom = this.position;
             this.position = room;
             findRoom(oldRoom).sendToItems("movement_detected");

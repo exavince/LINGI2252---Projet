@@ -1,6 +1,7 @@
 package main.item;
 
 import main.ConnectedHouse;
+import main.ConnectedHouseSimulator;
 import main.Room;
 
 public abstract class Item {
@@ -24,6 +25,8 @@ public abstract class Item {
     }
 
     protected void println(String value) {
-        System.out.println("[" + this.getClass().getSimpleName() + " Room:" + getRoom().getType() + " House:" + getHouse() + "] " + value);
+        String info = "[" + this.getClass().getSimpleName() + " Room:" + getRoom().getType() + " House:" + getHouse() + "] " + value;
+        System.out.println(info);
+        ConnectedHouseSimulator.dataOUT.add(info);
     }
 }

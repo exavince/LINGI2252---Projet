@@ -8,6 +8,8 @@ import main.item.Item;
 import main.item.control.heating.HeatingController;
 import main.routine.HomeMood;
 
+import static main.ConnectedHouseSimulator.dataOUT;
+
 public class SetExpression implements Command {
     private final RoomType roomType;
     private final String attribute;
@@ -61,5 +63,6 @@ public class SetExpression implements Command {
             }
         }
         System.out.println("-- Set attribute " + attribute + " of room " + roomType + " with success.");
+        dataOUT.add("-- Set attribute " + attribute + " of room " + roomType + " with success.");
     }
 }

@@ -7,7 +7,6 @@ import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -31,9 +30,8 @@ public class ConnectedHouseSimulator implements Runnable{
         }
         System.out.println("Choose a scenario (1 or 2)");
         int scenarioNumber = getScenarioNumber(dataIN);
-        System.out.println("fail get scenario");
-        if (scenarioNumber == 1) firstScenario(dataIN, dataOUT, house);
-        else secondScenario(dataIN, dataOUT, house);
+        if (scenarioNumber == 1) firstScenario(house);
+        else secondScenario(house);
     }
 
     private static int getScenarioNumber(Queue<String> dataIN) {
@@ -46,7 +44,7 @@ public class ConnectedHouseSimulator implements Runnable{
                 if (scenarioNumber >= 1 && scenarioNumber <= 2) {
                     valid = true;
                 } else {
-                    System.err.println("Invalid scenario number");
+                    println("Invalid scenario number");
                 }
             }
         }
@@ -75,25 +73,23 @@ public class ConnectedHouseSimulator implements Runnable{
                     }
                 } catch (RuntimeException e) {
                     System.err.println(e.getMessage());
-                    System.err.println("Please enter another command or \"EXIT\" to exit.");
-                    dataOUT.add("WRONG_COMMAND");
+                    println("Please enter another command or \"EXIT\" to exit.");
                 }
             }
         }
         return lastCommand;
     }
 
-    private static void firstScenario(Queue<String> dataIN, Queue<String> dataOUT, ConnectedHouse house) {
+    private static void firstScenario(ConnectedHouse house) {
         println("# Scenario 1 : Waking up in the bed");
         house.moveTo(BEDROOM);
-        dataOUT.add("MOVE_BEDROOM");
         println("## Some time before the user wakes up..");
         new SoonWakeUpRoutine().call(house);
         //house.broadcast(new SoonWakeUpTime());
         println("## Now the user must wake up.");
         // TODO Put in a configurable WakeUpRoutine ?
         house.findRoom(BEDROOM).sendToItems("trigger_alarm");
-        System.out.println("-- You wake up in your bedroom. What do you do ?");
+        println("-- You wake up in your bedroom. What do you do ?");
         final Command lastCommand = giveTerminalControl(dataIN, dataOUT, house);
         if (lastCommand == Command.EXIT) {
             return;
@@ -111,10 +107,10 @@ public class ConnectedHouseSimulator implements Runnable{
         house.sendToItems("lock");
     }
 
-    private static void secondScenario(Queue<String> dataIN, Queue<String> dataOUT, ConnectedHouse house) {
+    private static void secondScenario(ConnectedHouse house) {
         println("# Scenario 2 : Arriving home from work");
         house.moveTo(GARAGE);
-        System.out.println("-- You are in your garage after having returned from work. What do you do ?");
+        println("-- You are in your garage after having returned from work. What do you do ?");
         final Command lastCommand = giveTerminalControl(dataIN, dataOUT, house);
         if (lastCommand == Command.EXIT) {
             return;
@@ -136,5 +132,6 @@ public class ConnectedHouseSimulator implements Runnable{
      */
     private static void println(String x) {
         System.out.println(x);
+        dataOUT.add(x);
     }
 }
