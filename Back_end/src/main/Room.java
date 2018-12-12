@@ -65,6 +65,7 @@ public class Room implements ItemSubject {
      * @param temperature The new temperature of the room
      */
     public void setTemperature(int temperature) {
+        getHouse().notifyObservers();
         this.temperature = temperature;
     }
 
@@ -82,6 +83,7 @@ public class Room implements ItemSubject {
     }
 
     public void setLighting(int lighting) {
+        getHouse().notifyObservers();
         this.lighting = lighting;
     }
 

@@ -8,6 +8,7 @@ import main.routine.HomeMood;
 import java.util.ArrayList;
 
 public class ConnectedHouse implements ItemSubject {
+    private final ArrayList<HouseObserver> observers = new ArrayList<>();
     private final ArrayList<Room> rooms = new ArrayList<>();
     private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
     private RoomType position = RoomType.NOWHERE;
@@ -19,6 +20,14 @@ public class ConnectedHouse implements ItemSubject {
 
     public ArrayList<Room> getRooms() {
         return rooms;
+    }
+
+    public void registerObserver(HouseObserver o) {
+        observers.add(o);
+    }
+
+    void notifyObservers() {
+        observers.forEach(HouseObserver::update);
     }
 
     /**
@@ -53,6 +62,7 @@ public class ConnectedHouse implements ItemSubject {
     }
 
     public void setWeatherStatus(WeatherStatus weatherStatus) {
+        notifyObservers();
         this.weatherStatus = weatherStatus;
         sendToItems("check_weather");
     }
@@ -76,6 +86,7 @@ public class ConnectedHouse implements ItemSubject {
     }
 
     public void setMood(HomeMood mood) {
+        notifyObservers();
         this.mood = mood;
         switch (mood) {
             case NORMAL:
