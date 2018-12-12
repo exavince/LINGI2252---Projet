@@ -1,13 +1,12 @@
 package main.item;
 
 import main.ConnectedHouse;
-import main.ConnectedHouseSimulator;
 import main.Room;
 
 public abstract class Item {
-    abstract public void onEvent(Object message);
-
     private Room room;
+
+    abstract public void onEvent(Object message);
 
     protected ConnectedHouse getHouse() {
         return getRoom().getHouse();

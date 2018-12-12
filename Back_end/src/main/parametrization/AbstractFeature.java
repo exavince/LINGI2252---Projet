@@ -3,8 +3,8 @@ package main.parametrization;
 import main.Room;
 
 public class AbstractFeature implements Feature {
-    private boolean value = false;
     private final String name;
+    private boolean value = false;
 
     AbstractFeature(String name) {
         this.name = name;

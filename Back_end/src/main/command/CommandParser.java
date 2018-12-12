@@ -4,8 +4,8 @@ import main.RoomType;
 import main.WeatherStatus;
 import main.routine.HomeMood;
 
-import java.util.Queue;
-import java.util.Scanner;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Grammar:
@@ -19,14 +19,14 @@ import java.util.Scanner;
  * <ROOM> ::= KITCHEN, BEDROOM, ...
  */
 public class CommandParser {
-    private final Queue<String> input;
+    private final Iterator<String> input;
 
-    public CommandParser(Queue<String> dataIN) {
-        this.input = dataIN;
+    public CommandParser(String expression) {
+        this.input = Arrays.asList(expression.split(" ")).iterator();
     }
 
     public Command parse() {
-        String token = input.poll();
+        String token = input.next();
         switch (token) {
             case "EXIT":
                 return Command.EXIT;
@@ -65,15 +65,15 @@ public class CommandParser {
 
     private SayExpression say() {
         //TODO parse quotes ?
-        return new SayExpression(new TerminalExpression<>(input.poll()));
+        return new SayExpression(new TerminalExpression<>(input.next()));
     }
 
     private String attribute() {
-        return input.poll();
+        return input.next();
     }
 
     private ValueExpression value() {
-        String token = input.poll();
+        String token = input.next();
         if (token.equals("GET")) {
             return get();
         } else {
@@ -103,7 +103,7 @@ public class CommandParser {
     }
 
     private RoomType room() {
-        String token = input.poll();
+        String token = input.next();
         return RoomType.valueOf(token);
     }
 }

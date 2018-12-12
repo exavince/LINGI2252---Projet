@@ -23,7 +23,7 @@ public class EditExpression implements Command {
         }
         for (Room room : house.getRooms()) {
             if (room.getType() == roomType) {
-                if(mode) {
+                if (mode) {
                     feature.enable(room);
                 } else {
                     feature.disable(room);

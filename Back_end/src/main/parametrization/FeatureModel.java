@@ -51,11 +51,10 @@ public class FeatureModel {
     private Feature microphone = new ItemFeature(Microphone.class);
 
 
-
     FeatureModel() {
         // Feature diagram
         addRules(
-        new DoubleImplication(new OrExpression(comfortControllers, assistantControllers, securityControllers), control),
+                new DoubleImplication(new OrExpression(comfortControllers, assistantControllers, securityControllers), control),
                 new DoubleImplication(new OrExpression(lightController, shutterController, heatingController), comfortControllers),
                 new DoubleImplication(new OrExpression(voiceAssistant, clockController), assistantControllers),
                 new DoubleImplication(new OrExpression(doorController, garageDoorController), securityControllers),

@@ -1,84 +1,72 @@
 package main;
 
 import main.command.Command;
-import main.command.CommandParser;
 import main.parametrization.ConnectedHouseJSONParser;
 import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.io.InputStreamReader;
 
 import static main.RoomType.BEDROOM;
 import static main.RoomType.GARAGE;
 
-public class ConnectedHouseSimulator implements Runnable{
+public class ConnectedHouseSimulator {
     // TODO scenario with rain, weather detector and close the shutter
     public static ConnectedHouse house = null;
-    public static BlockingQueue<String> dataIN = new LinkedBlockingQueue<>();
 
-    public void run() {
+    public static void main(String[] args) throws IOException {
         System.out.println("# Welcome to ConnectedHouseSimulator");
         final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
-        try {
-            house = parser.parse("../Back_end/config.json", "../Back_end/state.json");
-        } catch (IOException e) {
-            System.out.println(e);
-        }
+        house = parser.parse("../Back_end/config.json", "../Back_end/state.json");
+        house.registerLogger(System.out::println);
         System.out.println("Choose a scenario (1 or 2)");
-        int scenarioNumber = getScenarioNumber(dataIN);
-        if (scenarioNumber == 1) firstScenario(house);
-        else secondScenario(house);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int scenarioNumber = getScenarioNumber(br);
+        if (scenarioNumber == 1) firstScenario(br, house);
+        else secondScenario(br, house);
+        br.close();
     }
 
-    private static int getScenarioNumber(Queue<String> dataIN) {
+    private static int getScenarioNumber(BufferedReader br) throws IOException {
         int scenarioNumber = 1;
         boolean valid = false;
         while (!valid) {
-            if (!dataIN.isEmpty()) {
-                String data = dataIN.poll();
-                scenarioNumber = Integer.parseInt(data);
-                if (scenarioNumber >= 1 && scenarioNumber <= 2) {
-                    valid = true;
-                } else {
-                    println("Invalid scenario number");
-                }
+            String data = br.readLine();
+            scenarioNumber = Integer.parseInt(data);
+            if (scenarioNumber >= 1 && scenarioNumber <= 2) {
+                valid = true;
+            } else {
+                println("Invalid scenario number");
             }
         }
         return scenarioNumber;
     }
 
-    private static Command giveTerminalControl(Queue<String> dataIN, ConnectedHouse house) {
-        CommandParser commandParser = new CommandParser(dataIN);
+    private static Command giveTerminalControl(BufferedReader br, ConnectedHouse house) throws IOException {
         Command lastCommand = Command.DONE;
         boolean shouldStopAskingUser = false;
 
         while (!shouldStopAskingUser) {
-            if (!dataIN.isEmpty()) {
-                try {
-                    Command command = commandParser.parse();
-                    lastCommand = command;
-                    if (command == Command.EXIT) {
-                        println("Exiting simulator..");
-                        shouldStopAskingUser = true;
-                    } else if (command == Command.DONE) {
-                        println("Continuing the scenario..");
-                        shouldStopAskingUser = true;
-                    } else {
-                        command.interpret(house);
-                    }
-                } catch (RuntimeException e) {
-                    System.err.println(e.getMessage());
-                    println("Please enter another command or \"EXIT\" to exit.");
+            try {
+                lastCommand = house.sendCommand(br.readLine());
+                if (lastCommand == Command.EXIT) {
+                    println("Exiting simulator..");
+                    shouldStopAskingUser = true;
+                } else if (lastCommand == Command.DONE) {
+                    println("Continuing the scenario..");
+                    shouldStopAskingUser = true;
                 }
+            } catch (RuntimeException e) {
+                System.err.println(e.getMessage());
+                println("Please enter another command or \"EXIT\" to exit.");
             }
         }
         return lastCommand;
     }
 
-    private static void firstScenario(ConnectedHouse house) {
+    private static void firstScenario(BufferedReader br, ConnectedHouse house) throws IOException {
         println("# Scenario 1 : Waking up in the bed");
         house.moveTo(BEDROOM);
         println("## Some time before the user wakes up..");
@@ -88,7 +76,7 @@ public class ConnectedHouseSimulator implements Runnable{
         // TODO Put in a configurable WakeUpRoutine ?
         house.findRoom(BEDROOM).sendToItems("trigger_alarm");
         println("-- You wake up in your bedroom. What do you do ?");
-        final Command lastCommand = giveTerminalControl(dataIN, house);
+        final Command lastCommand = giveTerminalControl(br, house);
         if (lastCommand == Command.EXIT) {
             return;
         }
@@ -105,11 +93,11 @@ public class ConnectedHouseSimulator implements Runnable{
         house.sendToItems("lock");
     }
 
-    private static void secondScenario(ConnectedHouse house) {
+    private static void secondScenario(BufferedReader br, ConnectedHouse house) throws IOException {
         println("# Scenario 2 : Arriving home from work");
         house.moveTo(GARAGE);
         println("-- You are in your garage after having returned from work. What do you do ?");
-        final Command lastCommand = giveTerminalControl(dataIN, house);
+        final Command lastCommand = giveTerminalControl(br, house);
         if (lastCommand == Command.EXIT) {
             return;
         }
@@ -129,6 +117,6 @@ public class ConnectedHouseSimulator implements Runnable{
      * @param x The <code>String</code> to be printed.
      */
     private static void println(String x) {
-        house.log(x);
+        System.out.println(x);
     }
 }

@@ -4,7 +4,6 @@ import main.ConnectedHouse;
 import main.Room;
 
 public class ConnectedHouseBuilder {
-
     private FeatureModel model = new FeatureModel();
     private ConnectedHouse house = new ConnectedHouse();
 
@@ -16,7 +15,7 @@ public class ConnectedHouseBuilder {
      * @return a valid {@code ConnectedHouse} instance.
      */
     public ConnectedHouse getHouse() {
-        if (verify()) {
+        if (!verify()) {
             System.err.println("Warning: Configuration invalid");
         }
         return house;

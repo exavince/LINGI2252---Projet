@@ -15,11 +15,13 @@ import main.item.control.light.LightController;
 import main.item.device.CoffeeMachine;
 import main.item.device.VoiceAssistant;
 import main.item.sounds.ConnectedSpeakers;
-import main.sensor.*;
+import main.sensor.Microphone;
+import main.sensor.MovementsSensor;
+import main.sensor.TemperatureSensor;
+import main.sensor.WeatherSensor;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.concurrent.BlockingQueue;
 
 import static main.RoomType.*;
 

@@ -8,7 +8,6 @@ import main.message.SoundMessage;
 import main.routine.HomeMood;
 
 import java.util.ArrayList;
-import java.util.Queue;
 
 public class ConnectedHouse implements ItemSubject {
     private final ArrayList<HouseObserver> observers = new ArrayList<>();
@@ -26,21 +25,14 @@ public class ConnectedHouse implements ItemSubject {
         return rooms;
     }
 
-    public boolean sendCommand(Queue<String> commandIn) {
-        try {
-            CommandParser commandParser = new CommandParser(commandIn);
-            Command command = commandParser.parse();
-            if (command == Command.EXIT) {
-                return true;
-            } else if (command == Command.DONE) {
-                return true;
-            } else {
-                command.interpret(this);
-                return false;
-            }
-        } catch (RuntimeException e) {
-            System.err.println(e.getMessage());
-            log("Please enter another command or \"EXIT\" to exit.");
+    public Command sendCommand(String commandIn) {
+        CommandParser commandParser = new CommandParser(commandIn);
+        Command command = commandParser.parse();
+        if (command == Command.EXIT || command == Command.DONE) {
+            return command;
+        } else {
+            command.interpret(this);
+            return command;
         }
     }
 
