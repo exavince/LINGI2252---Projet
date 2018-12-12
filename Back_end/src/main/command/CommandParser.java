@@ -20,11 +20,9 @@ import java.util.Scanner;
  */
 public class CommandParser {
     private final Queue<String> input;
-    private final Queue<String> output;
 
-    public CommandParser(Queue<String> dataIN, Queue<String> dataOUT) {
+    public CommandParser(Queue<String> dataIN) {
         this.input = dataIN;
-        this.output = dataOUT;
     }
 
     public Command parse() {

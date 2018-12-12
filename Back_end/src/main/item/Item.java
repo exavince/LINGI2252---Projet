@@ -26,7 +26,6 @@ public abstract class Item {
 
     protected void println(String value) {
         String info = "[" + this.getClass().getSimpleName() + " Room:" + getRoom().getType() + " House:" + getHouse() + "] " + value;
-        System.out.println(info);
-        ConnectedHouseSimulator.dataOUT.add(info);
+        getHouse().log(info);
     }
 }

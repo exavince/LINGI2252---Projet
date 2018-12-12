@@ -6,8 +6,6 @@ import main.RoomType;
 import main.item.Item;
 import main.item.control.heating.HeatingController;
 
-import static main.ConnectedHouseSimulator.dataOUT;
-
 public class GetExpression implements ValueExpression, Command {
     private final RoomType roomType;
     private final String attribute;
@@ -55,7 +53,6 @@ public class GetExpression implements ValueExpression, Command {
 
     @Override
     public void interpret(ConnectedHouse house) {
-        System.out.println(this.evaluate(house).toString());
-        dataOUT.add(this.evaluate(house).toString());
+        house.log(this.evaluate(house).toString());
     }
 }

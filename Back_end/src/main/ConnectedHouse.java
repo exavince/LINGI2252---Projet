@@ -1,14 +1,18 @@
 package main;
 
+import main.command.Command;
+import main.command.CommandParser;
 import main.item.ItemSubject;
 import main.item.control.light.LightController;
 import main.message.SoundMessage;
 import main.routine.HomeMood;
 
 import java.util.ArrayList;
+import java.util.Queue;
 
 public class ConnectedHouse implements ItemSubject {
     private final ArrayList<HouseObserver> observers = new ArrayList<>();
+    private final ArrayList<Logger> loggers = new ArrayList<>();
     private final ArrayList<Room> rooms = new ArrayList<>();
     private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
     private RoomType position = RoomType.NOWHERE;
@@ -22,8 +26,34 @@ public class ConnectedHouse implements ItemSubject {
         return rooms;
     }
 
+    public boolean sendCommand(Queue<String> commandIn) {
+        try {
+            CommandParser commandParser = new CommandParser(commandIn);
+            Command command = commandParser.parse();
+            if (command == Command.EXIT) {
+                return true;
+            } else if (command == Command.DONE) {
+                return true;
+            } else {
+                command.interpret(this);
+                return false;
+            }
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+            log("Please enter another command or \"EXIT\" to exit.");
+        }
+    }
+
     public void registerObserver(HouseObserver o) {
         observers.add(o);
+    }
+
+    public void registerLogger(Logger o) {
+        loggers.add(o);
+    }
+
+    public void log(String message) {
+        loggers.forEach(l -> l.log(message));
     }
 
     void notifyObservers() {
@@ -46,8 +76,7 @@ public class ConnectedHouse implements ItemSubject {
         if (this.position == room) System.err.println("User was already in the room " + room);
         else {
             String info = "## Moving to room " + room;
-            ConnectedHouseSimulator.dataOUT.add(info);
-            System.out.println(info);
+            this.log(info);
 
 
             RoomType oldRoom = this.position;
