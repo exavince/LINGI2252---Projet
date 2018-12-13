@@ -1,6 +1,9 @@
 package main.parametrization;
 
 import main.Room;
+import main.constraint.Constraint;
+import main.constraint.Implication;
+import main.constraint.LogicalOr;
 import main.item.control.ClockController;
 import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
@@ -10,6 +13,9 @@ import main.item.control.light.LightController;
 import main.item.device.CoffeeMachine;
 import main.item.device.VoiceAssistant;
 import main.item.sounds.ConnectedSpeakers;
+import main.primitive.Optional;
+import main.primitive.Or;
+import main.primitive.Primitive;
 import main.sensor.Microphone;
 import main.sensor.MovementsSensor;
 import main.sensor.TemperatureSensor;
@@ -21,52 +27,50 @@ import java.util.List;
 
 public class FeatureModel {
     /* TODO Generify */
-    private final List<Expression> rules = new ArrayList<>();
-
+    private final static FeatureModel INSTANCE = new FeatureModel();
+    private final List<Primitive> featureDiagram = new ArrayList<>();
+    private final List<Constraint> crossTreeConstraints = new ArrayList<>();
     // TODO Based on a string, one should be able to get the feature for command line
-    private Feature control = new AbstractFeature("Control");
-    private Feature comfortControllers = new AbstractFeature("Comfort_controllers");
-    private Feature lightController = new ItemFeature(LightController.class);
-    private Feature shutterController = new ItemFeature(ShutterController.class);
-    private Feature heatingController = new ItemFeature(HeatingController.class);
+    public Feature root = new AbstractFeature("Central");
+    public Feature control = new AbstractFeature("Control");
+    public Feature comfortControllers = new AbstractFeature("Comfort_controllers");
+    public Feature lightController = new ItemFeature(LightController.class);
+    public Feature shutterController = new ItemFeature(ShutterController.class);
+    public Feature heatingController = new ItemFeature(HeatingController.class);
+    public Feature assistantControllers = new AbstractFeature("Assistant_controllers");
+    public Feature voiceAssistant = new ItemFeature(VoiceAssistant.class);
+    public Feature clockController = new ItemFeature(ClockController.class);
+    public Feature securityControllers = new AbstractFeature("Security_controllers");
+    public Feature doorController = new ItemFeature(DoorController.class);
+    public Feature garageDoorController = new ItemFeature(GarageDoorController.class);
+    public Feature devices = new AbstractFeature("Devices");
+    public Feature mediaDevices = new AbstractFeature("Media_devices");
+    public Feature connectedSpeakers = new ItemFeature(ConnectedSpeakers.class);
+    public Feature others = new AbstractFeature("Others");
+    public Feature coffeeMachine = new ItemFeature(CoffeeMachine.class);
+    public Feature sensors = new AbstractFeature("Sensors");
+    public Feature movementsSensor = new ItemFeature(MovementsSensor.class);
+    public Feature weatherSensor = new ItemFeature(WeatherSensor.class);
+    public Feature temperatureSensor = new ItemFeature(TemperatureSensor.class);
+    public Feature microphone = new ItemFeature(Microphone.class);
 
-    private Feature assistantControllers = new AbstractFeature("Assistant_controllers");
-    private Feature voiceAssistant = new ItemFeature(VoiceAssistant.class);
-    private Feature clockController = new ItemFeature(ClockController.class);
-    private Feature securityControllers = new AbstractFeature("Security_controllers");
-    private Feature doorController = new ItemFeature(DoorController.class);
-    private Feature garageDoorController = new ItemFeature(GarageDoorController.class);
+    private FeatureModel() {
+        addFeatureDiagramPrimitives(
+                new Optional(root, control, devices, sensors),
+                new Or(control, comfortControllers, assistantControllers, securityControllers),
+                new Or(comfortControllers, lightController, shutterController, heatingController),
+                new Or(assistantControllers, voiceAssistant, clockController),
+                new Or(securityControllers, doorController, garageDoorController),
 
+                new Or(devices, mediaDevices, others),
+                new Optional(mediaDevices, connectedSpeakers),
+                new Optional(others, coffeeMachine),
 
-    private Feature devices = new AbstractFeature("Devices");
-    private Feature mediaDevices = new AbstractFeature("Media_devices");
-    private Feature connectedSpeakers = new ItemFeature(ConnectedSpeakers.class);
-    private Feature others = new AbstractFeature("Others");
-    private Feature coffeeMachine = new ItemFeature(CoffeeMachine.class);
+                new Or(sensors, temperatureSensor, weatherSensor, movementsSensor, microphone)
+        );
 
-    private Feature sensors = new AbstractFeature("Sensors");
-    private Feature movementsSensor = new ItemFeature(MovementsSensor.class);
-    private Feature weatherSensor = new ItemFeature(WeatherSensor.class);
-    private Feature temperatureSensor = new ItemFeature(TemperatureSensor.class);
-    private Feature microphone = new ItemFeature(Microphone.class);
-
-
-    FeatureModel() {
-        // Feature diagram
-        addRules(
-                new DoubleImplication(new OrExpression(comfortControllers, assistantControllers, securityControllers), control),
-                new DoubleImplication(new OrExpression(lightController, shutterController, heatingController), comfortControllers),
-                new DoubleImplication(new OrExpression(voiceAssistant, clockController), assistantControllers),
-                new DoubleImplication(new OrExpression(doorController, garageDoorController), securityControllers),
-
-                new DoubleImplication(new OrExpression(mediaDevices, others), devices),
-                new Implication(connectedSpeakers, mediaDevices),
-                new Implication(coffeeMachine, others),
-
-                new DoubleImplication(new OrExpression(temperatureSensor, weatherSensor, movementsSensor, microphone), sensors),
-
-                // Cross-tree constraints
-                new OrExpression(lightController, movementsSensor),
+        addCrossTreeConstraints(
+                new LogicalOr(lightController, movementsSensor),
                 new Implication(shutterController, weatherSensor),
                 new Implication(heatingController, temperatureSensor),
                 new Implication(voiceAssistant, microphone),
@@ -74,9 +78,16 @@ public class FeatureModel {
         );
     }
 
-    private void addRules(Expression minimumRule, Expression... rulesIn) {
-        rules.add(minimumRule);
-        rules.addAll(Arrays.asList(rulesIn));
+    public static FeatureModel getInstance() {
+        return INSTANCE;
+    }
+
+    private void addFeatureDiagramPrimitives(Primitive... primitivesIn) {
+        featureDiagram.addAll(Arrays.asList(primitivesIn));
+    }
+
+    private void addCrossTreeConstraints(Constraint... constraintsIn) {
+        crossTreeConstraints.addAll(Arrays.asList(constraintsIn));
     }
 
     /**
@@ -84,14 +95,28 @@ public class FeatureModel {
      * @return Whether the configuration is valid or not
      */
     public boolean interpret(Room context) {
-        for (Expression rule : rules) {
+        boolean valid = true;
+        System.out.println("Room: " + context);
+        System.out.println("Feature diagram:");
+        for (Constraint rule : featureDiagram) {
+            String output = "\t" + rule + ": ";
             if (!rule.interpret(context)) {
-                System.err.println("Rule " + rule + " is not valid in Room " + context);
-                return false;
+                System.err.println(output + "NOT VALID");
+                valid = false;
             } else {
-                System.out.println("Rule " + rule + " is valid in Room " + context);
+                System.out.println(output + "VALID");
             }
         }
-        return true;
+        System.out.println("Cross-tree constraints:");
+        for (Constraint rule : crossTreeConstraints) {
+            String output = "\t" + rule + ": ";
+            if (!rule.interpret(context)) {
+                System.err.println(output + "NOT VALID");
+                valid = false;
+            } else {
+                System.out.println(output + "VALID");
+            }
+        }
+        return valid;
     }
 }

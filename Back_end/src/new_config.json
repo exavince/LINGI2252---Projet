@@ -1,0 +1,54 @@
+{
+  "ROOM": [
+    "BEDROOM",
+    "KITCHEN",
+    "LIVING_ROOM",
+    "GARAGE"
+  ],
+  "SENSOR": {
+    "BEDROOM": [
+      "temperature",
+      "weather",
+      "movement"
+    ],
+    "KITCHEN": [
+      "temperature",
+      "movement",
+      "microphone"
+    ],
+    "LIVING_ROOM": [
+      "temperature",
+      "movement",
+      "microphone"
+    ],
+    "GARAGE": [
+      "movement"
+    ]
+  },
+  "ITEM": {
+    "BEDROOM": [
+      "speaker",
+      "heating",
+      "light",
+      "clock",
+      "shutter"
+    ],
+    "KITCHEN": [
+      "coffee",
+      "heating",
+      "light",
+      "speaker"
+    ],
+    "LIVING_ROOM": [
+      "voice",
+      "door",
+      "heating",
+      "light",
+      "speaker"
+    ],
+    "GARAGE": [
+      "garage",
+      "light"
+    ]
+  }
+}

@@ -4,8 +4,8 @@ import main.ConnectedHouse;
 import main.Room;
 
 public class ConnectedHouseBuilder {
-    private FeatureModel model = new FeatureModel();
-    private ConnectedHouse house = new ConnectedHouse();
+    private final FeatureModel model = FeatureModel.getInstance();
+    private final ConnectedHouse house = new ConnectedHouse();
 
     /**
      * Option A: A config is a sum of features and an interpreter is used to check it
@@ -27,10 +27,12 @@ public class ConnectedHouseBuilder {
      * @return whether the current house configuration is valid or not
      */
     private boolean verify() {
+        boolean valid = true;
+        System.out.println("Rooms: " + house.getRooms());
         for (Room room : house.getRooms()) {
-            if (!model.interpret(room)) return false;
+            if (!model.interpret(room)) valid = false;
         }
-        return true;
+        return valid;
     }
 
 

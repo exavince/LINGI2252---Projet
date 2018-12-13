@@ -1,11 +1,11 @@
-package main.parametrization;
+package main.constraint;
 
 import main.Room;
 
-public class Not implements Expression {
-    private final Expression content;
+public class Not implements Constraint {
+    private final Constraint content;
 
-    public Not(Expression content) {
+    public Not(Constraint content) {
         this.content = content;
     }
 
