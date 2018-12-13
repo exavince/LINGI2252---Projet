@@ -2,6 +2,7 @@ package main;
 
 import main.item.Item;
 import main.item.ItemSubject;
+import main.item.control.heating.HeatingController;
 
 import java.util.ArrayList;
 
@@ -59,13 +60,21 @@ public class Room implements ItemSubject {
         return temperature;
     }
 
+    public int getDesiredTemperature() {
+        Item item = getItem(HeatingController.class);
+        if (item == null) {
+            return Integer.MIN_VALUE;
+        }
+        HeatingController controller = (HeatingController) item;
+        return controller.getDesiredTemperature();
+    }
+
     /**
      * Edit the temperature of the room
      *
      * @param temperature The new temperature of the room
      */
     public void setTemperature(int temperature) {
-        getHouse().notifyObservers();
         this.temperature = temperature;
     }
 
@@ -83,7 +92,6 @@ public class Room implements ItemSubject {
     }
 
     public void setLighting(int lighting) {
-        getHouse().notifyObservers();
         this.lighting = lighting;
     }
 

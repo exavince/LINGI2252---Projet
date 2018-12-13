@@ -58,7 +58,7 @@ public class ConnectedHouseSimulator {
                     println("Continuing the scenario..");
                     shouldStopAskingUser = true;
                 }
-            } catch (RuntimeException e) {
+            } catch (Exception e) {
                 System.err.println(e.getMessage());
                 println("Please enter another command or \"EXIT\" to exit.");
             }
