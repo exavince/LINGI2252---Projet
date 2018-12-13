@@ -44,7 +44,7 @@ public class ConnectedHouseSimulator {
         return scenarioNumber;
     }
 
-    private static Command giveTerminalControl(BufferedReader br, ConnectedHouse house) throws IOException {
+    private static Command giveTerminalControl(BufferedReader br, ConnectedHouse house) {
         Command lastCommand = Command.DONE;
         boolean shouldStopAskingUser = false;
 

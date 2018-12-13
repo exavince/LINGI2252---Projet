@@ -25,7 +25,7 @@ public class ConnectedHouse implements ItemSubject {
         return rooms;
     }
 
-    public Command sendCommand(String commandIn) throws Exception {
+    public Command sendCommand(String commandIn) {
         CommandParser commandParser = new CommandParser(commandIn);
         Command command = commandParser.parse();
         if (command == Command.EXIT || command == Command.DONE) {
@@ -45,7 +45,6 @@ public class ConnectedHouse implements ItemSubject {
     }
 
     public void log(String message) {
-        notifyObservers();
         loggers.forEach(l -> l.log(message));
     }
 
@@ -84,6 +83,7 @@ public class ConnectedHouse implements ItemSubject {
     }
 
     public void setWeatherStatus(WeatherStatus weatherStatus) {
+        notifyObservers();
         this.weatherStatus = weatherStatus;
         sendToItems("check_weather");
     }
@@ -107,6 +107,7 @@ public class ConnectedHouse implements ItemSubject {
     }
 
     public void setMood(HomeMood mood) {
+        notifyObservers();
         this.mood = mood;
         switch (mood) {
             case NORMAL:

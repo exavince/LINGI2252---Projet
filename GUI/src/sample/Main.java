@@ -2,23 +2,23 @@ package sample;
 
 
 import javafx.application.Application;
-
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
-import jdk.nashorn.internal.runtime.ECMAException;
-import main.*;
-import main.command.Command;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import main.ConnectedHouse;
+import main.HouseObserver;
+import main.Logger;
+import main.Room;
+import main.item.control.heating.HeatingController;
 import main.parametrization.ConnectedHouseJSONParser;
 import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
@@ -26,12 +26,8 @@ import main.routine.SoonWakeUpRoutine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
-import static main.ConnectedHouseSimulator.*;
 import static main.RoomType.BEDROOM;
 import static main.RoomType.GARAGE;
 
@@ -47,154 +43,9 @@ public class Main extends Application implements HouseObserver, Logger {
     private static TextArea area = new TextArea();
     private static TextArea infoArea = new TextArea();
 
-    @Override
-    public void start(Stage stage) throws Exception{
-
-        StartHouse();
-
-        Group root = new Group();
-        Scene scene = new Scene(root, 903, 903, Color.BLACK);
-        GridPane grid = new GridPane();
-        grid.setHgap(5);
-        StackPane informations = new StackPane();
-        informations.setLayoutY(240);
-        informations.setLayoutX(605);
-
-        TextField notification = new TextField ();
-        notification.setPrefSize(847,20);
-        notification.setText("");
-        notification.setOnKeyPressed(e -> {
-            if (e.getCode().equals(KeyCode.ENTER))
-            {
-                OnDataSend(notification);
-            }
-        });
-
-        Button send = new Button("Send");
-        send.autosize();
-        send.setOnAction(e -> {
-            OnDataSend(notification);
-        });
-
-        area.setPrefSize(901,200);
-        area.setLayoutY(30);
-        area.setEditable(false);
-
-        rooms = house.getRooms().stream().map(Room::toString).collect(Collectors.toList());
-        for (int a=0; a < house.getRooms().size(); a++) {
-            int i = a / 4;
-            int j = a % 4;
-            String name = rooms.get(a);
-            StackPane stack = new StackPane();
-            stack.setPrefSize(150, 150);
-            stack.setLayoutX(151 * j);
-            stack.setLayoutY(240 + 151 * i);
-
-            Rectangle rectangle = new Rectangle(151 * j, 240 + 151 * i, 150, 150);
-            rectangle.setFill(Color.WHITE);
-
-            Text text = new Text();
-            text.setText(name);
-
-            stack.getChildren().addAll(rectangle, text);
-            root.getChildren().add(stack);
-            rectangleArrayList.add(rectangle);
-            pane.add(stack);
-            rooms.add(name);
-        }
-
-
-        Rectangle rect = new Rectangle(50,50,295,660);
-        rect.setFill(Color.WHITE);
-        infoArea.setEditable(false);
-        infoArea.setText(getHouseInformations());
-        informations.getChildren().addAll(rect, infoArea);
-
-        grid.add(notification, 0,0);
-        grid.add(send,1,0);
-
-        root.getChildren().add(informations);
-        root.getChildren().add(grid);
-        root.getChildren().add(area);
-
-        stage.setTitle("Connected House");
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    public void StartHouse() {
-        println("# Welcome to ConnectedHouseSimulator");
-        final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
-        try {
-            house = parser.parse("./Back_end/config.json", "./Back_end/state.json");
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-        house.registerObserver(this);
-        house.registerLogger(this);
-        println("Choose a scenario (1 or 2)");
-    }
-
-    public void OnDataSend(TextField notification) {
-        command = notification.getText();
-        notification.clear();
-        System.out.println(command);
-        if (scenarioChoosen == 0) {
-            println("Choose a scenario (1 or 2)");
-            switch (command.toUpperCase()){
-                case "1":
-                    scenarioChoosen = 1;
-                    firstScenario();
-                    break;
-                case "2":
-                    scenarioChoosen = 2;
-                    secondScenario();
-                    break;
-                default:
-                    break;
-            }
-        }
-        else {
-            try {
-                if (command.toUpperCase().equals("EXIT")) {
-                    if (scenarioChoosen == 1) {
-                        house.sendCommand(command.toUpperCase());
-                        endFirstScenario();
-                    }
-                    else {
-                        house.sendCommand(command.toUpperCase());
-                        endSecondScenarion();
-                    }
-                }
-                println("");
-                house.sendCommand(command.toUpperCase());
-            } catch (Exception e) {
-                println("The command " + command + " doesn't exist");
-            }
-        }
-    }
-
-
-    public void update() {
-        String name = house.getPosition().toString();
-        Rectangle rectangle = null;
-        for (int i = 0; i < house.getRooms().size(); i++) {
-            if (rooms.get(i).equals(name)) {
-                rectangle = rectangleArrayList.get(i);
-            }
-        }
-        if (rectangle != null) {
-            for (Rectangle r : rectangleArrayList) {
-                r.setFill(Color.WHITE);
-            }
-            rectangle.setFill(Color.BLUE);
-        }
-        infoArea.setText(getHouseInformations());
-    }
     public static void main(String[] args) {
         launch(args);
     }
-
 
     public static void firstScenario() {
         println("# Scenario 1 : Waking up in the bed");
@@ -238,25 +89,166 @@ public class Main extends Application implements HouseObserver, Logger {
         System.exit(0);
     }
 
-    public void log(String input) {
-        println(input);
-    }
-
     public static void println(String x) {
         area.appendText(x + "\n");
     }
 
-    public String getHouseInformations() {
-        String informations = "";
-        for (Room room : house.getRooms()) {
-            informations += room.toString() + "\n";
-            informations += "Temperature : " + room.getTemperature() + "\n";
-            if (room.getDesiredTemperature() != Integer.MIN_VALUE) {
-                informations += "Desired temperature : " + room.getDesiredTemperature() + "\n";
+    @Override
+    public void start(Stage stage) throws Exception {
+
+        startHouse();
+
+        Group root = new Group();
+        Scene scene = new Scene(root, 903, 903, Color.BLACK);
+        GridPane grid = new GridPane();
+        grid.setHgap(5);
+        StackPane informations = new StackPane();
+        informations.setLayoutY(240);
+        informations.setLayoutX(605);
+
+        TextField notification = new TextField();
+        notification.setPrefSize(847, 20);
+        notification.setText("");
+        notification.setOnKeyPressed(e -> {
+            if (e.getCode().equals(KeyCode.ENTER)) {
+                onDataSend(notification);
             }
-            informations += "Light intensity : " +room.getLighting() + "\n";
-            informations += "\n";
+        });
+
+        Button send = new Button("Send");
+        send.autosize();
+        send.setOnAction(e -> {
+            onDataSend(notification);
+        });
+
+        area.setPrefSize(901, 200);
+        area.setLayoutY(30);
+        area.setEditable(false);
+
+        rooms = house.getRooms().stream().map(Room::toString).collect(Collectors.toList());
+        for (int a = 0; a < house.getRooms().size(); a++) {
+            int i = a / 4;
+            int j = a % 4;
+            String name = rooms.get(a);
+            StackPane stack = new StackPane();
+            stack.setPrefSize(150, 150);
+            stack.setLayoutX(151 * j);
+            stack.setLayoutY(240 + 151 * i);
+
+            Rectangle rectangle = new Rectangle(151 * j, 240 + 151 * i, 150, 150);
+            rectangle.setFill(Color.WHITE);
+
+            Text text = new Text();
+            text.setText(name);
+
+            stack.getChildren().addAll(rectangle, text);
+            root.getChildren().add(stack);
+            rectangleArrayList.add(rectangle);
+            pane.add(stack);
+            rooms.add(name);
         }
-        return informations;
+
+
+        Rectangle rect = new Rectangle(50, 50, 295, 660);
+        rect.setFill(Color.WHITE);
+        infoArea.setEditable(false);
+        infoArea.setText(getHouseInformations());
+        informations.getChildren().addAll(rect, infoArea);
+
+        grid.add(notification, 0, 0);
+        grid.add(send, 1, 0);
+
+        root.getChildren().add(informations);
+        root.getChildren().add(grid);
+        root.getChildren().add(area);
+
+        stage.setTitle("Connected House");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void startHouse() {
+        println("# Welcome to ConnectedHouseSimulator");
+        final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
+        try {
+            house = parser.parse("./Back_end/config.json", "./Back_end/state.json");
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        house.registerObserver(this);
+        house.registerLogger(this);
+        println("Choose a scenario (1 or 2)");
+    }
+
+    public void onDataSend(TextField notification) {
+        command = notification.getText();
+        notification.clear();
+        System.out.println(command);
+        if (scenarioChoosen == 0) {
+            switch (command.toUpperCase()) {
+                case "1":
+                    scenarioChoosen = 1;
+                    firstScenario();
+                    break;
+                case "2":
+                    scenarioChoosen = 2;
+                    secondScenario();
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            try {
+                if (command.toUpperCase().equals("EXIT")) {
+                    if (scenarioChoosen == 1) {
+                        house.sendCommand(command.toUpperCase());
+                        endFirstScenario();
+                    } else {
+                        house.sendCommand(command.toUpperCase());
+                        endSecondScenarion();
+                    }
+                }
+                println("");
+                house.sendCommand(command.toUpperCase());
+            } catch (Exception e) {
+                println("The command " + command + " doesn't exist");
+            }
+        }
+    }
+
+    public void update() {
+        String name = house.getPosition().toString();
+        Rectangle rectangle = null;
+        for (int i = 0; i < house.getRooms().size(); i++) {
+            if (rooms.get(i).equals(name)) {
+                rectangle = rectangleArrayList.get(i);
+            }
+        }
+        if (rectangle != null) {
+            for (Rectangle r : rectangleArrayList) {
+                r.setFill(Color.WHITE);
+            }
+            rectangle.setFill(Color.BLUE);
+        }
+        infoArea.setText(getHouseInformations());
+    }
+
+    public void log(String input) {
+        println(input);
+    }
+
+    public String getHouseInformations() {
+        StringBuilder informations = new StringBuilder();
+        for (Room room : house.getRooms()) {
+            informations.append(room.toString()).append("\n");
+            informations.append("Temperature : ").append(room.getTemperature()).append("\n");
+            HeatingController heatingController = (HeatingController) room.getItem(HeatingController.class);
+            if (heatingController != null) {
+                informations.append("Desired temperature : ").append(heatingController.getDesiredTemperature()).append("\n");
+            }
+            informations.append("Light intensity : ").append(room.getLighting()).append("\n");
+            informations.append("\n");
+        }
+        return informations.toString();
     }
 }
