@@ -2,22 +2,22 @@ package sample;
 
 
 import javafx.application.Application;
-
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
-import main.*;
-import main.command.Command;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import main.ConnectedHouse;
+import main.HouseObserver;
+import main.Logger;
+import main.Room;
 import main.parametrization.ConnectedHouseJSONParser;
 import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
@@ -25,20 +25,17 @@ import main.routine.SoonWakeUpRoutine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
-import static main.ConnectedHouseSimulator.*;
 import static main.RoomType.BEDROOM;
 import static main.RoomType.GARAGE;
 
 
 public class Main extends Application implements HouseObserver, Logger {
 
-    private static String command = "";
-    private static int scenarioChoosen = 0;
+    private static int chosenScenario = 0;
     private static ConnectedHouse house;
     private static ArrayList<Rectangle> rectangleArrayList = new ArrayList<>();
     private static List<String> rooms = new ArrayList<>();
@@ -46,10 +43,58 @@ public class Main extends Application implements HouseObserver, Logger {
     private static BlockingQueue<String> data = new LinkedBlockingQueue<>();
     private static TextArea area = new TextArea();
 
-    @Override
-    public void start(Stage stage) throws Exception{
+    public static void main(String[] args) {
+        launch(args);
+    }
 
-        StartHouse();
+    private static void firstScenario() {
+        println("# Scenario 1 : Waking up in the bed");
+        house.moveTo(BEDROOM);
+        println("## Some time before the user wakes up..");
+        new SoonWakeUpRoutine().call(house);
+        //house.broadcast(new SoonWakeUpTime());
+        println("## Now the user must wake up.");
+        // TODO Put in a configurable WakeUpRoutine ?
+        house.findRoom(BEDROOM).sendToItems("trigger_alarm");
+        println("-- You wake up in your bedroom. What do you do ?");
+    }
+
+    private static void endFirstScenario() {
+        if (house.getPosition() != GARAGE) {
+            println("## The user moves to the garage to go to work");
+            house.moveTo(GARAGE);
+        }
+        println("## User enters his car");
+        println("## Using his smartphone from his car, he opens the garage door.");
+        house.findRoom(GARAGE).sendToItems("open");
+        println("## His application allows him to completely lock the house from his car, as he drives away.");
+        house.findRoom(GARAGE).sendToItems("lock");
+        house.sendToItems("lock");
+    }
+
+    public static void secondScenario() {
+        println("# Scenario 2 : Arriving home from work");
+        house.moveTo(GARAGE);
+        println("-- You are in your garage after having returned from work. What do you do ?");
+    }
+
+    private static void endSecondScenario() {
+        if (house.getPosition() != BEDROOM) {
+            println("## The user needs to sleep and goes to the bedroom to do so.");
+            house.moveTo(BEDROOM);
+        }
+        println("## He uses his smartphone application to completely lock the house from his bed.");
+        house.sendToItems("lock");
+    }
+
+    private static void println(String input) {
+        area.appendText(input + "\n");
+    }
+
+    @Override
+    public void start(Stage stage) {
+
+        startHouse();
 
         Group root = new Group();
         Scene scene = new Scene(root, 903, 903, Color.BLACK);
@@ -59,28 +104,27 @@ public class Main extends Application implements HouseObserver, Logger {
         informations.setLayoutY(240);
         informations.setLayoutX(605);
 
-        TextField notification = new TextField ();
-        notification.setPrefSize(847,20);
+        TextField notification = new TextField();
+        notification.setPrefSize(847, 20);
         notification.setText("");
         notification.setOnKeyPressed(e -> {
-            if (e.getCode().equals(KeyCode.ENTER))
-            {
-                OnDataSend(notification);
+            if (e.getCode().equals(KeyCode.ENTER)) {
+                onDataSend(notification);
             }
         });
 
         Button send = new Button("Send");
         send.autosize();
         send.setOnAction(e -> {
-            OnDataSend(notification);
+            onDataSend(notification);
         });
 
-        area.setPrefSize(901,200);
+        area.setPrefSize(901, 200);
         area.setLayoutY(30);
         area.setEditable(false);
 
         rooms = house.getRooms().stream().map(Room::toString).collect(Collectors.toList());
-        for (int a=0; a < house.getRooms().size(); a++) {
+        for (int a = 0; a < house.getRooms().size(); a++) {
             int i = a / 4;
             int j = a % 4;
             String name = rooms.get(a);
@@ -103,12 +147,12 @@ public class Main extends Application implements HouseObserver, Logger {
         }
 
 
-        Rectangle rect = new Rectangle(50,50,295,660);
+        Rectangle rect = new Rectangle(50, 50, 295, 660);
         rect.setFill(Color.WHITE);
         informations.getChildren().add(rect);
 
-        grid.add(notification, 0,0);
-        grid.add(send,1,0);
+        grid.add(notification, 0, 0);
+        grid.add(send, 1, 0);
 
         root.getChildren().add(informations);
         root.getChildren().add(grid);
@@ -119,8 +163,9 @@ public class Main extends Application implements HouseObserver, Logger {
         stage.show();
     }
 
-    public void StartHouse() {
-        area.appendText("# Welcome to ConnectedHouseSimulator");
+    private void startHouse() {
+        println("# Welcome to ConnectedHouseSimulator");
+        println("Choose a scenario (1 or 2)");
         final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
         try {
             house = parser.parse("./Back_end/config.json", "./Back_end/state.json");
@@ -131,37 +176,33 @@ public class Main extends Application implements HouseObserver, Logger {
         house.registerLogger(this);
     }
 
-    public void OnDataSend(TextField notification) {
-        command = notification.getText();
+    private void onDataSend(TextField notification) {
+        String command = notification.getText();
         notification.clear();
         System.out.println(command);
-        if (scenarioChoosen == 0) {
-            area.appendText("Choose a scenario (1 or 2");
-            switch (command){
+        if (chosenScenario == 0) {
+            switch (command) {
                 case "1":
-                    scenarioChoosen = 1;
+                    chosenScenario = 1;
                     firstScenario();
                     break;
                 case "2":
-                    scenarioChoosen = 2;
+                    chosenScenario = 2;
                     secondScenario();
                     break;
                 case "EXIT":
-                    if (scenarioChoosen == 1) {
+                    if (chosenScenario == 1) {
                         endFirstScenario();
-                    }
-                    else {
-                        endSecondScenarion();
+                    } else {
+                        endSecondScenario();
                     }
                 default:
                     break;
             }
-        }
-        else {
+        } else {
             house.sendCommand(command);
         }
     }
-
 
     public void update() {
         String name = house.getPosition().toString();
@@ -178,56 +219,8 @@ public class Main extends Application implements HouseObserver, Logger {
             rectangle.setFill(Color.BLUE);
         }
     }
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-
-    public static void firstScenario() {
-        println("# Scenario 1 : Waking up in the bed");
-        house.moveTo(BEDROOM);
-        println("## Some time before the user wakes up..");
-        new SoonWakeUpRoutine().call(house);
-        //house.broadcast(new SoonWakeUpTime());
-        println("## Now the user must wake up.");
-        // TODO Put in a configurable WakeUpRoutine ?
-        house.findRoom(BEDROOM).sendToItems("trigger_alarm");
-        println("-- You wake up in your bedroom. What do you do ?");
-    }
-
-    public static void endFirstScenario() {
-        if (house.getPosition() != GARAGE) {
-            println("## The user moves to the garage to go to work");
-            house.moveTo(GARAGE);
-        }
-        println("## User enters his car");
-        println("## Using his smartphone from his car, he opens the garage door.");
-        house.findRoom(GARAGE).sendToItems("open");
-        println("## His application allows him to completely lock the house from his car, as he drives away.");
-        house.findRoom(GARAGE).sendToItems("lock");
-        house.sendToItems("lock");
-    }
-
-    public static void secondScenario() {
-        println("# Scenario 2 : Arriving home from work");
-        house.moveTo(GARAGE);
-        println("-- You are in your garage after having returned from work. What do you do ?");
-    }
-
-    private static void endSecondScenarion() {
-        if (house.getPosition() != BEDROOM) {
-            println("## The user needs to sleep and goes to the bedroom to do so.");
-            house.moveTo(BEDROOM);
-        }
-        println("## He uses his smartphone application to completely lock the house from his bed.");
-        house.sendToItems("lock");
-    }
 
     public void log(String input) {
         area.appendText(input + "\n");
-    }
-
-    public static void println(String x) {
-        area.appendText(x);
     }
 }
