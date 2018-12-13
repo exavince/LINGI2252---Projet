@@ -1,7 +1,7 @@
 {
   "ROOM": ["BEDROOM","KITCHEN","LIVING_ROOM","GARAGE"],
   "SENSOR" : {
-    "BEDROOM": ["temperature", "weather"],
+    "BEDROOM": ["temperature", "weather", "movement"],
     "KITCHEN": ["temperature","movement", "microphone"],
     "LIVING_ROOM": ["temperature","movement", "microphone"],
     "GARAGE": ["movement"]

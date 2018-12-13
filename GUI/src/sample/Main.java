@@ -3,11 +3,11 @@ package sample;
 
 import javafx.application.Application;
 
-import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
@@ -16,153 +16,218 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
-import main.ConnectedHouseSimulator;
+import main.*;
+import main.command.Command;
+import main.parametrization.ConnectedHouseJSONParser;
+import main.parametrization.ConnectedHouseParser;
+import main.routine.SoonWakeUpRoutine;
 
-import javax.swing.plaf.synth.SynthTextAreaUI;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
+
+import static main.ConnectedHouseSimulator.*;
+import static main.RoomType.BEDROOM;
+import static main.RoomType.GARAGE;
 
 
-public class Main extends Application implements Runnable {
+public class Main extends Application implements HouseObserver, Logger {
 
     private static String command = "";
-    private static ConnectedHouseSimulator house;
+    private static int scenarioChoosen = 0;
+    private static ConnectedHouse house;
     private static ArrayList<Rectangle> rectangleArrayList = new ArrayList<>();
-    private static ArrayList<String> rooms = new ArrayList<>();
+    private static List<String> rooms = new ArrayList<>();
     private static ArrayList<StackPane> pane = new ArrayList<>();
-    private static Rectangle bedroom;
-    private static Rectangle garage;
-    TextArea area = new TextArea();
+    private static BlockingQueue<String> data = new LinkedBlockingQueue<>();
+    private static TextArea area = new TextArea();
 
     @Override
     public void start(Stage stage) throws Exception{
-        Thread home = new Thread(() -> {
-            StartHouse();
-        });
-        home.start();
+
+        StartHouse();
 
         Group root = new Group();
-        Scene scene = new Scene(root, 603, 903, Color.BLACK);
-
-        for (int i=0; i<4; i++) {
-            for (int j=0; j<4; j++) {
-                if (!house.dataOUT.isEmpty()) {
-                    Rectangle rectangle = new Rectangle(151 * j, 220 + 151 * i, 150, 150);
-                    rectangle.setFill(Color.WHITE);
-                    Text text = new Text();
-                    String name = house.dataOUT.poll();
-                    if (name.equals("GARAGE")) {
-                        garage = rectangle;
-                    }
-                    if (name.equals("BEDROOM")) {
-                        bedroom = rectangle;
-                    }
-                    text.setText(name);
-                    StackPane stack = new StackPane();
-                    stack.setPrefSize(150, 150);
-                    stack.setLayoutX(151 * j);
-                    stack.setLayoutY(220 + 151 * i);
-                    stack.getChildren().addAll(rectangle, text);
-                    root.getChildren().add(stack);
-                    rectangleArrayList.add(rectangle);
-                    pane.add(stack);
-                    rooms.add(name);
-                }
-            }
-        }
-
+        Scene scene = new Scene(root, 903, 903, Color.BLACK);
         GridPane grid = new GridPane();
-        grid.setVgap(4);
-        grid.setHgap(10);
-        grid.setPadding(new Insets(5, 5, 5, 5));
+        grid.setHgap(5);
+        StackPane informations = new StackPane();
+        informations.setLayoutY(240);
+        informations.setLayoutX(605);
 
         TextField notification = new TextField ();
-        notification.setPrefColumnCount(41);
+        notification.setPrefSize(847,20);
         notification.setText("");
-
         notification.setOnKeyPressed(e -> {
             if (e.getCode().equals(KeyCode.ENTER))
             {
                 OnDataSend(notification);
             }
         });
-        grid.add(notification, 0, 0);
-
-
-        grid.add(area, 0, 1);
-        area.setPrefRowCount(10);
-        area.setText("#Welcome to ConnectedHouseSimulator \n" +
-                "Choose a scenario (1 or 2)");
-        area.setEditable(false);
-
 
         Button send = new Button("Send");
+        send.autosize();
         send.setOnAction(e -> {
             OnDataSend(notification);
         });
+
+        area.setPrefSize(901,200);
+        area.setLayoutY(30);
+        area.setEditable(false);
+
+        rooms = house.getRooms().stream().map(Room::toString).collect(Collectors.toList());
+        for (int a=0; a < house.getRooms().size(); a++) {
+            int i = a / 4;
+            int j = a % 4;
+            String name = rooms.get(a);
+            StackPane stack = new StackPane();
+            stack.setPrefSize(150, 150);
+            stack.setLayoutX(151 * j);
+            stack.setLayoutY(240 + 151 * i);
+
+            Rectangle rectangle = new Rectangle(151 * j, 240 + 151 * i, 150, 150);
+            rectangle.setFill(Color.WHITE);
+
+            Text text = new Text();
+            text.setText(name);
+
+            stack.getChildren().addAll(rectangle, text);
+            root.getChildren().add(stack);
+            rectangleArrayList.add(rectangle);
+            pane.add(stack);
+            rooms.add(name);
+        }
+
+
+        Rectangle rect = new Rectangle(50,50,295,660);
+        rect.setFill(Color.WHITE);
+        informations.getChildren().add(rect);
+
+        grid.add(notification, 0,0);
         grid.add(send,1,0);
 
+        root.getChildren().add(informations);
         root.getChildren().add(grid);
+        root.getChildren().add(area);
+
         stage.setTitle("Connected House");
         stage.setScene(scene);
         stage.show();
-        Thread dataProcess = new Thread(() -> {
-            run();
-        });
-        dataProcess.start();
     }
 
     public void StartHouse() {
-        house = new ConnectedHouseSimulator();
-        house.run();
-    }
-
-    public void OnRectangleClick(Rectangle rectangle, String name) {
-        house.dataIN.add("MOVETO");
-        house.dataIN.add(name);
-        for (Rectangle r : rectangleArrayList) {
-            r.setFill(Color.WHITE);
+        area.appendText("# Welcome to ConnectedHouseSimulator");
+        final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
+        try {
+            house = parser.parse("../Back_end/config.json", "../Back_end/state.json");
+        } catch (IOException e) {
+            System.out.println(e);
         }
-        rectangle.setFill(Color.BLUE);
+        house.registerObserver(this);
+        house.registerLogger(this);
     }
 
     public void OnDataSend(TextField notification) {
         command = notification.getText();
-
-        String[] parse = command.split(" ");
-        for (String word: parse) {
-            house.dataIN.add(word);
-        }
-        System.out.println(command);
         notification.clear();
-    }
-
-    public void run() {
-        while (true) {
-            if (!house.dataOUT.isEmpty()) {
-                //area.setText(area.getText() + "\n" + house.dataOUT.poll());
-                String data = house.dataOUT.poll();
-                area.appendText(data + "\n");
-                if (data.contains("Moving to room")) {
-                    String[] parse = data.split("Moving to room ");
-                    System.out.println(parse[1]);
-                    Rectangle rectangle = null;
-                    for (int i=0; i < rooms.size(); i++) {
-                        if (rooms.get(i).equals(parse[1])) {
-                            rectangle = rectangleArrayList.get(i);
-                        }
+        System.out.println(command);
+        if (scenarioChoosen == 0) {
+            area.appendText("Choose a scenario (1 or 2");
+            switch (command){
+                case "1":
+                    scenarioChoosen = 1;
+                    firstScenario();
+                    break;
+                case "2":
+                    scenarioChoosen = 2;
+                    secondScenario();
+                    break;
+                case "EXIT":
+                    if (scenarioChoosen == 1) {
+                        endFirstScenario();
                     }
-                    if (rectangle != null) {
-                        for (Rectangle r : rectangleArrayList) {
-                            r.setFill(Color.WHITE);
-                        }
-                        rectangle.setFill(Color.BLUE);
+                    else {
+                        endSecondScenarion();
                     }
-                }
+                default:
+                    break;
             }
         }
+        else {
+            house.sendCommand(command);
+        }
     }
 
+
+    public void update() {
+        String name = house.getPosition().toString();
+        Rectangle rectangle = null;
+        for (int i = 0; i < house.getRooms().size(); i++) {
+            if (rooms.get(i).equals(name)) {
+                rectangle = rectangleArrayList.get(i);
+            }
+        }
+        if (rectangle != null) {
+            for (Rectangle r : rectangleArrayList) {
+                r.setFill(Color.WHITE);
+            }
+            rectangle.setFill(Color.BLUE);
+        }
+    }
     public static void main(String[] args) {
         launch(args);
+    }
+
+
+    public static void firstScenario() {
+        println("# Scenario 1 : Waking up in the bed");
+        house.moveTo(BEDROOM);
+        println("## Some time before the user wakes up..");
+        new SoonWakeUpRoutine().call(house);
+        //house.broadcast(new SoonWakeUpTime());
+        println("## Now the user must wake up.");
+        // TODO Put in a configurable WakeUpRoutine ?
+        house.findRoom(BEDROOM).sendToItems("trigger_alarm");
+        println("-- You wake up in your bedroom. What do you do ?");
+    }
+
+    public static void endFirstScenario() {
+        if (house.getPosition() != GARAGE) {
+            println("## The user moves to the garage to go to work");
+            house.moveTo(GARAGE);
+        }
+        println("## User enters his car");
+        println("## Using his smartphone from his car, he opens the garage door.");
+        house.findRoom(GARAGE).sendToItems("open");
+        println("## His application allows him to completely lock the house from his car, as he drives away.");
+        house.findRoom(GARAGE).sendToItems("lock");
+        house.sendToItems("lock");
+    }
+
+    public static void secondScenario() {
+        println("# Scenario 2 : Arriving home from work");
+        house.moveTo(GARAGE);
+        println("-- You are in your garage after having returned from work. What do you do ?");
+    }
+
+    private static void endSecondScenarion() {
+        if (house.getPosition() != BEDROOM) {
+            println("## The user needs to sleep and goes to the bedroom to do so.");
+            house.moveTo(BEDROOM);
+        }
+        println("## He uses his smartphone application to completely lock the house from his bed.");
+        house.sendToItems("lock");
+    }
+
+    public void log(String input) {
+        area.appendText(input + "\n");
+    }
+
+    public static void println(String x) {
+        area.appendText(x);
     }
 }
