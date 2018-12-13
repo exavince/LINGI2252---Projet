@@ -123,7 +123,7 @@ public class Main extends Application implements HouseObserver, Logger {
         area.appendText("# Welcome to ConnectedHouseSimulator");
         final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
         try {
-            house = parser.parse("../Back_end/config.json", "../Back_end/state.json");
+            house = parser.parse("./Back_end/config.json", "./Back_end/state.json");
         } catch (IOException e) {
             System.out.println(e);
         }
