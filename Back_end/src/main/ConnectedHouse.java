@@ -84,8 +84,8 @@ public class ConnectedHouse implements ItemSubject {
 
     public void setWeatherStatus(WeatherStatus weatherStatus) {
         this.weatherStatus = weatherStatus;
-        notifyObservers();
         sendToItems("check_weather");
+        notifyObservers();
     }
 
     @Override
@@ -108,7 +108,6 @@ public class ConnectedHouse implements ItemSubject {
 
     public void setMood(HomeMood mood) {
         this.mood = mood;
-        notifyObservers();
         switch (mood) {
             case NORMAL:
                 getRooms().forEach((room -> room.getItems().forEach((item -> {
@@ -126,5 +125,6 @@ public class ConnectedHouse implements ItemSubject {
                 sendToItems(new SoundMessage("Jazz Music starts playing"));
                 break;
         }
+        notifyObservers();
     }
 }
