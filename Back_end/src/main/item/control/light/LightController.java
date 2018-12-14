@@ -23,4 +23,8 @@ public class LightController extends Item {
     public void setIntensity(int value) {
         intensity = value;
     }
+
+    public int getIntensity() {
+        return  intensity;
+    }
 }

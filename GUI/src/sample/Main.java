@@ -21,6 +21,7 @@ import main.HouseObserver;
 import main.Logger;
 import main.Room;
 import main.item.control.heating.HeatingController;
+import main.item.control.light.LightController;
 import main.parametrization.ConnectedHouseJSONParser;
 import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
@@ -264,7 +265,10 @@ public class Main extends Application implements HouseObserver, Logger {
             if (heatingController != null) {
                 informations.append("Desired temperature : ").append(heatingController.getDesiredTemperature()).append("\n");
             }
-            informations.append("Light intensity : ").append(room.getLighting()).append("\n");
+            LightController lightController = (LightController) room.getItem(LightController.class);
+            if (lightController != null) {
+                informations.append("Light intensity : ").append(lightController.getIntensity()).append("\n");
+            }
             informations.append("\n");
         }
         return informations.toString();
