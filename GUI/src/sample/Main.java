@@ -42,8 +42,7 @@ import static main.RoomType.GARAGE;
 
 public class Main extends Application implements HouseObserver {
 
-    private static String command = "";
-    private static int scenarioChoosen = 0;
+    private static int scenarioChosen = 0;
     private static ConnectedHouse house;
     private static ArrayList<Rectangle> rectangleArrayList = new ArrayList<>();
     private static ArrayList<Rectangle> lightArrayList = new ArrayList<>();
@@ -55,7 +54,7 @@ public class Main extends Application implements HouseObserver {
         launch(args);
     }
 
-    public static void firstScenario() {
+    private static void firstScenario() {
         println("# Scenario 1 : Waking up in the bed");
         house.moveTo(BEDROOM);
         println("## Some time before the user wakes up..");
@@ -67,7 +66,7 @@ public class Main extends Application implements HouseObserver {
         println("-- You wake up in your bedroom. What do you do ?");
     }
 
-    public static void endFirstScenario() {
+    private static void endFirstScenario() {
         if (house.getPosition() != GARAGE) {
             println("## The user moves to the garage to go to work");
             house.moveTo(GARAGE);
@@ -81,13 +80,13 @@ public class Main extends Application implements HouseObserver {
         System.exit(0);
     }
 
-    public static void secondScenario() {
+    private static void secondScenario() {
         println("# Scenario 2 : Arriving home from work");
         house.moveTo(GARAGE);
         println("-- You are in your garage after having returned from work. What do you do ?");
     }
 
-    private static void endSecondScenarion() {
+    private static void endSecondScenario() {
         if (house.getPosition() != BEDROOM) {
             println("## The user needs to sleep and goes to the bedroom to do so.");
             house.moveTo(BEDROOM);
@@ -97,13 +96,12 @@ public class Main extends Application implements HouseObserver {
         System.exit(0);
     }
 
-    public static void println(String x) {
+    private static void println(String x) {
         area.appendText(x + "\n");
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
-
+    public void start(Stage stage) {
         startHouse();
 
         Group root = new Group();
@@ -170,7 +168,7 @@ public class Main extends Application implements HouseObserver {
         Rectangle rect = new Rectangle(50, 50, 295, 660);
         rect.setFill(Color.WHITE);
         infoArea.setEditable(false);
-        infoArea.setText(getHouseInformations());
+        infoArea.setText(getHouseInformation());
         informations.getChildren().addAll(rect, infoArea);
 
         grid.add(notification, 0, 0);
@@ -193,13 +191,15 @@ public class Main extends Application implements HouseObserver {
         }
 
         @Override
-        public void flush() {}
+        public void flush() {
+        }
 
         @Override
-        public void close() throws SecurityException {}
+        public void close() throws SecurityException {
+        }
     };
 
-    public void startHouse() {
+    private void startHouse() {
         println("# Welcome to ConnectedHouseSimulator");
         Logger.getLogger(ConnectedHouseJSONParser.class.getName()).addHandler(loggingHandler);
         Logger.getLogger(FeatureModel.class.getName()).addHandler(loggingHandler);
@@ -215,17 +215,17 @@ public class Main extends Application implements HouseObserver {
         println("Choose a scenario (1 or 2)");
     }
 
-    public void onDataSend(TextField notification) {
-        command = notification.getText();
+    private void onDataSend(TextField notification) {
+        String command = notification.getText();
         notification.clear();
-        if (scenarioChoosen == 0) {
+        if (scenarioChosen == 0) {
             switch (command.toUpperCase()) {
                 case "1":
-                    scenarioChoosen = 1;
+                    scenarioChosen = 1;
                     firstScenario();
                     break;
                 case "2":
-                    scenarioChoosen = 2;
+                    scenarioChosen = 2;
                     secondScenario();
                     break;
                 default:
@@ -233,12 +233,12 @@ public class Main extends Application implements HouseObserver {
             }
         } else {
             if (command.toUpperCase().equals("EXIT")) {
-                if (scenarioChoosen == 1) {
+                if (scenarioChosen == 1) {
                     house.sendCommand(command);
                     endFirstScenario();
                 } else {
                     house.sendCommand(command);
-                    endSecondScenarion();
+                    endSecondScenario();
                 }
             }
             println("");
@@ -255,8 +255,7 @@ public class Main extends Application implements HouseObserver {
             }
             if (house.getRooms().get(i).getLighting() != 0) {
                 lightArrayList.get(i).setVisible(true);
-            }
-            else {
+            } else {
                 lightArrayList.get(i).setVisible(false);
             }
         }
@@ -266,28 +265,28 @@ public class Main extends Application implements HouseObserver {
             }
             rectangle.setFill(Color.BLUE);
         }
-        infoArea.setText(getHouseInformations());
+        infoArea.setText(getHouseInformation());
     }
 
     public void log(String input) {
         println(input);
     }
 
-    public String getHouseInformations() {
-        StringBuilder informations = new StringBuilder();
+    private String getHouseInformation() {
+        StringBuilder information = new StringBuilder();
         for (Room room : house.getRooms()) {
-            informations.append(room.toString()).append("\n");
-            informations.append("Temperature : ").append(room.getTemperature()).append("\n");
+            information.append(room.toString()).append("\n");
+            information.append("Temperature : ").append(room.getTemperature()).append("\n");
             HeatingController heatingController = (HeatingController) room.getItem(HeatingController.class);
             if (heatingController != null) {
-                informations.append("Desired temperature : ").append(heatingController.getDesiredTemperature()).append("\n");
+                information.append("[Heating controller] Desired temperature : ").append(heatingController.getDesiredTemperature()).append("\n");
             }
             LightController lightController = (LightController) room.getItem(LightController.class);
             if (lightController != null) {
-                informations.append("Light intensity : ").append(lightController.getIntensity()).append("\n");
+                information.append("[Light controller] Light intensity : ").append(lightController.getIntensity()).append("\n");
             }
-            informations.append("\n");
+            information.append("\n");
         }
-        return informations.toString();
+        return information.toString();
     }
 }
