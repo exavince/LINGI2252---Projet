@@ -27,7 +27,7 @@ public class Room implements ItemSubject {
     /**
      * Adds items to the Event bus. At least one item is required to call the method.
      */
-    public Room attach(Item minimumItem, Item... itemsIn) {
+    public void attach(Item minimumItem, Item... itemsIn) {
         minimumItem.setRoom(this);
         items.add(minimumItem);
 
@@ -35,7 +35,7 @@ public class Room implements ItemSubject {
             item.setRoom(this);
             items.add(item);
         }
-        return this;
+        getHouse().notifyObservers();
     }
 
     public ConnectedHouse getHouse() {
@@ -104,5 +104,10 @@ public class Room implements ItemSubject {
 
     public FeatureModelConfiguration getModelState() {
         return modelConfiguration;
+    }
+
+    public void remove(Class<? extends Item> objectClass) {
+        getItems().removeIf(objectClass::isInstance);
+        getHouse().notifyObservers();
     }
 }

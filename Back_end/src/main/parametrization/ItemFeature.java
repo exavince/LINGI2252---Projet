@@ -41,6 +41,6 @@ public class ItemFeature implements Feature<Room> {
 
     @Override
     public void deactivate(Room target) {
-        target.getItems().removeIf(objectClass::isInstance);
+        target.remove(objectClass);
     }
 }

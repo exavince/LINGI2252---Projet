@@ -49,6 +49,7 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
         boolean valid = true;
         for (String roomName : json.keySet()) {
             Room room = roomFromString(roomName);
+            house.register(room);
             JsonArray features = json.getAsJsonArray(roomName);
             List<FeatureAction<Room>> actions = new ArrayList<>();
             actions.add(new ActivateFeature<>(model.getFeature("Central"), room));
@@ -62,11 +63,11 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
             try {
                 strategy.apply(room.getModelState(), actions);
             } catch (InvalidModelConfigurationException e) {
+                // Game over, but we want to display ALL feature model config errors.
                 LOGGER.log(Level.SEVERE, "=> " + room + " not valid.");
                 valid = false;
             }
             if (valid) {
-                house.register(room);
                 setItemStates(room, stateJson);
             }
         }
