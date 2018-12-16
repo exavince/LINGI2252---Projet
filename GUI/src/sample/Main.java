@@ -3,12 +3,14 @@ package sample;
 
 import framework.FeatureModel;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -21,6 +23,7 @@ import main.Room;
 import main.command.CommandParser;
 import main.item.Item;
 import main.item.control.heating.HeatingController;
+import main.item.control.light.LightController;
 import main.parametrization.ConnectedHouseJSONParser;
 import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
@@ -43,8 +46,8 @@ public class Main extends Application implements HouseObserver {
     private static int scenarioChoosen = 0;
     private static ConnectedHouse house;
     private static ArrayList<Rectangle> rectangleArrayList = new ArrayList<>();
+    private static ArrayList<Rectangle> lightArrayList = new ArrayList<>();
     private static List<String> rooms = new ArrayList<>();
-    private static ArrayList<StackPane> pane = new ArrayList<>();
     private static TextArea area = new TextArea();
     private static TextArea infoArea = new TextArea();
 
@@ -143,13 +146,23 @@ public class Main extends Application implements HouseObserver {
             Rectangle rectangle = new Rectangle(151 * j, 240 + 151 * i, 150, 150);
             rectangle.setFill(Color.WHITE);
 
-            Text text = new Text();
-            text.setText(name);
+            FlowPane flow = new FlowPane();
+            flow.setAlignment(Pos.CENTER);
+            flow.setHgap(100);
 
-            stack.getChildren().addAll(rectangle, text);
+            Rectangle light = new Rectangle(151 * j + 110, 240 + 151 * i + 80, 40, 40);
+            light.setFill(Color.YELLOW);
+            light.setVisible(false);
+
+            Text text = new Text();
+            text.setText(name + "\n");
+
+            flow.getChildren().add(text);
+            flow.getChildren().add(light);
+            stack.getChildren().addAll(rectangle, flow);
             root.getChildren().add(stack);
+            lightArrayList.add(light);
             rectangleArrayList.add(rectangle);
-            pane.add(stack);
             rooms.add(name);
         }
 
@@ -240,6 +253,12 @@ public class Main extends Application implements HouseObserver {
             if (rooms.get(i).equals(name)) {
                 rectangle = rectangleArrayList.get(i);
             }
+            if (house.getRooms().get(i).getLighting() != 0) {
+                lightArrayList.get(i).setVisible(true);
+            }
+            else {
+                lightArrayList.get(i).setVisible(false);
+            }
         }
         if (rectangle != null) {
             for (Rectangle r : rectangleArrayList) {
@@ -263,7 +282,10 @@ public class Main extends Application implements HouseObserver {
             if (heatingController != null) {
                 informations.append("Desired temperature : ").append(heatingController.getDesiredTemperature()).append("\n");
             }
-            informations.append("Light intensity : ").append(room.getLighting()).append("\n");
+            LightController lightController = (LightController) room.getItem(LightController.class);
+            if (lightController != null) {
+                informations.append("Light intensity : ").append(lightController.getIntensity()).append("\n");
+            }
             informations.append("\n");
         }
         return informations.toString();
