@@ -1,6 +1,6 @@
-package main.constraint;
+package framework.constraint;
 
-import main.Room;
+import framework.FeatureModelConfiguration;
 
 public class Not implements Constraint {
     private final Constraint content;
@@ -10,7 +10,7 @@ public class Not implements Constraint {
     }
 
     @Override
-    public boolean interpret(Room context) {
+    public boolean interpret(FeatureModelConfiguration context) {
         return !content.interpret(context);
     }
 

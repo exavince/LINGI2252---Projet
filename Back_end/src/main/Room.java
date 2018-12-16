@@ -1,5 +1,7 @@
 package main;
 
+import framework.FeatureModelConfiguration;
+import framework.FeatureModelConfigurationImpl;
 import main.item.Item;
 import main.item.ItemSubject;
 
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 public class Room implements ItemSubject {
     public static final Room NONE = new Room(RoomType.NOWHERE);
     private final RoomType type;
+    private final FeatureModelConfiguration modelConfiguration = new FeatureModelConfigurationImpl();
     private ArrayList<Item> items = new ArrayList<>();
     private ConnectedHouse house;
     private int temperature = 0;
@@ -97,5 +100,9 @@ public class Room implements ItemSubject {
     @Override
     public String toString() {
         return type.toString();
+    }
+
+    public FeatureModelConfiguration getModelState() {
+        return modelConfiguration;
     }
 }

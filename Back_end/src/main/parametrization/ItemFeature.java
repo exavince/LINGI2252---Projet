@@ -1,9 +1,10 @@
 package main.parametrization;
 
+import framework.Feature;
 import main.Room;
 import main.item.Item;
 
-public class ItemFeature implements Feature {
+public class ItemFeature implements Feature<Room> {
     private final Class<? extends Item> objectClass;
 
     /**
@@ -13,29 +14,29 @@ public class ItemFeature implements Feature {
         this.objectClass = objectClass;
     }
 
-    /**
-     * @return Whether the feature is activated or not
-     */
     @Override
-    public boolean interpret(Room context) {
-        for (Item item : context.getItems()) {
-            if (objectClass.isInstance(item)) return true;
-        }
-        return false;
+    public String toString() {
+        return getName();
     }
 
     @Override
-    public String toString() {
+    public String getName() {
         return objectClass.getSimpleName();
     }
 
     @Override
-    public void enable(Room context) {
-
+    public void activate(Room target) {
+        try {
+            Item item = objectClass.newInstance();
+            target.attach(item);
+        } catch (InstantiationException | IllegalAccessException e) {
+            System.err.println("Could not instantiate item " + objectClass.getSimpleName());
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void disable(Room context) {
-
+    public void deactivate(Room target) {
+        target.getItems().removeIf(objectClass::isInstance);
     }
 }

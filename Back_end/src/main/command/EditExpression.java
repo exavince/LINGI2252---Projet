@@ -1,19 +1,44 @@
 package main.command;
 
+import framework.Feature;
+import framework.FeatureModel;
+import framework.InvalidModelConfigurationException;
+import framework.editing.ActivateFeature;
+import framework.editing.DeactivateFeature;
+import framework.editing.FeatureAction;
+import framework.editing.FeatureEditingStrategy;
+import framework.editing.TryOnCopyStrategy;
 import main.ConnectedHouse;
+import main.ConnectedHouseFeatureModel;
 import main.Room;
 import main.RoomType;
-import main.parametrization.Feature;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EditExpression implements Command {
     private final RoomType roomType;
-    private final Feature feature;
-    private final boolean mode;
+    private final List<String> actionTokens;
+    private final FeatureModel<Room> model = ConnectedHouseFeatureModel.getInstance();
+    private final FeatureEditingStrategy strategy = new TryOnCopyStrategy(ConnectedHouseFeatureModel.getInstance());
 
-    public EditExpression(RoomType roomType, Feature feature, boolean mode) {
+    public EditExpression(RoomType roomType, List<String> actionTokens) {
         this.roomType = roomType;
-        this.feature = feature;
-        this.mode = mode;
+        this.actionTokens = actionTokens;
+    }
+
+    private FeatureAction<Room> tokenToAction(Room room, String token) {
+        Feature<Room> feature = model.getFeature(token.substring(1));
+        if (feature == null) {
+            throw new UnsupportedOperationException("Unknown feature in " + token);
+        }
+        if (token.startsWith("+")) {
+            return new ActivateFeature<>(feature, room);
+        } else if (token.startsWith("-")) {
+            return new DeactivateFeature<>(feature, room);
+        } else {
+            throw new UnsupportedOperationException("Unknown editing operation " + token);
+        }
     }
 
     @Override
@@ -21,15 +46,13 @@ public class EditExpression implements Command {
         if (roomType == RoomType.GLOBAL) {
             throw new UnsupportedOperationException("Cannot edit globally");
         }
-        for (Room room : house.getRooms()) {
-            if (room.getType() == roomType) {
-                if (mode) {
-                    feature.enable(room);
-                } else {
-                    feature.disable(room);
-                }
-                // TODO Check if valid afterwards
-            }
+        Room room = house.findRoom(roomType);
+        List<FeatureAction<Room>> actions = actionTokens.stream().map(token -> tokenToAction(room, token)).collect(Collectors.toList());
+        try {
+            strategy.apply(room.getModelState(), actions);
+        } catch (InvalidModelConfigurationException e) {
+            e.printStackTrace();
+            throw new UnsupportedOperationException("Invalid edit command");
         }
     }
 }

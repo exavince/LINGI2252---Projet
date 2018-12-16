@@ -1,6 +1,6 @@
-package main.constraint;
+package framework.constraint;
 
-import main.Room;
+import framework.FeatureModelConfiguration;
 
 public class DoubleImplication implements Constraint {
     private final Constraint left;
@@ -12,7 +12,7 @@ public class DoubleImplication implements Constraint {
     }
 
     @Override
-    public boolean interpret(Room context) {
+    public boolean interpret(FeatureModelConfiguration context) {
         return new LogicalAnd(new Implication(left, right), new Implication(right, left)).interpret(context);
     }
 

@@ -4,8 +4,10 @@ import main.RoomType;
 import main.WeatherStatus;
 import main.routine.HomeMood;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Grammar:
@@ -22,7 +24,7 @@ public class CommandParser {
     private final Iterator<String> input;
 
     public CommandParser(String expression) {
-        this.input = Arrays.asList(expression.split(" ")).iterator();
+        this.input = Arrays.asList(expression.toUpperCase().split(" ")).iterator();
     }
 
     public Command parse() {
@@ -40,20 +42,21 @@ public class CommandParser {
                 return move();
             case "SAY":
                 return say();
-                /*
             case "EDIT":
                 return edit();
-                */
             default:
                 throw new UnsupportedOperationException("Unknown command: " + token);
         }
     }
 
-    /*
     private EditExpression edit() {
-        return new EditExpression();
+        RoomType room = room();
+        List<String> remainingTokens = new ArrayList<>();
+        while (input.hasNext()) {
+            remainingTokens.add(input.next());
+        }
+        return new EditExpression(room, remainingTokens);
     }
-    */
 
     private GetExpression get() {
         return new GetExpression(room(), attribute());

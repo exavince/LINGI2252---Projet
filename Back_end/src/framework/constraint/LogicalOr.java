@@ -1,6 +1,6 @@
-package main.constraint;
+package framework.constraint;
 
-import main.Room;
+import framework.FeatureModelConfiguration;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,7 @@ public class LogicalOr implements Constraint {
     }
 
     @Override
-    public boolean interpret(Room context) {
+    public boolean interpret(FeatureModelConfiguration context) {
         for (Constraint expr : constraints) {
             if (expr.interpret(context)) return true;
         }

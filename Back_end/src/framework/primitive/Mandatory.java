@@ -1,9 +1,9 @@
-package main.primitive;
+package framework.primitive;
 
-import main.constraint.Constraint;
-import main.constraint.DoubleImplication;
-import main.constraint.LogicalAnd;
-import main.parametrization.Feature;
+import framework.Feature;
+import framework.constraint.Constraint;
+import framework.constraint.DoubleImplication;
+import framework.constraint.LogicalAnd;
 
 import java.util.stream.Collectors;
 

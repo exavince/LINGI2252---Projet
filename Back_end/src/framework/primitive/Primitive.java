@@ -1,8 +1,8 @@
-package main.primitive;
+package framework.primitive;
 
-import main.Room;
-import main.constraint.Constraint;
-import main.parametrization.Feature;
+import framework.Feature;
+import framework.FeatureModelConfiguration;
+import framework.constraint.Constraint;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +34,7 @@ public abstract class Primitive implements Constraint {
 
     // TODO cache the propositional formula
     @Override
-    public final boolean interpret(Room context) {
+    public final boolean interpret(FeatureModelConfiguration context) {
         return getPropositionalFormula().interpret(context);
     }
 }

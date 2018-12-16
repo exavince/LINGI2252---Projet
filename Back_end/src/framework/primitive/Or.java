@@ -1,9 +1,9 @@
-package main.primitive;
+package framework.primitive;
 
-import main.constraint.Constraint;
-import main.constraint.DoubleImplication;
-import main.constraint.LogicalOr;
-import main.parametrization.Feature;
+import framework.Feature;
+import framework.constraint.Constraint;
+import framework.constraint.DoubleImplication;
+import framework.constraint.LogicalOr;
 
 import java.util.ArrayList;
 

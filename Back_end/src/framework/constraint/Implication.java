@@ -1,6 +1,6 @@
-package main.constraint;
+package framework.constraint;
 
-import main.Room;
+import framework.FeatureModelConfiguration;
 
 public class Implication implements Constraint {
     private final Constraint left;
@@ -12,7 +12,7 @@ public class Implication implements Constraint {
     }
 
     @Override
-    public boolean interpret(Room context) {
+    public boolean interpret(FeatureModelConfiguration context) {
         return new LogicalOr(new Not(left), right).interpret(context);
     }
 
