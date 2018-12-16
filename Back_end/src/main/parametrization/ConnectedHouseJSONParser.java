@@ -3,15 +3,8 @@ package main.parametrization;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import framework.Feature;
-import framework.FeatureModel;
 import framework.InvalidModelConfigurationException;
-import framework.editing.ActivateFeature;
-import framework.editing.FeatureAction;
-import framework.editing.FeatureEditingStrategy;
-import framework.editing.TryOnCopyStrategy;
 import main.ConnectedHouse;
-import main.ConnectedHouseFeatureModel;
 import main.Room;
 import main.RoomType;
 import main.item.Item;
@@ -30,54 +23,43 @@ import static java.lang.System.exit;
 
 public class ConnectedHouseJSONParser implements ConnectedHouseParser {
     private static final Logger LOGGER = Logger.getLogger(ConnectedHouseJSONParser.class.getName());
-    private final FeatureEditingStrategy strategy = new TryOnCopyStrategy(ConnectedHouseFeatureModel.getInstance());
-    private final FeatureModel<Room> model = ConnectedHouseFeatureModel.getInstance();
-    private ConnectedHouseBuilder house;
+    private static ConnectedHouseParser INSTANCE = null;
+
+    private ConnectedHouseJSONParser() {
+    }
+
+    public static ConnectedHouseParser getInstance() {
+        if (INSTANCE == null) INSTANCE = new ConnectedHouseJSONParser();
+        return INSTANCE;
+    }
 
     @Override
     public ConnectedHouse parse(String inputConfigFile, String inputStateFile) throws FileNotFoundException {
-        this.house = new ConnectedHouseBuilder();
+        ConnectedHouseBuilder houseBuilder = new ConnectedHouseBuilder();
         JsonParser gson = new JsonParser();
         JsonObject json = (JsonObject) gson.parse(new FileReader(inputConfigFile));
         JsonObject stateJson = (JsonObject) gson.parse(new FileReader(inputStateFile));
-        createRooms(json, stateJson);
-
-        return this.house.getHouse();
-    }
-
-    private void createRooms(JsonObject json, JsonObject stateJson) {
         boolean valid = true;
         for (String roomName : json.keySet()) {
-            Room room = roomFromString(roomName);
-            house.register(room);
             JsonArray features = json.getAsJsonArray(roomName);
-            List<FeatureAction<Room>> actions = new ArrayList<>();
-            actions.add(new ActivateFeature<>(model.getFeature("Central"), room));
+            List<String> featureNames = new ArrayList<>(features.size());
             for (int i = 0; i < features.size(); i++) {
-                String featureName = features.get(i).getAsString();
-                Feature<Room> feature = model.getFeature(featureName);
-                if (feature == null)
-                    throw new RuntimeException("Feature " + featureName + " not present in feature model.");
-                actions.add(new ActivateFeature<>(feature, room));
+                featureNames.add(features.get(i).getAsString());
             }
             try {
-                strategy.apply(room.getModelState(), actions);
+                houseBuilder.addRoom(RoomType.valueOf(roomName), featureNames);
             } catch (InvalidModelConfigurationException e) {
                 // Game over, but we want to display ALL feature model config errors.
-                LOGGER.log(Level.SEVERE, "=> " + room + " not valid.");
+                LOGGER.log(Level.SEVERE, "=> " + roomName + " not valid.");
                 valid = false;
-            }
-            if (valid) {
-                setItemStates(room, stateJson);
             }
         }
         if (!valid) exit(1);
-    }
+        ConnectedHouse house = houseBuilder.getHouse();
+        house.getRooms().forEach(r -> setItemStates(r, stateJson));
 
-    private Room roomFromString(String roomName) {
-        return new Room(RoomType.valueOf(roomName));
+        return house;
     }
-
 
     private void setItemStates(Room room, JsonObject json) {
         JsonObject temp = json.getAsJsonObject(room.getType().toString());

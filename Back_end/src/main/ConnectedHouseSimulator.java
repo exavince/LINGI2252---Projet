@@ -18,7 +18,7 @@ public class ConnectedHouseSimulator {
 
     public static void main(String[] args) throws IOException {
         println("# Welcome to ConnectedHouseSimulator");
-        final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
+        final ConnectedHouseParser parser = ConnectedHouseJSONParser.getInstance();
         house = parser.parse("./Back_end/config.json", "./Back_end/state.json");
         println("Choose a scenario (1 or 2)");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

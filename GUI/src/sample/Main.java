@@ -205,7 +205,7 @@ public class Main extends Application implements HouseObserver {
         Logger.getLogger(FeatureModel.class.getName()).addHandler(loggingHandler);
         Logger.getLogger(Item.class.getName()).addHandler(loggingHandler);
         Logger.getLogger(CommandParser.class.getName()).addHandler(loggingHandler);
-        final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
+        final ConnectedHouseParser parser = ConnectedHouseJSONParser.getInstance();
         try {
             house = parser.parse("./Back_end/config.json", "./Back_end/state.json");
         } catch (IOException e) {

@@ -14,7 +14,6 @@ public abstract class FeatureModel<T> {
     private final List<Feature<T>> features = new ArrayList<>();
     private final List<Primitive> featureDiagram = new ArrayList<>();
     private final List<Constraint> crossTreeConstraints = new ArrayList<>();
-    // TODO Based on a string, one should be able to get the feature for command line
 
     @SafeVarargs
     protected final void addFeatures(Feature<T>... featuresIn) {
@@ -30,8 +29,11 @@ public abstract class FeatureModel<T> {
     }
 
     public final Feature<T> getFeature(String name) {
-        // TODO Error if feature name does not make sense in our model ?
-        return features.stream().filter(feature -> feature.getName().toUpperCase().equals(name.toUpperCase())).findFirst().orElse(null);
+        Feature<T> feature = features.stream().filter(f -> f.getName().toUpperCase().equals(name.toUpperCase())).findFirst().orElse(null);
+        if (feature == null) {
+            LOGGER.log(Level.SEVERE, "Feature " + name + " not present in feature model.");
+        }
+        return feature;
     }
 
     /**
