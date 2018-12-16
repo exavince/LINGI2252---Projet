@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Grammar:
@@ -21,6 +22,7 @@ import java.util.List;
  * <ROOM> ::= KITCHEN, BEDROOM, ...
  */
 public class CommandParser {
+    static final Logger LOGGER = Logger.getLogger(CommandParser.class.getName());
     private final Iterator<String> input;
 
     public CommandParser(String expression) {

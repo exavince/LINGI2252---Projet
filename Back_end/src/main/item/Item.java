@@ -3,7 +3,11 @@ package main.item;
 import main.ConnectedHouse;
 import main.Room;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public abstract class Item {
+    private static final Logger LOGGER = Logger.getLogger(Item.class.getName());
     private Room room;
 
     abstract public void onEvent(Object message);
@@ -25,6 +29,6 @@ public abstract class Item {
 
     protected void println(String value) {
         String info = "[" + this.getClass().getSimpleName() + " Room:" + getRoom().getType() + " House:" + getHouse() + "] " + value;
-        getHouse().log(info);
+        LOGGER.log(Level.INFO, info);
     }
 }

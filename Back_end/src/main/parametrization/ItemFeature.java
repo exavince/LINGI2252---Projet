@@ -4,7 +4,11 @@ import framework.Feature;
 import main.Room;
 import main.item.Item;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class ItemFeature implements Feature<Room> {
+    private static final Logger LOGGER = Logger.getLogger(ItemFeature.class.getName());
     private final Class<? extends Item> objectClass;
 
     /**
@@ -30,7 +34,7 @@ public class ItemFeature implements Feature<Room> {
             Item item = objectClass.newInstance();
             target.attach(item);
         } catch (InstantiationException | IllegalAccessException e) {
-            System.err.println("Could not instantiate item " + objectClass.getSimpleName());
+            LOGGER.log(Level.SEVERE, "Could not instantiate item " + objectClass.getSimpleName());
             e.printStackTrace();
         }
     }

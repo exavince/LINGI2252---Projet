@@ -22,7 +22,7 @@ public class EditExpression implements Command {
     private final FeatureModel<Room> model = ConnectedHouseFeatureModel.getInstance();
     private final FeatureEditingStrategy strategy = new TryOnCopyStrategy(ConnectedHouseFeatureModel.getInstance());
 
-    public EditExpression(RoomType roomType, List<String> actionTokens) {
+    EditExpression(RoomType roomType, List<String> actionTokens) {
         this.roomType = roomType;
         this.actionTokens = actionTokens;
     }

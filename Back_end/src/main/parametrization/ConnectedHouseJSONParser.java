@@ -23,10 +23,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.lang.System.exit;
 
 public class ConnectedHouseJSONParser implements ConnectedHouseParser {
+    private static final Logger LOGGER = Logger.getLogger(ConnectedHouseJSONParser.class.getName());
     private final FeatureEditingStrategy strategy = new TryOnCopyStrategy(ConnectedHouseFeatureModel.getInstance());
     private final FeatureModel<Room> model = ConnectedHouseFeatureModel.getInstance();
     private ConnectedHouseBuilder house;
@@ -59,7 +62,7 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
             try {
                 strategy.apply(room.getModelState(), actions);
             } catch (InvalidModelConfigurationException e) {
-                System.err.println("=> " + room + " not valid.");
+                LOGGER.log(Level.SEVERE, "=> " + room + " not valid.");
                 valid = false;
             }
             if (valid) {
@@ -81,26 +84,29 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
             if (temp.get("speaker") != null) {
                 Item item = room.getItem(ConnectedSpeakers.class);
                 if (item == null) {
-                    System.err.println("Speaker not in Room " + room);
+                    LOGGER.log(Level.WARNING, "Speaker not in Room " + room);
+                } else {
+                    ConnectedSpeakers speakers = (ConnectedSpeakers) item;
+                    speakers.setIntensity(temp.get("speaker").getAsInt());
                 }
-                ConnectedSpeakers speakers = (ConnectedSpeakers) item;
-                speakers.setIntensity(temp.get("speaker").getAsInt());
             }
             if (temp.get("light") != null) {
                 Item item = room.getItem(LightController.class);
                 if (item == null) {
-                    System.err.println("LightController not in Room " + room);
+                    LOGGER.log(Level.WARNING, "LightController not in Room " + room);
+                } else {
+                    LightController light = (LightController) item;
+                    light.setIntensity(temp.get("light").getAsInt());
                 }
-                LightController light = (LightController) item;
-                light.setIntensity(temp.get("light").getAsInt());
             }
             if (temp.get("heating") != null) {
                 Item item = room.getItem(HeatingController.class);
                 if (item == null) {
-                    System.err.println("HeatingController not in Room " + room);
+                    LOGGER.log(Level.WARNING, "HeatingController not in Room " + room);
+                } else {
+                    HeatingController heating = (HeatingController) item;
+                    heating.setDesiredTemperature(temp.get("heating").getAsInt());
                 }
-                HeatingController heating = (HeatingController) item;
-                heating.setDesiredTemperature(temp.get("heating").getAsInt());
             }
         }
     }

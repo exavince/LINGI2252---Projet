@@ -6,6 +6,8 @@ import main.RoomType;
 import main.item.Item;
 import main.item.control.heating.HeatingController;
 
+import java.util.logging.Level;
+
 public class GetExpression implements ValueExpression, Command {
     private final RoomType roomType;
     private final String attribute;
@@ -53,6 +55,6 @@ public class GetExpression implements ValueExpression, Command {
 
     @Override
     public void interpret(ConnectedHouse house) {
-        house.log(this.evaluate(house).toString());
+        CommandParser.LOGGER.log(Level.INFO, this.evaluate(house).toString());
     }
 }

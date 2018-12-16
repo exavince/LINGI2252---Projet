@@ -6,8 +6,11 @@ import framework.primitive.Primitive;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class FeatureModel<T> {
+    private static final Logger LOGGER = Logger.getLogger(FeatureModel.class.getName());
     private final List<Feature<T>> features = new ArrayList<>();
     private final List<Primitive> featureDiagram = new ArrayList<>();
     private final List<Constraint> crossTreeConstraints = new ArrayList<>();
@@ -40,14 +43,14 @@ public abstract class FeatureModel<T> {
         for (Constraint rule : featureDiagram) {
             String output = "[Feature diagram]\t" + rule + ": ";
             if (!rule.interpret(context)) {
-                System.err.println(output + "NOT VALID");
+                LOGGER.log(Level.SEVERE, output + "NOT VALID");
                 valid = false;
             }
         }
         for (Constraint rule : crossTreeConstraints) {
             String output = "[Cross-tree constraint]\t" + rule + ": ";
             if (!rule.interpret(context)) {
-                System.err.println(output + "NOT VALID");
+                LOGGER.log(Level.SEVERE, output + "NOT VALID");
                 valid = false;
             }
         }

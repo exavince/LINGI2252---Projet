@@ -8,6 +8,8 @@ import main.item.Item;
 import main.item.control.heating.HeatingController;
 import main.routine.HomeMood;
 
+import java.util.logging.Level;
+
 public class SetExpression implements Command {
     private final RoomType roomType;
     private final String attribute;
@@ -25,7 +27,7 @@ public class SetExpression implements Command {
             switch (attribute) {
                 case "WEATHER":
                     house.setWeatherStatus((WeatherStatus) value.evaluate(house));
-                    System.out.println("-- Set global attribute " + attribute + " with success.");
+                    CommandParser.LOGGER.log(Level.INFO, "-- Set global attribute " + attribute + " with success.");
                     break;
                 case "MOOD":
                     house.setMood((HomeMood) value.evaluate(house));
@@ -60,6 +62,6 @@ public class SetExpression implements Command {
                 }
             }
         }
-        house.log("-- Set attribute " + attribute + " of room " + roomType + " with success.");
+        CommandParser.LOGGER.log(Level.INFO, "-- Set attribute " + attribute + " of room " + roomType + " with success.");
     }
 }

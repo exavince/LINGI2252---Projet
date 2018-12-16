@@ -1,6 +1,7 @@
 package sample;
 
 
+import framework.FeatureModel;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -16,8 +17,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import main.ConnectedHouse;
 import main.HouseObserver;
-import main.Logger;
 import main.Room;
+import main.command.CommandParser;
+import main.item.Item;
 import main.item.control.heating.HeatingController;
 import main.parametrization.ConnectedHouseJSONParser;
 import main.parametrization.ConnectedHouseParser;
@@ -26,13 +28,16 @@ import main.routine.SoonWakeUpRoutine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static main.RoomType.BEDROOM;
 import static main.RoomType.GARAGE;
 
 
-public class Main extends Application implements HouseObserver, Logger {
+public class Main extends Application implements HouseObserver {
 
     private static String command = "";
     private static int scenarioChoosen = 0;
@@ -167,23 +172,39 @@ public class Main extends Application implements HouseObserver, Logger {
         stage.show();
     }
 
+    private final Handler loggingHandler = new Handler() {
+        @Override
+        public void publish(LogRecord record) {
+            // TODO Errors in red ?
+            println(record.getMessage());
+        }
+
+        @Override
+        public void flush() {}
+
+        @Override
+        public void close() throws SecurityException {}
+    };
+
     public void startHouse() {
         println("# Welcome to ConnectedHouseSimulator");
+        Logger.getLogger(ConnectedHouseJSONParser.class.getName()).addHandler(loggingHandler);
+        Logger.getLogger(FeatureModel.class.getName()).addHandler(loggingHandler);
+        Logger.getLogger(Item.class.getName()).addHandler(loggingHandler);
+        Logger.getLogger(CommandParser.class.getName()).addHandler(loggingHandler);
         final ConnectedHouseParser parser = new ConnectedHouseJSONParser();
         try {
             house = parser.parse("./Back_end/config.json", "./Back_end/state.json");
         } catch (IOException e) {
-            System.out.println(e);
+            System.err.println(e);
         }
         house.registerObserver(this);
-        house.registerLogger(this);
         println("Choose a scenario (1 or 2)");
     }
 
     public void onDataSend(TextField notification) {
         command = notification.getText();
         notification.clear();
-        System.out.println(command);
         if (scenarioChoosen == 0) {
             switch (command.toUpperCase()) {
                 case "1":
@@ -198,21 +219,17 @@ public class Main extends Application implements HouseObserver, Logger {
                     break;
             }
         } else {
-            try {
-                if (command.toUpperCase().equals("EXIT")) {
-                    if (scenarioChoosen == 1) {
-                        house.sendCommand(command.toUpperCase());
-                        endFirstScenario();
-                    } else {
-                        house.sendCommand(command.toUpperCase());
-                        endSecondScenarion();
-                    }
+            if (command.toUpperCase().equals("EXIT")) {
+                if (scenarioChoosen == 1) {
+                    house.sendCommand(command);
+                    endFirstScenario();
+                } else {
+                    house.sendCommand(command);
+                    endSecondScenarion();
                 }
-                println("");
-                house.sendCommand(command.toUpperCase());
-            } catch (Exception e) {
-                println("The command " + command + " doesn't exist");
             }
+            println("");
+            house.sendCommand(command);
         }
     }
 

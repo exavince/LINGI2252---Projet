@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class ConnectedHouse implements ItemSubject {
     private final ArrayList<HouseObserver> observers = new ArrayList<>();
-    private final ArrayList<Logger> loggers = new ArrayList<>();
     private final ArrayList<Room> rooms = new ArrayList<>();
     private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
     private RoomType position = RoomType.NOWHERE;
@@ -40,14 +39,6 @@ public class ConnectedHouse implements ItemSubject {
         observers.add(o);
     }
 
-    public void registerLogger(Logger o) {
-        loggers.add(o);
-    }
-
-    public void log(String message) {
-        loggers.forEach(l -> l.log(message));
-    }
-
     void notifyObservers() {
         observers.forEach(HouseObserver::update);
     }
@@ -65,17 +56,10 @@ public class ConnectedHouse implements ItemSubject {
     }
 
     public void moveTo(RoomType room) {
-        if (this.position == room) System.err.println("User was already in the room " + room);
-        else {
-            String info = "## Moving to room " + room;
-            this.log(info);
-
-
-            RoomType oldRoom = this.position;
-            this.position = room;
-            findRoom(oldRoom).sendToItems("movement_detected");
-            findRoom(this.position).sendToItems("movement_detected");
-        }
+        RoomType oldRoom = this.position;
+        this.position = room;
+        findRoom(oldRoom).sendToItems("movement_detected");
+        findRoom(this.position).sendToItems("movement_detected");
     }
 
     public WeatherStatus getWeatherStatus() {
