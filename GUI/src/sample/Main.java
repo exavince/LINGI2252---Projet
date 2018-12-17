@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -54,19 +55,10 @@ public class Main extends Application implements HouseObserver {
     private final Handler loggingHandler = new Handler() {
         @Override
         public void publish(LogRecord record) {
-            // TODO Severe in red, Warning in orange ?
-            switch (record.getLevel().getName()) {
-                case "INFO":
-                    println(record.getMessage());
-
-                    break;
-                case "WARNING":
-                    printlnOrange(record.getMessage());
-                    break;
-                case "SEVERE":
-                    printlnRed(record.getMessage());
-                    break;
-            }
+            Level level = record.getLevel();
+            if (level == Level.WARNING) println(Color.DARKORANGE, record.getMessage());
+            else if (level == Level.SEVERE) println(Color.RED, record.getMessage());
+            else println(record.getMessage());
         }
 
         @Override
@@ -127,26 +119,13 @@ public class Main extends Application implements HouseObserver {
     }
 
     private static void println(String x) {
-        Text text = new Text();
-        text.setFont(Font.font(15));
-        text.setText(x + "\n");
-        area.getChildren().add(text);
-        scrollPane.vvalueProperty().bind(area.heightProperty());
+        println(Color.BLACK, x);
     }
 
-    private static void printlnOrange(String x) {
+    private static void println(Color color, String x) {
         Text text = new Text();
         text.setFont(Font.font(15));
-        text.setFill(Color.DARKORANGE);
-        text.setText(x + "\n");
-        area.getChildren().add(text);
-        scrollPane.vvalueProperty().bind(area.heightProperty());
-    }
-
-    private static void printlnRed(String x) {
-        Text text = new Text();
-        text.setFont(Font.font(15));
-        text.setFill(Color.RED);
+        text.setFill(color);
         text.setText(x + "\n");
         area.getChildren().add(text);
         scrollPane.vvalueProperty().bind(area.heightProperty());
