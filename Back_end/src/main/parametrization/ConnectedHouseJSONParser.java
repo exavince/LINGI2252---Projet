@@ -7,7 +7,6 @@ import framework.InvalidModelConfigurationException;
 import main.ConnectedHouse;
 import main.Room;
 import main.RoomType;
-import main.item.Item;
 import main.item.control.heating.HeatingController;
 import main.item.control.light.LightController;
 import main.item.sounds.ConnectedSpeakers;
@@ -65,30 +64,27 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
         JsonObject temp = json.getAsJsonObject(room.getType().toString());
         if (temp != null) {
             if (temp.get("speaker") != null) {
-                Item item = room.getItem(ConnectedSpeakers.class);
+                ConnectedSpeakers item = room.getItem(ConnectedSpeakers.class);
                 if (item == null) {
                     LOGGER.log(Level.WARNING, "Speaker not in Room " + room);
                 } else {
-                    ConnectedSpeakers speakers = (ConnectedSpeakers) item;
-                    speakers.setIntensity(temp.get("speaker").getAsInt());
+                    item.setIntensity(temp.get("speaker").getAsInt());
                 }
             }
             if (temp.get("light") != null) {
-                Item item = room.getItem(LightController.class);
+                LightController item = room.getItem(LightController.class);
                 if (item == null) {
                     LOGGER.log(Level.WARNING, "LightController not in Room " + room);
                 } else {
-                    LightController light = (LightController) item;
-                    light.setIntensity(temp.get("light").getAsInt());
+                    item.setIntensity(temp.get("light").getAsInt());
                 }
             }
             if (temp.get("heating") != null) {
-                Item item = room.getItem(HeatingController.class);
+                HeatingController item = room.getItem(HeatingController.class);
                 if (item == null) {
                     LOGGER.log(Level.WARNING, "HeatingController not in Room " + room);
                 } else {
-                    HeatingController heating = (HeatingController) item;
-                    heating.setDesiredTemperature(temp.get("heating").getAsInt());
+                    item.setDesiredTemperature(temp.get("heating").getAsInt());
                 }
             }
         }

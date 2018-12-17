@@ -11,7 +11,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -23,6 +25,8 @@ import main.HouseObserver;
 import main.Room;
 import main.command.CommandParser;
 import main.item.Item;
+import main.item.control.door.DoorController;
+import main.item.control.door.GarageDoorController;
 import main.item.control.heating.HeatingController;
 import main.item.control.light.LightController;
 import main.parametrization.ConnectedHouseJSONParser;
@@ -32,7 +36,7 @@ import main.routine.SoonWakeUpRoutine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
+import java.util.function.Function;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -40,6 +44,7 @@ import java.util.stream.Collectors;
 
 import static main.RoomType.BEDROOM;
 import static main.RoomType.GARAGE;
+import static main.RoomType.NOWHERE;
 
 public class Main extends Application implements HouseObserver {
 
@@ -60,7 +65,7 @@ public class Main extends Application implements HouseObserver {
                     println(record.getMessage());
 
                     break;
-                case "WARING":
+                case "WARNING":
                     printlnOrange(record.getMessage());
                     break;
                 case "SEVERE":
@@ -102,6 +107,7 @@ public class Main extends Application implements HouseObserver {
         println("## User enters his car");
         println("## Using his smartphone from his car, he opens the garage door.");
         house.findRoom(GARAGE).sendToItems("open");
+        house.moveTo(NOWHERE);
         println("## His application allows him to completely lock the house from his car, as he drives away.");
         house.findRoom(GARAGE).sendToItems("lock");
         house.sendToItems("lock");
@@ -110,6 +116,7 @@ public class Main extends Application implements HouseObserver {
 
     private static void secondScenario() {
         println("# Scenario 2 : Arriving home from work");
+        house.findRoom(GARAGE).sendToItems("open");
         house.moveTo(GARAGE);
         println("-- You are in your garage after having returned from work. What do you do ?");
     }
@@ -187,7 +194,7 @@ public class Main extends Application implements HouseObserver {
 
         log.setMaxSize(1001, 200);
         log.setLayoutY(30);
-        Rectangle re = new Rectangle(1001,200);
+        Rectangle re = new Rectangle(1001, 200);
         re.setFill(Color.WHITE);
         area.setPrefSize(1001, 200);
         log.getChildren().addAll(re, scrollPane);
@@ -323,16 +330,20 @@ public class Main extends Application implements HouseObserver {
             information.append(room.toString()).append("\n");
             information.append("Lighting: ").append(room.getLighting()).append("\n");
             information.append("Temperature: ").append(room.getTemperature()).append("\n");
-            HeatingController heatingController = (HeatingController) room.getItem(HeatingController.class);
-            if (heatingController != null) {
-                information.append("[Heating controller] Desired temperature: ").append(heatingController.getDesiredTemperature()).append("\n");
-            }
-            LightController lightController = (LightController) room.getItem(LightController.class);
-            if (lightController != null) {
-                information.append("[Light controller] Light intensity: ").append(lightController.getIntensity()).append("\n");
-            }
+            appendItemAttributeIfInRoom(information, room, HeatingController.class, "Desired temperature", HeatingController::getDesiredTemperature);
+            appendItemAttributeIfInRoom(information, room, LightController.class, "Light intensity", LightController::getIntensity);
+            appendItemAttributeIfInRoom(information, room, DoorController.class, "Locked", DoorController::isLocked);
+            appendItemAttributeIfInRoom(information, room, GarageDoorController.class, "Locked", GarageDoorController::isLocked);
             information.append("\n");
         }
         return information.toString();
+    }
+
+    private <T extends Item> void appendItemAttributeIfInRoom(StringBuilder information, Room room, Class<T> itemClass, String attributeName, Function<T, Object> getter) {
+        T roomItem = room.getItem(itemClass);
+        if (roomItem != null) {
+            information.append("[").append(itemClass.getSimpleName()).append("] ").append(attributeName).append(": ")
+                    .append(getter.apply(roomItem)).append("\n");
+        }
     }
 }

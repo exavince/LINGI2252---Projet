@@ -72,10 +72,10 @@ public class Room implements ItemSubject {
         getHouse().notifyObservers();
     }
 
-    public Item getItem(Class<? extends Item> itemClass) {
+    public <T extends Item> T getItem(Class<T> itemClass) {
         for (Item item : getItems()) {
             if (itemClass.isInstance(item)) {
-                return item;
+                return (T) item;
             }
         }
         return null;

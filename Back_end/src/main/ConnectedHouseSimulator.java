@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 
 import static main.RoomType.BEDROOM;
 import static main.RoomType.GARAGE;
+import static main.RoomType.NOWHERE;
 
 public class ConnectedHouseSimulator {
     // TODO scenario with rain, weather detector and close the shutter
@@ -65,7 +66,7 @@ public class ConnectedHouseSimulator {
         return lastCommand;
     }
 
-    private static void firstScenario(BufferedReader br, ConnectedHouse house) throws IOException {
+    private static void firstScenario(BufferedReader br, ConnectedHouse house) {
         println("# Scenario 1 : Waking up in the bed");
         house.moveTo(BEDROOM);
         println("## Some time before the user wakes up..");
@@ -87,13 +88,15 @@ public class ConnectedHouseSimulator {
         println("## User enters his car");
         println("## Using his smartphone from his car, he opens the garage door.");
         house.findRoom(GARAGE).sendToItems("open");
+        house.moveTo(NOWHERE);
         println("## His application allows him to completely lock the house from his car, as he drives away.");
         house.findRoom(GARAGE).sendToItems("lock");
         house.sendToItems("lock");
     }
 
-    private static void secondScenario(BufferedReader br, ConnectedHouse house) throws IOException {
+    private static void secondScenario(BufferedReader br, ConnectedHouse house) {
         println("# Scenario 2 : Arriving home from work");
+        house.findRoom(GARAGE).sendToItems("open");
         house.moveTo(GARAGE);
         println("-- You are in your garage after having returned from work. What do you do ?");
         final Command lastCommand = giveTerminalControl(br, house);

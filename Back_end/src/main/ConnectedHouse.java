@@ -39,7 +39,7 @@ public class ConnectedHouse implements ItemSubject {
         observers.add(o);
     }
 
-    void notifyObservers() {
+    public void notifyObservers() {
         observers.forEach(HouseObserver::update);
     }
 
@@ -58,8 +58,12 @@ public class ConnectedHouse implements ItemSubject {
     public void moveTo(RoomType room) {
         RoomType oldRoom = this.position;
         this.position = room;
-        findRoom(oldRoom).sendToItems("movement_detected");
-        findRoom(this.position).sendToItems("movement_detected");
+        if (oldRoom != RoomType.NOWHERE) {
+            findRoom(oldRoom).sendToItems("movement_detected");
+        }
+        if (this.position != RoomType.NOWHERE) {
+            findRoom(this.position).sendToItems("movement_detected");
+        }
     }
 
     public WeatherStatus getWeatherStatus() {
