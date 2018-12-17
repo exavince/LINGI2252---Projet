@@ -7,15 +7,16 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import main.ConnectedHouse;
 import main.HouseObserver;
@@ -31,6 +32,7 @@ import main.routine.SoonWakeUpRoutine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -39,7 +41,6 @@ import java.util.stream.Collectors;
 import static main.RoomType.BEDROOM;
 import static main.RoomType.GARAGE;
 
-
 public class Main extends Application implements HouseObserver {
 
     private static int scenarioChosen = 0;
@@ -47,13 +48,25 @@ public class Main extends Application implements HouseObserver {
     private static ArrayList<Rectangle> rectangleArrayList = new ArrayList<>();
     private static ArrayList<Rectangle> lightArrayList = new ArrayList<>();
     private static List<String> rooms = new ArrayList<>();
-    private static TextArea area = new TextArea();
+    private static TextFlow area = new TextFlow();
+    private static ScrollPane scrollPane = new ScrollPane();
     private static TextArea infoArea = new TextArea();
     private final Handler loggingHandler = new Handler() {
         @Override
         public void publish(LogRecord record) {
             // TODO Severe in red, Warning in orange ?
-            println(record.getMessage());
+            switch (record.getLevel().getName()) {
+                case "INFO":
+                    println(record.getMessage());
+
+                    break;
+                case "WARING":
+                    printlnOrange(record.getMessage());
+                    break;
+                case "SEVERE":
+                    printlnRed(record.getMessage());
+                    break;
+            }
         }
 
         @Override
@@ -112,7 +125,29 @@ public class Main extends Application implements HouseObserver {
     }
 
     private static void println(String x) {
-        area.appendText(x + "\n");
+        Text text = new Text();
+        text.setFont(Font.font(15));
+        text.setText(x + "\n");
+        area.getChildren().add(text);
+        scrollPane.vvalueProperty().bind(area.heightProperty());
+    }
+
+    private static void printlnOrange(String x) {
+        Text text = new Text();
+        text.setFont(Font.font(15));
+        text.setFill(Color.DARKORANGE);
+        text.setText(x + "\n");
+        area.getChildren().add(text);
+        scrollPane.vvalueProperty().bind(area.heightProperty());
+    }
+
+    private static void printlnRed(String x) {
+        Text text = new Text();
+        text.setFont(Font.font(15));
+        text.setFill(Color.RED);
+        text.setText(x + "\n");
+        area.getChildren().add(text);
+        scrollPane.vvalueProperty().bind(area.heightProperty());
     }
 
     @Override
@@ -120,15 +155,16 @@ public class Main extends Application implements HouseObserver {
         startHouse();
 
         Group root = new Group();
-        Scene scene = new Scene(root, 903, 903, Color.BLACK);
+        Scene scene = new Scene(root, 1003, 903, Color.BLACK);
         GridPane grid = new GridPane();
         grid.setHgap(5);
+
         StackPane informations = new StackPane();
         informations.setLayoutY(240);
         informations.setLayoutX(605);
 
         TextField notification = new TextField();
-        notification.setPrefSize(847, 20);
+        notification.setPrefSize(947, 20);
         notification.setText("");
         notification.setOnKeyPressed(e -> {
             if (e.getCode().equals(KeyCode.ENTER)) {
@@ -142,9 +178,20 @@ public class Main extends Application implements HouseObserver {
             onDataSend(notification);
         });
 
-        area.setPrefSize(901, 200);
-        area.setLayoutY(30);
-        area.setEditable(false);
+        StackPane log = new StackPane();
+
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.getMaxHeight();
+        scrollPane.setFitToWidth(true);
+        scrollPane.setContent(area);
+
+        log.setMaxSize(1001, 200);
+        log.setLayoutY(30);
+        Rectangle re = new Rectangle(1001,200);
+        re.setFill(Color.WHITE);
+        area.setPrefSize(1001, 200);
+        log.getChildren().addAll(re, scrollPane);
+
 
         rooms = house.getRooms().stream().map(Room::toString).collect(Collectors.toList());
         for (int a = 0; a < house.getRooms().size(); a++) {
@@ -191,7 +238,7 @@ public class Main extends Application implements HouseObserver {
 
         root.getChildren().add(informations);
         root.getChildren().add(grid);
-        root.getChildren().add(area);
+        root.getChildren().add(log);
 
         stage.setTitle("Connected House");
         stage.setScene(scene);
