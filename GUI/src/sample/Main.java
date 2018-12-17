@@ -27,6 +27,7 @@ import main.command.CommandParser;
 import main.item.Item;
 import main.item.control.door.DoorController;
 import main.item.control.door.GarageDoorController;
+import main.item.control.door.ShutterController;
 import main.item.control.heating.HeatingController;
 import main.item.control.light.LightController;
 import main.parametrization.ConnectedHouseJSONParser;
@@ -267,6 +268,7 @@ public class Main extends Application implements HouseObserver {
             appendItemAttributeIfInRoom(information, room, LightController.class, "Light intensity", LightController::getIntensity);
             appendItemAttributeIfInRoom(information, room, DoorController.class, "Locked", DoorController::isLocked);
             appendItemAttributeIfInRoom(information, room, GarageDoorController.class, "Locked", GarageDoorController::isLocked);
+            appendItemAttributeIfInRoom(information, room, ShutterController.class, "Locked", ShutterController::isLocked);
             information.append("\n");
         }
         return information.toString();
