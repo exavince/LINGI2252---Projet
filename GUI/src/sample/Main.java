@@ -10,10 +10,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -45,7 +46,6 @@ import static main.RoomType.GARAGE;
 import static main.RoomType.NOWHERE;
 
 public class Main extends Application implements HouseObserver {
-
     private static int scenarioChosen = 0;
     private static ConnectedHouse house;
     private static List<RoomGUI> roomGUIs = new ArrayList<>();
@@ -128,7 +128,6 @@ public class Main extends Application implements HouseObserver {
         text.setFill(color);
         text.setText(x + "\n");
         area.getChildren().add(text);
-        scrollPane.vvalueProperty().bind(area.heightProperty());
     }
 
     @Override
@@ -137,15 +136,12 @@ public class Main extends Application implements HouseObserver {
 
         Group root = new Group();
         Scene scene = new Scene(root, 1003, 903, Color.BLACK);
-        GridPane grid = new GridPane();
-        grid.setHgap(5);
+        BorderPane border = new BorderPane();
+        root.getChildren().add(border);
 
-        StackPane informations = new StackPane();
-        informations.setLayoutY(240);
-        informations.setLayoutX(605);
+        // Input bar
 
         TextField notification = new TextField();
-        notification.setPrefSize(947, 20);
         notification.setText("");
         notification.setOnKeyPressed(e -> {
             if (e.getCode().equals(KeyCode.ENTER)) {
@@ -154,53 +150,51 @@ public class Main extends Application implements HouseObserver {
         });
 
         Button send = new Button("Send");
-        send.autosize();
+        send.setPrefWidth(100);
         send.setOnAction(e -> {
             onDataSend(notification);
         });
 
-        StackPane log = new StackPane();
+        notification.prefWidthProperty().bind(scene.widthProperty().subtract(send.getPrefWidth() + 10));
 
+        HBox inputBar = new HBox();
+        inputBar.setSpacing(5);
+        inputBar.getChildren().addAll(notification, send);
+
+        border.setTop(inputBar);
+
+        // Log
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.getMaxHeight();
-        scrollPane.setFitToWidth(true);
         scrollPane.setContent(area);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefHeight(200);
 
-        log.setMaxSize(1001, 200);
-        log.setLayoutY(30);
-        Rectangle re = new Rectangle(1001, 200);
-        re.setFill(Color.WHITE);
-        area.setPrefSize(1001, 200);
-        log.getChildren().addAll(re, scrollPane);
+        border.setBottom(scrollPane);
 
+        GridPane roomsGrid = new GridPane();
+        roomsGrid.setHgap(5);
 
         for (int a = 0; a < house.getRooms().size(); a++) {
-            int i = a / 4;
-            int j = a % 4;
-            StackPane stack = new StackPane();
-            stack.setPrefSize(150, 150);
-            stack.setLayoutX(151 * j);
-            stack.setLayoutY(240 + 151 * i);
+            int row = a / 4;
+            int column = a % 4;
 
-            RoomGUI roomGUI = new RoomGUI(i, j, house.getRooms().get(a));
-            roomGUI.addToPane(stack);
-            root.getChildren().add(stack);
+            RoomGUI roomGUI = new RoomGUI(house.getRooms().get(a));
+            roomGUI.addToGrid(roomsGrid, column, row);
             roomGUIs.add(roomGUI);
         }
+        border.setCenter(roomsGrid);
 
+        StackPane informations = new StackPane();
 
-        Rectangle rect = new Rectangle(50, 50, 295, 660);
-        rect.setFill(Color.WHITE);
         infoArea.setEditable(false);
         infoArea.setText(getHouseInformation());
-        informations.getChildren().addAll(rect, infoArea);
+        infoArea.setMinHeight(600);
+        infoArea.setMaxWidth(400);
+        infoArea.setWrapText(true);
 
-        grid.add(notification, 0, 0);
-        grid.add(send, 1, 0);
+        informations.getChildren().add(infoArea);
 
-        root.getChildren().add(informations);
-        root.getChildren().add(grid);
-        root.getChildren().add(log);
+        border.setRight(informations);
 
         stage.setTitle("Connected House");
         stage.setScene(scene);
@@ -262,7 +256,7 @@ public class Main extends Application implements HouseObserver {
     private String getHouseInformation() {
         StringBuilder information = new StringBuilder();
         information.append("Weather: ").append(house.getWeatherStatus()).append("\n");
-        information.append("Mood setting:").append(house.getMood()).append("\n");
+        information.append("Mood setting: ").append(house.getMood()).append("\n");
         information.append("\n");
         for (Room room : house.getRooms()) {
             information.append(room.toString()).append("\n");

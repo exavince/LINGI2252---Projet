@@ -2,7 +2,8 @@ package sample;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -10,39 +11,51 @@ import main.Room;
 
 class RoomGUI {
     private final Room room;
-    private final Rectangle rectangle;
-    private final FlowPane flow;
+    private final Rectangle selected;
     private final Rectangle light;
-    private final Text text;
+    private final StackPane stack;
 
-    RoomGUI(int i, int j, Room room) {
+    RoomGUI(Room room) {
         this.room = room;
-        rectangle = new Rectangle(151 * j, 240 + 151 * i, 150, 150);
+        Rectangle background = new Rectangle();
 
-        flow = new FlowPane();
+        background.setHeight(100);
+        background.setWidth(100);
+
+        background.setFill(Color.WHITE);
+
+        selected = new Rectangle();
+        selected.setFill(Color.TRANSPARENT);
+        selected.setStroke(Color.BLUE);
+        selected.setStrokeWidth(10);
+        selected.widthProperty().bind(background.widthProperty());
+        selected.heightProperty().bind(background.heightProperty());
+
+        FlowPane flow = new FlowPane();
         flow.setAlignment(Pos.CENTER);
         flow.setHgap(100);
-
-        light = new Rectangle(151 * j + 110, 240 + 151 * i + 80, 40, 40);
-        light.setFill(Color.YELLOW);
-
-        text = new Text();
+        Text text = new Text();
         text.setText(room.toString() + "\n");
+        flow.getChildren().add(text);
+
+        light = new Rectangle();
+        light.setWidth(25);
+        light.setHeight(25);
+        flow.getChildren().add(light);
+
+        stack = new StackPane();
+        stack.setPrefSize(100, 100);
+        stack.getChildren().addAll(background, flow, selected);
+
         update();
     }
 
-    void addToPane(Pane pane) {
-        flow.getChildren().add(text);
-        flow.getChildren().add(light);
-        pane.getChildren().addAll(rectangle, flow);
+    void addToGrid(GridPane roomsGrid, int column, int row) {
+        roomsGrid.add(stack, column, row);
     }
 
     void update() {
-        if (room.getHouse().getPosition() == room.getType()) {
-            rectangle.setFill(Color.BLUE);
-        } else {
-            rectangle.setFill(Color.WHITE);
-        }
-        light.setVisible(room.getLighting() > 0);
+        selected.setVisible(room.getHouse().getPosition() == room.getType());
+        light.setFill(room.getLighting() > 0 ? Color.YELLOW : Color.YELLOW.darker().darker().darker());
     }
 }
