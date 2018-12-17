@@ -14,6 +14,7 @@ import main.Room;
 import main.RoomType;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class EditExpression implements Command {
@@ -56,5 +57,6 @@ public class EditExpression implements Command {
             CommandParser.LOGGER.warning("Invalid edit command");
             throw new UnsupportedOperationException("Invalid edit command");
         }
+        CommandParser.LOGGER.log(Level.INFO, "-- Applied feature configuration changes " + String.join(" ", actionTokens) + " of room " + roomType + " with success.");
     }
 }

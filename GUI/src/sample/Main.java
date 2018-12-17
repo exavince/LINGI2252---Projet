@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import main.ConnectedHouse;
 import main.HouseObserver;
 import main.Room;
+import main.command.Command;
 import main.command.CommandParser;
 import main.item.Item;
 import main.item.control.door.DoorController;
@@ -98,7 +99,6 @@ public class Main extends Application implements HouseObserver {
         println("## His application allows him to completely lock the house from his car, as he drives away.");
         house.findRoom(GARAGE).sendToItems("lock");
         house.sendToItems("lock");
-        System.exit(0);
     }
 
     private static void secondScenario() {
@@ -115,7 +115,6 @@ public class Main extends Application implements HouseObserver {
         }
         println("## He uses his smartphone application to completely lock the house from his bed.");
         house.sendToItems("lock");
-        System.exit(0);
     }
 
     private static void println(String x) {
@@ -168,6 +167,7 @@ public class Main extends Application implements HouseObserver {
         scrollPane.setContent(area);
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefHeight(200);
+        scrollPane.vvalueProperty().bind(area.heightProperty());
 
         border.setBottom(scrollPane);
 
@@ -231,20 +231,21 @@ public class Main extends Application implements HouseObserver {
                     secondScenario();
                     break;
                 default:
+                    println(Color.DARKORANGE, "Invalid scenario number");
                     break;
             }
         } else {
-            if (command.toUpperCase().equals("EXIT")) {
+            Command commandSent = house.sendCommand(command);
+            if (commandSent == Command.EXIT) {
+                System.exit(0);
+            } else if (commandSent == Command.DONE) {
                 if (scenarioChosen == 1) {
-                    house.sendCommand(command);
                     endFirstScenario();
                 } else {
-                    house.sendCommand(command);
                     endSecondScenario();
                 }
             }
             println("");
-            house.sendCommand(command);
         }
     }
 
