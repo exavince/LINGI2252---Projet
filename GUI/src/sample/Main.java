@@ -52,7 +52,7 @@ public class Main extends Application implements HouseObserver {
     private final Handler loggingHandler = new Handler() {
         @Override
         public void publish(LogRecord record) {
-            // TODO Errors in red ?
+            // TODO Severe in red, Warning in orange ?
             println(record.getMessage());
         }
 
@@ -267,22 +267,22 @@ public class Main extends Application implements HouseObserver {
         infoArea.setText(getHouseInformation());
     }
 
-    public void log(String input) {
-        println(input);
-    }
-
     private String getHouseInformation() {
         StringBuilder information = new StringBuilder();
+        information.append("Weather: ").append(house.getWeatherStatus()).append("\n");
+        information.append("Mood setting:").append(house.getMood()).append("\n");
+        information.append("\n");
         for (Room room : house.getRooms()) {
             information.append(room.toString()).append("\n");
-            information.append("Temperature : ").append(room.getTemperature()).append("\n");
+            information.append("Lighting: ").append(room.getLighting()).append("\n");
+            information.append("Temperature: ").append(room.getTemperature()).append("\n");
             HeatingController heatingController = (HeatingController) room.getItem(HeatingController.class);
             if (heatingController != null) {
-                information.append("[Heating controller] Desired temperature : ").append(heatingController.getDesiredTemperature()).append("\n");
+                information.append("[Heating controller] Desired temperature: ").append(heatingController.getDesiredTemperature()).append("\n");
             }
             LightController lightController = (LightController) room.getItem(LightController.class);
             if (lightController != null) {
-                information.append("[Light controller] Light intensity : ").append(lightController.getIntensity()).append("\n");
+                information.append("[Light controller] Light intensity: ").append(lightController.getIntensity()).append("\n");
             }
             information.append("\n");
         }
