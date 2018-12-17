@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -22,10 +24,11 @@ import java.util.logging.Logger;
  * <ROOM> ::= KITCHEN, BEDROOM, ...
  */
 public class CommandParser {
-    static final Logger LOGGER = Logger.getLogger(CommandParser.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(CommandParser.class.getName());
     private final Iterator<String> input;
 
     public CommandParser(String expression) {
+        LOGGER.info("Parsing command " + expression);
         this.input = Arrays.asList(expression.toUpperCase().split(" ")).iterator();
     }
 
@@ -47,6 +50,7 @@ public class CommandParser {
             case "EDIT":
                 return edit();
             default:
+                LOGGER.warning("Unknown command: " + token);
                 throw new UnsupportedOperationException("Unknown command: " + token);
         }
     }
@@ -78,28 +82,34 @@ public class CommandParser {
     }
 
     private ValueExpression value() {
-        String token = input.next();
-        if (token.equals("GET")) {
-            return get();
-        } else {
-            // TODO guess type based on what should be expected with attribute ?
-            try {
-                return new TerminalExpression<>(WeatherStatus.valueOf(token));
-            } catch (IllegalArgumentException e1) {
+        try {
+            String token = input.next();
+            if (token.equals("GET")) {
+                return get();
+            } else {
+                // TODO guess type based on what should be expected with attribute ?
                 try {
-                    return new TerminalExpression<>(HomeMood.valueOf(token));
-                } catch (IllegalArgumentException e) {
+                    return new TerminalExpression<>(WeatherStatus.valueOf(token));
+                } catch (IllegalArgumentException e1) {
                     try {
-                        return new TerminalExpression<>(Integer.parseInt(token));
-                    } catch (NumberFormatException e2) {
+                        return new TerminalExpression<>(HomeMood.valueOf(token));
+                    } catch (IllegalArgumentException e) {
                         try {
-                            return new TerminalExpression<>(Double.parseDouble(token));
-                        } catch (NumberFormatException e3) {
-                            throw new RuntimeException("Unknown value token " + token);
+                            return new TerminalExpression<>(Integer.parseInt(token));
+                        } catch (NumberFormatException e2) {
+                            try {
+                                return new TerminalExpression<>(Double.parseDouble(token));
+                            } catch (NumberFormatException e3) {
+                                LOGGER.warning("Unknown value token " + token);
+                                throw new RuntimeException("Unknown value token " + token);
+                            }
                         }
                     }
                 }
             }
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.WARNING, "A value expression was expected");
+            return null;
         }
     }
 
@@ -109,6 +119,14 @@ public class CommandParser {
 
     private RoomType room() {
         String token = input.next();
-        return RoomType.valueOf(token);
+        try {
+            return RoomType.valueOf(token);
+        } catch (IllegalArgumentException e) {
+            LOGGER.warning("Unknown room type " + token);
+            throw new UnsupportedOperationException(e);
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.WARNING, "A room expression was expected");
+            throw new UnsupportedOperationException(e);
+        }
     }
 }

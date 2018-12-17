@@ -44,6 +44,7 @@ public class EditExpression implements Command {
     @Override
     public void interpret(ConnectedHouse house) {
         if (roomType == RoomType.GLOBAL) {
+            CommandParser.LOGGER.warning("Cannot edit globally");
             throw new UnsupportedOperationException("Cannot edit globally");
         }
         Room room = house.findRoom(roomType);
@@ -52,6 +53,7 @@ public class EditExpression implements Command {
             strategy.apply(room.getModelState(), actions);
         } catch (InvalidModelConfigurationException e) {
             e.printStackTrace();
+            CommandParser.LOGGER.warning("Invalid edit command");
             throw new UnsupportedOperationException("Invalid edit command");
         }
     }

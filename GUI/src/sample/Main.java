@@ -49,6 +49,21 @@ public class Main extends Application implements HouseObserver {
     private static List<String> rooms = new ArrayList<>();
     private static TextArea area = new TextArea();
     private static TextArea infoArea = new TextArea();
+    private final Handler loggingHandler = new Handler() {
+        @Override
+        public void publish(LogRecord record) {
+            // TODO Errors in red ?
+            println(record.getMessage());
+        }
+
+        @Override
+        public void flush() {
+        }
+
+        @Override
+        public void close() throws SecurityException {
+        }
+    };
 
     public static void main(String[] args) {
         launch(args);
@@ -183,28 +198,12 @@ public class Main extends Application implements HouseObserver {
         stage.show();
     }
 
-    private final Handler loggingHandler = new Handler() {
-        @Override
-        public void publish(LogRecord record) {
-            // TODO Errors in red ?
-            println(record.getMessage());
-        }
-
-        @Override
-        public void flush() {
-        }
-
-        @Override
-        public void close() throws SecurityException {
-        }
-    };
-
     private void startHouse() {
         println("# Welcome to ConnectedHouseSimulator");
         Logger.getLogger(ConnectedHouseJSONParser.class.getName()).addHandler(loggingHandler);
         Logger.getLogger(FeatureModel.class.getName()).addHandler(loggingHandler);
         Logger.getLogger(Item.class.getName()).addHandler(loggingHandler);
-        Logger.getLogger(CommandParser.class.getName()).addHandler(loggingHandler);
+        CommandParser.LOGGER.addHandler(loggingHandler);
         final ConnectedHouseParser parser = ConnectedHouseJSONParser.getInstance();
         try {
             house = parser.parse("./Back_end/config.json", "./Back_end/state.json");

@@ -8,9 +8,38 @@ import main.item.Item;
 import main.item.control.heating.HeatingController;
 import main.routine.HomeMood;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 
 public class SetExpression implements Command {
+    private static Map<String, BiConsumer<ConnectedHouse, Object>> globalAttributes = new HashMap<>();
+    private static Map<String, BiConsumer<Room, Object>> roomAttributes = new HashMap<>();
+
+    static {
+        globalAttributes.put("WEATHER", (connectedHouse, weatherStatus) -> connectedHouse.setWeatherStatus((WeatherStatus) weatherStatus));
+        globalAttributes.put("MOOD", (connectedHouse, mood) -> connectedHouse.setMood((HomeMood) mood));
+
+        roomAttributes.put("TEMPERATURE", (room, temperature) -> {
+            room.setTemperature((Integer) temperature);
+            room.sendToItems("start_heating");
+        });
+        roomAttributes.put("DESIRED_TEMPERATURE", (room, desiredTemperature) -> {
+            boolean found = false;
+
+            for (Item item : room.getItems()) {
+                if (item instanceof HeatingController) {
+                    found = true;
+                    ((HeatingController) item).setDesiredTemperature((Integer) desiredTemperature);
+                    item.onEvent("start_heating");
+                }
+            }
+            if (!found)
+                throw new RuntimeException("Could not find any heating controller in the room " + room);
+        });
+    }
+
     private final RoomType roomType;
     private final String attribute;
     private final ValueExpression value;
@@ -24,41 +53,25 @@ public class SetExpression implements Command {
     @Override
     public void interpret(ConnectedHouse house) {
         if (roomType == RoomType.GLOBAL) {
-            switch (attribute) {
-                case "WEATHER":
-                    house.setWeatherStatus((WeatherStatus) value.evaluate(house));
-                    CommandParser.LOGGER.log(Level.INFO, "-- Set global attribute " + attribute + " with success.");
-                    break;
-                case "MOOD":
-                    house.setMood((HomeMood) value.evaluate(house));
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unknown global attribute " + attribute);
+            try {
+                globalAttributes.get(attribute).accept(house, value.evaluate(house));
+                CommandParser.LOGGER.log(Level.INFO, "-- Set global attribute " + attribute + " with success.");
+            } catch (NullPointerException e) {
+                CommandParser.LOGGER.log(Level.WARNING, "Unknown global attribute " + attribute);
+                CommandParser.LOGGER.log(Level.INFO, "Available attributes: " + String.join(", ", globalAttributes.keySet()));
+                throw new UnsupportedOperationException("Unknown global attribute " + attribute);
             }
             return;
         }
         for (Room room : house.getRooms()) {
             if (room.getType() == roomType) {
-                switch (attribute) {
-                    case "TEMPERATURE":
-                        room.setTemperature((Integer) value.evaluate(house));
-                        house.findRoom(roomType).sendToItems("start_heating");
-                        break;
-                    case "DESIRED_TEMPERATURE":
-                        boolean found = false;
-
-                        for (Item item : room.getItems()) {
-                            if (item instanceof HeatingController) {
-                                found = true;
-                                ((HeatingController) item).setDesiredTemperature((Integer) value.evaluate(house));
-                                item.onEvent("start_heating");
-                            }
-                        }
-                        if (!found)
-                            throw new RuntimeException("Could not find any heating controller in the room " + roomType);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unknown attribute " + attribute + " for room " + roomType);
+                try {
+                    roomAttributes.get(attribute).accept(room, value.evaluate(house));
+                    CommandParser.LOGGER.log(Level.INFO, "-- Set room attribute " + attribute + " with success.");
+                } catch (NullPointerException e) {
+                    CommandParser.LOGGER.log(Level.WARNING, "Unknown attribute " + attribute + " for room " + roomType);
+                    CommandParser.LOGGER.log(Level.INFO, "Available attributes: " + String.join(", ", roomAttributes.keySet()));
+                    throw new UnsupportedOperationException("Unknown attribute " + attribute + " for room " + roomType);
                 }
             }
         }
