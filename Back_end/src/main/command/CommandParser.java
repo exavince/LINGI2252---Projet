@@ -61,6 +61,10 @@ public class CommandParser {
         while (input.hasNext()) {
             remainingTokens.add(input.next());
         }
+        if (remainingTokens.size() == 0) {
+            LOGGER.warning("Feature actions were expected. Syntax: +F to activate, -F to deactivate");
+            throw new UnsupportedOperationException();
+        }
         return new EditExpression(room, remainingTokens);
     }
 
@@ -78,7 +82,12 @@ public class CommandParser {
     }
 
     private String attribute() {
-        return input.next();
+        try {
+            return input.next();
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.WARNING, "An attribute was expected");
+            return null;
+        }
     }
 
     private ValueExpression value() {
@@ -118,12 +127,14 @@ public class CommandParser {
     }
 
     private RoomType room() {
-        String token = input.next();
         try {
-            return RoomType.valueOf(token);
-        } catch (IllegalArgumentException e) {
-            LOGGER.warning("Unknown room type " + token);
-            throw new UnsupportedOperationException(e);
+            String token = input.next();
+            try {
+                return RoomType.valueOf(token);
+            } catch (IllegalArgumentException e) {
+                LOGGER.warning("Unknown room type " + token);
+                throw new UnsupportedOperationException(e);
+            }
         } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, "A room expression was expected");
             throw new UnsupportedOperationException(e);
