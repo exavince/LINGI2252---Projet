@@ -12,6 +12,7 @@ import main.ConnectedHouse;
 import main.ConnectedHouseFeatureModel;
 import main.Room;
 import main.RoomType;
+import main.parametrization.RoomFeature;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -28,7 +29,7 @@ public class EditExpression implements Command {
         this.actionTokens = actionTokens;
     }
 
-    private FeatureAction<Room> tokenToAction(Room room, String token) {
+    private FeatureAction<Room> tokenToRoomAction(Room room, String token) {
         Feature<Room> feature = model.getFeature(token.substring(1));
         if (feature == null) {
             throw new UnsupportedOperationException("Unknown feature in " + token);
@@ -42,41 +43,29 @@ public class EditExpression implements Command {
         }
     }
 
+    private FeatureAction<ConnectedHouse> tokenToHouseAction(ConnectedHouse house, String token) {
+        final RoomType attributeRoomType = RoomType.valueOf(token.substring(1));
+        Feature<ConnectedHouse> feature = RoomFeature.get(attributeRoomType);
+        if (token.startsWith("+")) {
+            return new ActivateFeature<>(feature, house);
+        } else if (token.startsWith("-")) {
+            return new DeactivateFeature<>(feature, house);
+        } else {
+            throw new UnsupportedOperationException("Unknown editing operation " + token);
+        }
+    }
+
     @Override
     public void interpret(ConnectedHouse house) {
         if (roomType == RoomType.GLOBAL) {
-            // TODO Rooms should be features on ConnectedHouse so we could allow their adding/removal with action features
-            actionTokens.forEach(token -> {
-                final RoomType attributeRoomType = RoomType.valueOf(token.substring(1));
-                final boolean add;
-                if (token.startsWith("+")) {
-                    add = true;
-                } else if (token.startsWith("-")) {
-                    add = false;
-                } else {
-                    throw new UnsupportedOperationException("Unknown editing operation " + token);
-                }
-                Room currentRoom = house.findRoom(attributeRoomType);
-                if (add) {
-                    if (currentRoom == Room.NONE) {
-                        house.attach(new Room(attributeRoomType));
-                    } else {
-                        CommandParser.LOGGER.warning("Room " + attributeRoomType + " was already in the house. Change ignored");
-                    }
-                } else {
-                    if (currentRoom == Room.NONE) {
-                        CommandParser.LOGGER.warning("Room " + attributeRoomType + " was not in the house. Change ignored");
-                    } else {
-                        house.detach(currentRoom);
-                    }
-                }
-            });
+            List<FeatureAction<ConnectedHouse>> actions = actionTokens.stream().map(token -> tokenToHouseAction(house, token)).collect(Collectors.toList());
+            actions.forEach(FeatureAction::apply);
         } else if (roomType == RoomType.NOWHERE) {
             CommandParser.LOGGER.warning("Editing this room does not make sense");
             throw new UnsupportedOperationException("Cannot edit " + roomType);
         } else {
             Room room = house.findRoom(roomType);
-            List<FeatureAction<Room>> actions = actionTokens.stream().map(token -> tokenToAction(room, token)).collect(Collectors.toList());
+            List<FeatureAction<Room>> actions = actionTokens.stream().map(token -> tokenToRoomAction(room, token)).collect(Collectors.toList());
             try {
                 strategy.apply(room.getModelState(), actions);
             } catch (InvalidModelConfigurationException e) {

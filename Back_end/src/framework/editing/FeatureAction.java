@@ -22,5 +22,5 @@ public abstract class FeatureAction<T> {
 
     abstract void execute(FeatureModelConfiguration model);
 
-    abstract void apply();
+    public abstract void apply();
 }
