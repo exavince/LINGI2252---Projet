@@ -57,9 +57,11 @@ public class ConnectedHouse implements ItemSubject {
     }
 
     public void detach(Room minimumRoom, Room... roomsIn) {
+        if(getPosition() == minimumRoom.getType()) this.moveTo(RoomType.NOWHERE);
         minimumRoom.setHouse(null);
         rooms.remove(minimumRoom);
         for (Room room : roomsIn) {
+            if(getPosition() == room.getType()) this.moveTo(RoomType.NOWHERE);
             room.setHouse(null);
             rooms.remove(room);
         }
