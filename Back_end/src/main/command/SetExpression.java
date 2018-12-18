@@ -20,6 +20,7 @@ public class SetExpression implements Command {
     static {
         globalAttributes.put("WEATHER", (connectedHouse, weatherStatus) -> connectedHouse.setWeatherStatus((WeatherStatus) weatherStatus));
         globalAttributes.put("MOOD", (connectedHouse, mood) -> connectedHouse.setMood((HomeMood) mood));
+        //TODO Add position which takes a room argument. Be careful because ValueExpression cannot be room at the moment.
 
         roomAttributes.put("TEMPERATURE", (room, temperature) -> {
             room.setTemperature((Integer) temperature);
@@ -35,8 +36,10 @@ public class SetExpression implements Command {
                     item.onEvent("start_heating");
                 }
             }
-            if (!found)
+            if (!found) {
+                CommandParser.LOGGER.warning("Could not find any heating controller in the room " + room);
                 throw new RuntimeException("Could not find any heating controller in the room " + room);
+            }
         });
     }
 

@@ -6,9 +6,36 @@ import main.RoomType;
 import main.item.Item;
 import main.item.control.heating.HeatingController;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class GetExpression implements ValueExpression, Command {
+    private static Map<String, Function<ConnectedHouse, Object>> globalAttributes = new HashMap<>();
+    private static Map<String, Function<Room, Object>> roomAttributes = new HashMap<>();
+
+    static {
+        globalAttributes.put("MOOD", ConnectedHouse::getMood);
+        globalAttributes.put("WEATHER", ConnectedHouse::getWeatherStatus);
+        globalAttributes.put("POSITION", ConnectedHouse::getPosition);
+        globalAttributes.put("ROOMS", (house) -> house.getRooms().stream().map(Object::toString).collect(Collectors.joining(" ")));
+
+        roomAttributes.put("TEMPERATURE", Room::getTemperature);
+        roomAttributes.put("DESIRED_TEMPERATURE", (r) -> {
+            for (Item item : r.getItems()) {
+                if (item instanceof HeatingController) {
+                    return ((HeatingController) item).getDesiredTemperature();
+                }
+            }
+            CommandParser.LOGGER.warning("Could not find any heating controller in the room " + r);
+            throw new NoSuchElementException("Could not find any heating controller in the room " + r);
+        });
+        roomAttributes.put("FEATURES", Room::getModelState);
+    }
+
     private final RoomType roomType;
     private final String attribute;
 
@@ -24,33 +51,27 @@ public class GetExpression implements ValueExpression, Command {
     @Override
     public Object evaluate(ConnectedHouse house) {
         if (roomType == RoomType.GLOBAL) {
-            switch (attribute) {
-                case "MOOD":
-                    return house.getMood();
-                case "WEATHER":
-                    return house.getWeatherStatus();
-                default:
-                    throw new UnsupportedOperationException("Unknown attribute: " + attribute);
+            try {
+                return globalAttributes.get(attribute).apply(house);
+            } catch (NullPointerException e) {
+                CommandParser.LOGGER.log(Level.WARNING, "Unknown global attribute " + attribute);
+                CommandParser.LOGGER.log(Level.INFO, "Available attributes: " + String.join(", ", globalAttributes.keySet()));
+                throw new UnsupportedOperationException("Unknown global attribute " + attribute);
             }
-        }
-        for (Room room : house.getRooms()) {
-            if (room.getType() == roomType) {
-                switch (attribute) {
-                    case "TEMPERATURE":
-                        return Integer.toString(room.getTemperature());
-                    case "DESIRED_TEMPERATURE":
-                        for (Item item : room.getItems()) {
-                            if (item instanceof HeatingController) {
-                                return ((HeatingController) item).getDesiredTemperature();
-                            }
-                        }
-                        throw new RuntimeException("Could not find any heating controller in the room " + roomType);
-                    default:
-                        throw new UnsupportedOperationException("Unknown attribute: " + attribute);
+        } else {
+            for (Room room : house.getRooms()) {
+                if (room.getType() == roomType) {
+                    try {
+                        return roomAttributes.get(attribute).apply(room);
+                    } catch (NullPointerException e) {
+                        CommandParser.LOGGER.log(Level.WARNING, "Unknown attribute " + attribute + " for room " + roomType);
+                        CommandParser.LOGGER.log(Level.INFO, "Available attributes: " + String.join(", ", roomAttributes.keySet()));
+                        throw new UnsupportedOperationException("Unknown attribute " + attribute + " for room " + roomType);
+                    }
                 }
             }
+            throw new RuntimeException("Could not find room " + roomType);
         }
-        throw new RuntimeException("Could not find room " + roomType);
     }
 
     @Override
