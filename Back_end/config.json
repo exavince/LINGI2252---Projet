@@ -21,6 +21,8 @@
     "MovementsSensor",
     "Microphone",
     "Devices",
+    "Cleaning_devices",
+    "RoboticVacuumCleaner",
     "Others",
     "CoffeeMachine",
     "Media_devices",

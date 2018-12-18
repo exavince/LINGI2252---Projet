@@ -8,7 +8,7 @@ import framework.constraint.LogicalAnd;
 import java.util.stream.Collectors;
 
 public class Mandatory extends Primitive {
-    protected Mandatory(Feature parent, Feature... subfeatures) {
+    public Mandatory(Feature parent, Feature... subfeatures) {
         super(parent, subfeatures);
     }
 

@@ -5,6 +5,7 @@ import framework.Feature;
 import framework.FeatureModel;
 import framework.constraint.Implication;
 import framework.constraint.LogicalOr;
+import framework.primitive.Mandatory;
 import framework.primitive.Optional;
 import framework.primitive.Or;
 import main.item.control.ClockController;
@@ -14,13 +15,14 @@ import main.item.control.door.ShutterController;
 import main.item.control.heating.HeatingController;
 import main.item.control.light.LightController;
 import main.item.device.CoffeeMachine;
+import main.item.device.RoboticVacuumCleaner;
 import main.item.device.VoiceAssistant;
+import main.item.sensor.Microphone;
+import main.item.sensor.MovementsSensor;
+import main.item.sensor.TemperatureSensor;
+import main.item.sensor.WeatherSensor;
 import main.item.sounds.ConnectedSpeakers;
 import main.parametrization.ItemFeature;
-import main.sensor.Microphone;
-import main.sensor.MovementsSensor;
-import main.sensor.TemperatureSensor;
-import main.sensor.WeatherSensor;
 
 public class ConnectedHouseFeatureModel extends FeatureModel<Room> {
     private static ConnectedHouseFeatureModel INSTANCE = null;
@@ -39,6 +41,8 @@ public class ConnectedHouseFeatureModel extends FeatureModel<Room> {
         Feature<Room> doorController = new ItemFeature(DoorController.class);
         Feature<Room> garageDoorController = new ItemFeature(GarageDoorController.class);
         Feature<Room> devices = new AbstractFeature<>("Devices");
+        Feature<Room> cleaningDevices = new AbstractFeature<>("Cleaning_devices");
+        Feature<Room> roboticVacuumCleaner = new ItemFeature(RoboticVacuumCleaner.class);
         Feature<Room> mediaDevices = new AbstractFeature<>("Media_devices");
         Feature<Room> connectedSpeakers = new ItemFeature(ConnectedSpeakers.class);
         Feature<Room> others = new AbstractFeature<>("Others");
@@ -63,6 +67,8 @@ public class ConnectedHouseFeatureModel extends FeatureModel<Room> {
                 doorController,
                 garageDoorController,
                 devices,
+                cleaningDevices,
+                roboticVacuumCleaner,
                 mediaDevices,
                 connectedSpeakers,
                 others,
@@ -81,7 +87,8 @@ public class ConnectedHouseFeatureModel extends FeatureModel<Room> {
                 new Or(assistantControllers, voiceAssistant, clockController),
                 new Or(securityControllers, doorController, garageDoorController),
 
-                new Or(devices, mediaDevices, others),
+                new Or(devices, cleaningDevices, mediaDevices, others),
+                new Mandatory(cleaningDevices, roboticVacuumCleaner),
                 new Optional(mediaDevices, connectedSpeakers),
                 new Optional(others, coffeeMachine),
 

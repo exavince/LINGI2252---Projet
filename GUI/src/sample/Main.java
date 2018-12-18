@@ -31,13 +31,13 @@ import main.item.control.door.GarageDoorController;
 import main.item.control.door.ShutterController;
 import main.item.control.heating.HeatingController;
 import main.item.control.light.LightController;
+import main.item.device.RoboticVacuumCleaner;
 import main.parametrization.ConnectedHouseJSONParser;
 import main.parametrization.ConnectedHouseParser;
 import main.routine.SoonWakeUpRoutine;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.logging.Handler;
@@ -50,6 +50,8 @@ import static main.RoomType.GARAGE;
 import static main.RoomType.NOWHERE;
 
 public class Main extends Application implements HouseObserver {
+    private static final int WINDOW_WIDTH = 1100;
+    private static final int WINDOW_HEIGHT = 830;
     private static int scenarioChosen = 0;
     private static ConnectedHouse house;
     private static List<RoomGUI> roomGUIs = new ArrayList<>();
@@ -132,9 +134,6 @@ public class Main extends Application implements HouseObserver {
         text.setText(x + "\n");
         area.getChildren().add(text);
     }
-
-    private static final int WINDOW_WIDTH = 1100;
-    private static final int WINDOW_HEIGHT = 830;
 
     @Override
     public void start(Stage stage) {
@@ -288,6 +287,7 @@ public class Main extends Application implements HouseObserver {
             appendItemAttributeIfInRoom(information, room, DoorController.class, "Locked", DoorController::isLocked);
             appendItemAttributeIfInRoom(information, room, GarageDoorController.class, "Locked", GarageDoorController::isLocked);
             appendItemAttributeIfInRoom(information, room, ShutterController.class, "Locked", ShutterController::isLocked);
+            appendItemAttributeIfInRoom(information, room, RoboticVacuumCleaner.class, "Present", (robot) -> true);
             information.append("\n");
         }
         return information.toString();

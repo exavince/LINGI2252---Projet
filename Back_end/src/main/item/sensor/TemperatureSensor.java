@@ -1,4 +1,4 @@
-package main.sensor;
+package main.item.sensor;
 
 import main.item.Item;
 import main.message.TemperatureReport;

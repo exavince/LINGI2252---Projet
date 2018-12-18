@@ -28,7 +28,7 @@
             </or>
             <or abstract="true" name="Devices">
                 <and abstract="true" name="Cleaning_devices">
-                    <feature name="Automated_vacuum"/>
+                    <feature mandatory="true" name="Robotic_vacuum_cleaner"/>
                 </and>
                 <and abstract="true" name="Media_devices">
                     <feature name="Connected_speakers"/>
