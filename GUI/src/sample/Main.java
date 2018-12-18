@@ -3,6 +3,7 @@ package sample;
 
 import framework.FeatureModel;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,7 +14,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -130,18 +131,19 @@ public class Main extends Application implements HouseObserver {
         area.getChildren().add(text);
     }
 
+    private static final int WINDOW_WIDTH = 1100;
+    private static final int WINDOW_HEIGHT = 830;
+
     @Override
     public void start(Stage stage) {
         startHouse();
 
         Group root = new Group();
-        Scene scene = new Scene(root, 1003, 827, Color.BLACK);
+        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT, Color.DARKGREY.darker().darker().darker());
         BorderPane border = new BorderPane();
         root.getChildren().add(border);
-        scene.setFill(Color.DARKGREY.darker().darker().darker());
 
         // Input bar
-
         TextField notification = new TextField();
         notification.setText("");
         notification.setOnKeyPressed(e -> {
@@ -162,17 +164,20 @@ public class Main extends Application implements HouseObserver {
         inputBar.setSpacing(5);
         inputBar.getChildren().addAll(notification, send);
 
-        border.setTop(inputBar);
-
         // Log
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setContent(area);
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefHeight(200);
+        scrollPane.prefWidthProperty().bind(scene.widthProperty());
         scrollPane.vvalueProperty().bind(area.heightProperty());
 
-        border.setBottom(scrollPane);
+        VBox terminal = new VBox();
+        terminal.setSpacing(5);
+        terminal.getChildren().addAll(scrollPane, inputBar);
+        border.setTop(terminal);
 
+        // Rooms
         GridPane roomsGrid = new GridPane();
         roomsGrid.setHgap(5);
 
@@ -186,17 +191,14 @@ public class Main extends Application implements HouseObserver {
         }
         border.setCenter(roomsGrid);
 
-        StackPane informations = new StackPane();
-
         infoArea.setEditable(false);
         infoArea.setText(getHouseInformation());
-        infoArea.setMinHeight(600);
+        infoArea.setMinHeight(590);
         infoArea.setMaxWidth(400);
         infoArea.setWrapText(true);
 
-        informations.getChildren().add(infoArea);
-
-        border.setRight(informations);
+        border.setRight(infoArea);
+        BorderPane.setMargin(infoArea, new Insets(5));
 
         stage.setTitle("Connected House");
         stage.setScene(scene);
