@@ -135,7 +135,7 @@ public class Main extends Application implements HouseObserver {
         startHouse();
 
         Group root = new Group();
-        Scene scene = new Scene(root, 1003, 903, Color.BLACK);
+        Scene scene = new Scene(root, 1003, 827, Color.BLACK);
         BorderPane border = new BorderPane();
         root.getChildren().add(border);
 
@@ -155,7 +155,7 @@ public class Main extends Application implements HouseObserver {
             onDataSend(notification);
         });
 
-        notification.prefWidthProperty().bind(scene.widthProperty().subtract(send.getPrefWidth() + 10));
+        notification.prefWidthProperty().bind(scene.widthProperty().subtract(send.getPrefWidth() + 2));
 
         HBox inputBar = new HBox();
         inputBar.setSpacing(5);

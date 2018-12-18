@@ -6,6 +6,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import main.Room;
 
@@ -19,8 +20,8 @@ class RoomGUI {
         this.room = room;
         Rectangle background = new Rectangle();
 
-        background.setHeight(100);
-        background.setWidth(100);
+        background.setHeight(150);
+        background.setWidth(150);
 
         background.setFill(Color.WHITE);
 
@@ -36,11 +37,12 @@ class RoomGUI {
         flow.setHgap(100);
         Text text = new Text();
         text.setText(room.toString() + "\n");
+        text.setFont(Font.font(15));
         flow.getChildren().add(text);
 
         light = new Rectangle();
-        light.setWidth(25);
-        light.setHeight(25);
+        light.setWidth(50);
+        light.setHeight(50);
         flow.getChildren().add(light);
 
         stack = new StackPane();
