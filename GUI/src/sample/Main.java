@@ -37,6 +37,7 @@ import main.routine.SoonWakeUpRoutine;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.logging.Handler;
@@ -55,6 +56,7 @@ public class Main extends Application implements HouseObserver {
     private static TextFlow area = new TextFlow();
     private static ScrollPane scrollPane = new ScrollPane();
     private static TextArea infoArea = new TextArea();
+    private static GridPane roomsGrid;
     private final Handler loggingHandler = new Handler() {
         @Override
         public void publish(LogRecord record) {
@@ -178,7 +180,7 @@ public class Main extends Application implements HouseObserver {
         border.setTop(terminal);
 
         // Rooms
-        GridPane roomsGrid = new GridPane();
+        roomsGrid = new GridPane();
         roomsGrid.setHgap(5);
 
         for (int a = 0; a < house.getRooms().size(); a++) {
@@ -257,6 +259,17 @@ public class Main extends Application implements HouseObserver {
     }
 
     public void update() {
+        // TODO Not retrace everything in Room
+        roomsGrid.getChildren().clear();
+        roomGUIs.clear();
+        for (int a = 0; a < house.getRooms().size(); a++) {
+            int row = a / 4;
+            int column = a % 4;
+
+            RoomGUI roomGUI = new RoomGUI(house.getRooms().get(a));
+            roomGUI.addToGrid(roomsGrid, column, row);
+            roomGUIs.add(roomGUI);
+        }
         roomGUIs.forEach(RoomGUI::update);
         infoArea.setText(getHouseInformation());
     }

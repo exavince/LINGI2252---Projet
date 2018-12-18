@@ -53,6 +53,17 @@ public class ConnectedHouse implements ItemSubject {
             room.setHouse(this);
             rooms.add(room);
         }
+        notifyObservers();
+    }
+
+    public void detach(Room minimumRoom, Room... roomsIn) {
+        minimumRoom.setHouse(null);
+        rooms.remove(minimumRoom);
+        for (Room room : roomsIn) {
+            room.setHouse(null);
+            rooms.remove(room);
+        }
+        notifyObservers();
     }
 
     public void moveTo(RoomType room) {
@@ -83,6 +94,9 @@ public class ConnectedHouse implements ItemSubject {
         }
     }
 
+    /**
+     * Returns the Room object belonging to the type, Room.NONE otherwise
+     */
     public Room findRoom(RoomType type) {
         for (Room room : getRooms()) {
             if (room.getType() == type) return room;
