@@ -217,6 +217,7 @@ public class Main extends Application implements HouseObserver {
         }
         house.registerObserver(this);
         println("Choose a scenario (1 or 2)");
+        println("");
     }
 
     private void onDataSend(TextField notification) {
@@ -227,10 +228,12 @@ public class Main extends Application implements HouseObserver {
                 case "1":
                     scenarioChosen = 1;
                     firstScenario();
+                    println("");
                     break;
                 case "2":
                     scenarioChosen = 2;
                     secondScenario();
+                    println("");
                     break;
                 default:
                     println(Color.DARKORANGE, "Invalid scenario number");

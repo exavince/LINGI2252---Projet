@@ -61,6 +61,6 @@ class RoomGUI {
 
     void update() {
         selected.setVisible(room.getHouse().getPosition() == room.getType());
-        light.setFill(room.getLighting() > 0 ? Color.YELLOW : Color.YELLOW.darker().darker().darker());
+        light.setFill(room.getLighting() > 0 ? Color.YELLOW : Color.BLACK);
     }
 }
