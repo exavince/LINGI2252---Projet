@@ -138,6 +138,7 @@ public class Main extends Application implements HouseObserver {
         Scene scene = new Scene(root, 1003, 827, Color.BLACK);
         BorderPane border = new BorderPane();
         root.getChildren().add(border);
+        scene.setFill(Color.DARKGREY.darker().darker().darker());
 
         // Input bar
 
