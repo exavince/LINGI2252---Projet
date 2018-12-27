@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class ConnectedHouseBuilder {
     private final ConnectedHouse house = new ConnectedHouse();
-    private final FeatureModel<Room> model = ConnectedHouseFeatureModel.getInstance();
+    private final FeatureModel model = ConnectedHouseFeatureModel.getInstance();
     private final FeatureEditingStrategy strategy = new TryOnCopyStrategy(ConnectedHouseFeatureModel.getInstance());
 
     public ConnectedHouse getHouse() {
@@ -30,7 +30,7 @@ public class ConnectedHouseBuilder {
     void addRoom(RoomType roomType, List<String> featureNames) throws InvalidModelConfigurationException {
         Room room = new Room(roomType);
         house.attach(room);
-        List<FeatureAction<Room>> actions = new ArrayList<>();
+        List<FeatureAction> actions = new ArrayList<>();
         actions.add(new ActivateFeature<>(model.getFeature("Central"), room));
         actions.addAll(featureNames.stream().map(name -> new ActivateFeature<>(model.getFeature(name), room)).collect(Collectors.toList()));
         strategy.apply(room.getModelState(), actions);

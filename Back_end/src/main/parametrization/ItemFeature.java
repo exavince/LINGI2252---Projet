@@ -1,13 +1,13 @@
 package main.parametrization;
 
-import framework.Feature;
+import framework.ConcreteFeature;
 import main.Room;
 import main.item.Item;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ItemFeature implements Feature<Room> {
+public class ItemFeature implements ConcreteFeature<Room> {
     private static final Logger LOGGER = Logger.getLogger(ItemFeature.class.getName());
     private final Class<? extends Item> objectClass;
 

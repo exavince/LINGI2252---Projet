@@ -2,12 +2,8 @@ package framework;
 
 import framework.constraint.Constraint;
 
-public interface Feature<T> extends Constraint {
+public interface Feature extends Constraint {
     String getName();
-
-    void activate(T target);
-
-    void deactivate(T target);
 
     /**
      * @return Whether the feature is activated or not

@@ -14,5 +14,5 @@ public interface FeatureEditingStrategy {
      * @param actions            The changes
      * @throws InvalidModelConfigurationException When it was not possible because the changes resulted in an invalid model
      */
-    <T> void apply(FeatureModelConfiguration modelConfiguration, List<FeatureAction<T>> actions) throws InvalidModelConfigurationException;
+    void apply(FeatureModelConfiguration modelConfiguration, List<FeatureAction> actions) throws InvalidModelConfigurationException;
 }

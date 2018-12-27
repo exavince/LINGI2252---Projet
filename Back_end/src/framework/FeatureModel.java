@@ -9,14 +9,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class FeatureModel<T> {
+public abstract class FeatureModel {
     private static final Logger LOGGER = Logger.getLogger(FeatureModel.class.getName());
-    private final List<Feature<T>> features = new ArrayList<>();
+    private final List<Feature> features = new ArrayList<>();
     private final List<Primitive> featureDiagram = new ArrayList<>();
     private final List<Constraint> crossTreeConstraints = new ArrayList<>();
 
-    @SafeVarargs
-    protected final void addFeatures(Feature<T>... featuresIn) {
+    protected final void addFeatures(Feature... featuresIn) {
         features.addAll(Arrays.asList(featuresIn));
     }
 
@@ -28,8 +27,8 @@ public abstract class FeatureModel<T> {
         crossTreeConstraints.addAll(Arrays.asList(constraintsIn));
     }
 
-    public final Feature<T> getFeature(String name) {
-        Feature<T> feature = features.stream().filter(f -> f.getName().toUpperCase().equals(name.toUpperCase())).findFirst().orElse(null);
+    public final Feature getFeature(String name) {
+        Feature feature = features.stream().filter(f -> f.getName().toUpperCase().equals(name.toUpperCase())).findFirst().orElse(null);
         if (feature == null) {
             LOGGER.log(Level.SEVERE, "Feature " + name + " not present in feature model.");
         }

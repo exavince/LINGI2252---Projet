@@ -1,11 +1,12 @@
 package framework.editing;
 
+import framework.ConcreteFeature;
 import framework.Feature;
 import framework.FeatureModelConfiguration;
 
 public class ActivateFeature<T> extends FeatureAction<T> {
 
-    public ActivateFeature(Feature<T> feature, T target) {
+    public ActivateFeature(Feature feature, T target) {
         super(feature, target);
     }
 
@@ -16,6 +17,8 @@ public class ActivateFeature<T> extends FeatureAction<T> {
 
     @Override
     public void apply() {
-        getFeature().activate(getTarget());
+        if (getFeature() instanceof ConcreteFeature) {
+            ((ConcreteFeature<T>) getFeature()).activate(getTarget());
+        }
     }
 }

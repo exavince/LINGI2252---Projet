@@ -1,6 +1,6 @@
 package main.parametrization;
 
-import framework.Feature;
+import framework.ConcreteFeature;
 import main.ConnectedHouse;
 import main.Room;
 import main.RoomType;
@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class RoomFeature implements Feature<ConnectedHouse> {
+public class RoomFeature implements ConcreteFeature<ConnectedHouse> {
     private static final Logger LOGGER = Logger.getLogger(RoomFeature.class.getName());
     private static final List<RoomFeature> roomFeatures = Arrays.stream(RoomType.values()).map(RoomFeature::new).collect(Collectors.toList());
     private final RoomType roomType;

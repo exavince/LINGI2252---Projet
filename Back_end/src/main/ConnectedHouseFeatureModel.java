@@ -24,34 +24,34 @@ import main.item.sensor.WeatherSensor;
 import main.item.sounds.ConnectedSpeakers;
 import main.parametrization.ItemFeature;
 
-public class ConnectedHouseFeatureModel extends FeatureModel<Room> {
+public class ConnectedHouseFeatureModel extends FeatureModel {
     private static ConnectedHouseFeatureModel INSTANCE = null;
 
     private ConnectedHouseFeatureModel() {
-        Feature<Room> root = new AbstractFeature<>("Central");
-        Feature<Room> control = new AbstractFeature<>("Control");
-        Feature<Room> comfortControllers = new AbstractFeature<>("Comfort_controllers");
-        Feature<Room> lightController = new ItemFeature(LightController.class);
-        Feature<Room> shutterController = new ItemFeature(ShutterController.class);
-        Feature<Room> heatingController = new ItemFeature(HeatingController.class);
-        Feature<Room> assistantControllers = new AbstractFeature<>("Assistant_controllers");
-        Feature<Room> voiceAssistant = new ItemFeature(VoiceAssistant.class);
-        Feature<Room> clockController = new ItemFeature(ClockController.class);
-        Feature<Room> securityControllers = new AbstractFeature<>("Security_controllers");
-        Feature<Room> doorController = new ItemFeature(DoorController.class);
-        Feature<Room> garageDoorController = new ItemFeature(GarageDoorController.class);
-        Feature<Room> devices = new AbstractFeature<>("Devices");
-        Feature<Room> cleaningDevices = new AbstractFeature<>("Cleaning_devices");
-        Feature<Room> roboticVacuumCleaner = new ItemFeature(RoboticVacuumCleaner.class);
-        Feature<Room> mediaDevices = new AbstractFeature<>("Media_devices");
-        Feature<Room> connectedSpeakers = new ItemFeature(ConnectedSpeakers.class);
-        Feature<Room> others = new AbstractFeature<>("Others");
-        Feature<Room> coffeeMachine = new ItemFeature(CoffeeMachine.class);
-        Feature<Room> sensors = new AbstractFeature<>("Sensors");
-        Feature<Room> movementsSensor = new ItemFeature(MovementsSensor.class);
-        Feature<Room> weatherSensor = new ItemFeature(WeatherSensor.class);
-        Feature<Room> temperatureSensor = new ItemFeature(TemperatureSensor.class);
-        Feature<Room> microphone = new ItemFeature(Microphone.class);
+        Feature root = new AbstractFeature("Central");
+        Feature control = new AbstractFeature("Control");
+        Feature comfortControllers = new AbstractFeature("Comfort_controllers");
+        Feature lightController = new ItemFeature(LightController.class);
+        Feature shutterController = new ItemFeature(ShutterController.class);
+        Feature heatingController = new ItemFeature(HeatingController.class);
+        Feature assistantControllers = new AbstractFeature("Assistant_controllers");
+        Feature voiceAssistant = new ItemFeature(VoiceAssistant.class);
+        Feature clockController = new ItemFeature(ClockController.class);
+        Feature securityControllers = new AbstractFeature("Security_controllers");
+        Feature doorController = new ItemFeature(DoorController.class);
+        Feature garageDoorController = new ItemFeature(GarageDoorController.class);
+        Feature devices = new AbstractFeature("Devices");
+        Feature cleaningDevices = new AbstractFeature("Cleaning_devices");
+        Feature roboticVacuumCleaner = new ItemFeature(RoboticVacuumCleaner.class);
+        Feature mediaDevices = new AbstractFeature("Media_devices");
+        Feature connectedSpeakers = new ItemFeature(ConnectedSpeakers.class);
+        Feature others = new AbstractFeature("Others");
+        Feature coffeeMachine = new ItemFeature(CoffeeMachine.class);
+        Feature sensors = new AbstractFeature("Sensors");
+        Feature movementsSensor = new ItemFeature(MovementsSensor.class);
+        Feature weatherSensor = new ItemFeature(WeatherSensor.class);
+        Feature temperatureSensor = new ItemFeature(TemperatureSensor.class);
+        Feature microphone = new ItemFeature(Microphone.class);
 
         addFeatures(
                 root,

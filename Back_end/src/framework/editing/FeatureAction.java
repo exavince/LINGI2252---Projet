@@ -4,15 +4,15 @@ import framework.Feature;
 import framework.FeatureModelConfiguration;
 
 public abstract class FeatureAction<T> {
-    private final Feature<T> feature;
+    private final Feature feature;
     private final T target;
 
-    public FeatureAction(Feature<T> feature, T target) {
+    public FeatureAction(Feature feature, T target) {
         this.feature = feature;
         this.target = target;
     }
 
-    protected Feature<T> getFeature() {
+    protected Feature getFeature() {
         return feature;
     }
 

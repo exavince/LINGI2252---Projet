@@ -12,13 +12,13 @@ public interface FeatureModelConfiguration {
      * @param feature The feature
      * @return True if the feature was added, false if it was already there
      */
-    <T> boolean activate(Feature<T> feature);
+    boolean activate(Feature feature);
 
     /**
      * @param feature The feature
      * @return True if the feature was disabled, false if it was already disabled
      */
-    <T> boolean deactivate(Feature<T> feature);
+    boolean deactivate(Feature feature);
 
     /**
      * Meant to be used to try new changes and verify them.

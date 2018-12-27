@@ -14,7 +14,7 @@ public class TryOnCopyStrategy implements FeatureEditingStrategy {
     }
 
     @Override
-    public <T> void apply(FeatureModelConfiguration modelConfiguration, List<FeatureAction<T>> actions) throws InvalidModelConfigurationException {
+    public void apply(FeatureModelConfiguration modelConfiguration, List<FeatureAction> actions) throws InvalidModelConfigurationException {
         FeatureModelConfiguration copy = modelConfiguration.copy();
         actions.forEach(action -> action.execute(copy));
         boolean valid = model.interpret(copy);
@@ -23,7 +23,7 @@ public class TryOnCopyStrategy implements FeatureEditingStrategy {
         } else throw new InvalidModelConfigurationException(copy, model);
     }
 
-    private <T> void commitActions(FeatureModelConfiguration modelConfiguration, List<FeatureAction<T>> actions) {
+    private void commitActions(FeatureModelConfiguration modelConfiguration, List<FeatureAction> actions) {
         actions.forEach(action -> {
             action.execute(modelConfiguration);
             action.apply();
