@@ -68,8 +68,8 @@ public class CommandParser {
         return new EditExpression(room, remainingTokens);
     }
 
-    private GetExpression get() {
-        return new GetExpression(room(), attribute());
+    private <T> GetExpression<T> get() {
+        return new GetExpression<>(room(), attribute());
     }
 
     private MoveExpression move() {
@@ -90,40 +90,45 @@ public class CommandParser {
         }
     }
 
-    private ValueExpression value() {
+    /**
+     * Tries to guess at runtime what type T is
+     */
+    private <T> TerminalExpression<T> terminal(String token) {
         try {
-            String token = input.next();
-            if (token.equals("GET")) {
-                return get();
-            } else {
-                // TODO guess type based on what should be expected with attribute ?
+            return new TerminalExpression<>((T) WeatherStatus.valueOf(token));
+        } catch (IllegalArgumentException e1) {
+            try {
+                return new TerminalExpression<>((T) HomeMood.valueOf(token));
+            } catch (IllegalArgumentException e) {
                 try {
-                    return new TerminalExpression<>(WeatherStatus.valueOf(token));
-                } catch (IllegalArgumentException e1) {
+                    return new TerminalExpression<>((T) new Integer(Integer.parseInt(token)));
+                } catch (NumberFormatException e2) {
                     try {
-                        return new TerminalExpression<>(HomeMood.valueOf(token));
-                    } catch (IllegalArgumentException e) {
-                        try {
-                            return new TerminalExpression<>(Integer.parseInt(token));
-                        } catch (NumberFormatException e2) {
-                            try {
-                                return new TerminalExpression<>(Double.parseDouble(token));
-                            } catch (NumberFormatException e3) {
-                                LOGGER.warning("Unknown value token " + token);
-                                throw new RuntimeException("Unknown value token " + token);
-                            }
-                        }
+                        return new TerminalExpression<>((T) new Double(Double.parseDouble(token)));
+                    } catch (NumberFormatException e3) {
+                        LOGGER.warning("Unknown value token " + token);
+                        throw new RuntimeException("Unknown value token " + token);
                     }
                 }
             }
+        }
+    }
+
+    private <T> ValueExpression<T> value() {
+        try {
+            String token = input.next();
+            if ("GET".equals(token)) {
+                return get();
+            }
+            return terminal(token);
         } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, "A value expression was expected");
             return null;
         }
     }
 
-    private SetExpression set() {
-        return new SetExpression(room(), attribute(), value());
+    private <T> SetExpression<T> set() {
+        return new SetExpression<>(room(), attribute(), value());
     }
 
     private RoomType room() {

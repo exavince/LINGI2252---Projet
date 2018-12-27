@@ -11,7 +11,7 @@ public class Room implements ItemSubject {
     public static final Room NONE = new Room(RoomType.NOWHERE);
     private final RoomType type;
     private final FeatureModelConfiguration modelConfiguration = new FeatureModelConfigurationImpl();
-    private ArrayList<Item> items = new ArrayList<>();
+    private final ArrayList<Item> items = new ArrayList<>();
     private ConnectedHouse house;
     private int temperature = 0;
     private int lighting = 0; // TODO Replace by Lamp item ?

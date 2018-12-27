@@ -13,9 +13,9 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-public class GetExpression implements ValueExpression, Command {
-    private static Map<String, Function<ConnectedHouse, Object>> globalAttributes = new HashMap<>();
-    private static Map<String, Function<Room, Object>> roomAttributes = new HashMap<>();
+public class GetExpression<T> implements ValueExpression<T>, Command {
+    private static final Map<String, Function<ConnectedHouse, ?>> globalAttributes = new HashMap<>();
+    private static final Map<String, Function<Room, ?>> roomAttributes = new HashMap<>();
 
     static {
         globalAttributes.put("MOOD", ConnectedHouse::getMood);
@@ -49,10 +49,10 @@ public class GetExpression implements ValueExpression, Command {
      * @return value of the get expression. Type depends on attribute.
      */
     @Override
-    public Object evaluate(ConnectedHouse house) {
+    public T evaluate(ConnectedHouse house) {
         if (roomType == RoomType.GLOBAL) {
             try {
-                return globalAttributes.get(attribute).apply(house);
+                return (T) globalAttributes.get(attribute).apply(house);
             } catch (NullPointerException e) {
                 CommandParser.LOGGER.log(Level.WARNING, "Unknown global attribute " + attribute);
                 CommandParser.LOGGER.log(Level.INFO, "Available attributes: " + String.join(", ", globalAttributes.keySet()));
@@ -62,7 +62,7 @@ public class GetExpression implements ValueExpression, Command {
             for (Room room : house.getRooms()) {
                 if (room.getType() == roomType) {
                     try {
-                        return roomAttributes.get(attribute).apply(room);
+                        return (T) roomAttributes.get(attribute).apply(room);
                     } catch (NullPointerException e) {
                         CommandParser.LOGGER.log(Level.WARNING, "Unknown attribute " + attribute + " for room " + roomType);
                         CommandParser.LOGGER.log(Level.INFO, "Available attributes: " + String.join(", ", roomAttributes.keySet()));

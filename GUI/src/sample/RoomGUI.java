@@ -48,9 +48,7 @@ class RoomGUI {
         stack = new StackPane();
         stack.setPrefSize(100, 100);
         stack.getChildren().addAll(background, flow, selected);
-        stack.setOnMouseClicked(e -> {
-            room.getHouse().sendCommand("MOVETO " + room);
-        });
+        stack.setOnMouseClicked(e -> room.getHouse().sendCommand("MOVETO " + room));
 
         update();
     }

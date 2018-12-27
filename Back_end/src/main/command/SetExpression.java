@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 
-public class SetExpression implements Command {
-    private static Map<String, BiConsumer<ConnectedHouse, Object>> globalAttributes = new HashMap<>();
-    private static Map<String, BiConsumer<Room, Object>> roomAttributes = new HashMap<>();
+public class SetExpression<T> implements Command {
+    private static final Map<String, BiConsumer<ConnectedHouse, ?>> globalAttributes = new HashMap<>();
+    private static final Map<String, BiConsumer<Room, ?>> roomAttributes = new HashMap<>();
 
     static {
         globalAttributes.put("WEATHER", (connectedHouse, weatherStatus) -> connectedHouse.setWeatherStatus((WeatherStatus) weatherStatus));
@@ -45,9 +45,9 @@ public class SetExpression implements Command {
 
     private final RoomType roomType;
     private final String attribute;
-    private final ValueExpression value;
+    private final ValueExpression<T> value;
 
-    SetExpression(RoomType roomType, String attribute, ValueExpression value) {
+    SetExpression(RoomType roomType, String attribute, ValueExpression<T> value) {
         this.roomType = roomType;
         this.attribute = attribute;
         this.value = value;
@@ -57,24 +57,31 @@ public class SetExpression implements Command {
     public void interpret(ConnectedHouse house) {
         if (roomType == RoomType.GLOBAL) {
             try {
-                globalAttributes.get(attribute).accept(house, value.evaluate(house));
+                BiConsumer<ConnectedHouse, T> setter = (BiConsumer<ConnectedHouse, T>) globalAttributes.get(attribute);
+                setter.accept(house, value.evaluate(house));
+
                 CommandParser.LOGGER.log(Level.INFO, "-- Set global attribute " + attribute + " with success.");
+            } catch (ClassCastException e) {
+                CommandParser.LOGGER.log(Level.WARNING, e.getMessage());
+                throw e;
             } catch (NullPointerException e) {
                 CommandParser.LOGGER.log(Level.WARNING, "Unknown global attribute " + attribute);
                 CommandParser.LOGGER.log(Level.INFO, "Available attributes: " + String.join(", ", globalAttributes.keySet()));
-                throw new UnsupportedOperationException("Unknown global attribute " + attribute);
+                throw new UnsupportedOperationException("Unknown global attribute " + attribute, e);
             }
             return;
         }
         for (Room room : house.getRooms()) {
             if (room.getType() == roomType) {
                 try {
-                    roomAttributes.get(attribute).accept(room, value.evaluate(house));
+                    BiConsumer<Room, T> setter = (BiConsumer<Room, T>) roomAttributes.get(attribute);
+                    setter.accept(room, value.evaluate(house));
+
                     CommandParser.LOGGER.log(Level.INFO, "-- Set room attribute " + attribute + " with success.");
                 } catch (NullPointerException e) {
                     CommandParser.LOGGER.log(Level.WARNING, "Unknown attribute " + attribute + " for room " + roomType);
                     CommandParser.LOGGER.log(Level.INFO, "Available attributes: " + String.join(", ", roomAttributes.keySet()));
-                    throw new UnsupportedOperationException("Unknown attribute " + attribute + " for room " + roomType);
+                    throw new UnsupportedOperationException("Unknown attribute " + attribute + " for room " + roomType, e);
                 }
             }
         }

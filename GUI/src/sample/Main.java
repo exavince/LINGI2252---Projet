@@ -155,9 +155,7 @@ public class Main extends Application implements HouseObserver {
 
         Button send = new Button("Send");
         send.setPrefWidth(100);
-        send.setOnAction(e -> {
-            onDataSend(notification);
-        });
+        send.setOnAction(e -> onDataSend(notification));
 
         notification.prefWidthProperty().bind(scene.widthProperty().subtract(send.getPrefWidth() + 2));
 
