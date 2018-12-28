@@ -34,7 +34,7 @@ public class ConnectedHouseJSONParser implements ConnectedHouseParser {
 
     @Override
     public ConnectedHouse parse(String inputConfigFile, String inputStateFile) throws FileNotFoundException {
-        ConnectedHouseBuilder houseBuilder = new ConnectedHouseBuilder();
+        ConnectedHouseBuilder houseBuilder = new ConnectedHouseBuilderImpl();
         JsonParser gson = new JsonParser();
         JsonObject json = (JsonObject) gson.parse(new FileReader(inputConfigFile));
         JsonObject stateJson = (JsonObject) gson.parse(new FileReader(inputStateFile));
