@@ -2,16 +2,16 @@ package main;
 
 import main.command.Command;
 import main.command.CommandParser;
-import main.item.ItemSubject;
 import main.item.control.light.LightController;
 import main.message.SoundMessage;
 import main.routine.HomeMood;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ConnectedHouse implements ItemSubject {
-    private final ArrayList<HouseObserver> observers = new ArrayList<>();
-    private final ArrayList<Room> rooms = new ArrayList<>();
+public class ConnectedHouse {
+    private final List<HouseObserver> observers = new ArrayList<>();
+    private final List<Room> rooms = new ArrayList<>();
     private WeatherStatus weatherStatus = WeatherStatus.SUNNY;
     private RoomType position = RoomType.NOWHERE;
     private HomeMood mood = HomeMood.NORMAL;
@@ -20,7 +20,7 @@ public class ConnectedHouse implements ItemSubject {
         return position;
     }
 
-    public ArrayList<Room> getRooms() {
+    public List<Room> getRooms() {
         return rooms;
     }
 
@@ -89,7 +89,6 @@ public class ConnectedHouse implements ItemSubject {
         notifyObservers();
     }
 
-    @Override
     public void sendToItems(Object message) {
         for (Room room : getRooms()) {
             room.sendToItems(message);

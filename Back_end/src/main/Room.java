@@ -38,6 +38,13 @@ public class Room implements ItemSubject {
         getHouse().notifyObservers();
     }
 
+    @Override
+    public void attach(Item itemIn) {
+        itemIn.setRoom(this);
+        items.add(itemIn);
+        getHouse().notifyObservers();
+    }
+
     public ConnectedHouse getHouse() {
         if (house == null) {
             throw new RuntimeException("House was not set");
